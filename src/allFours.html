@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ALL FOURS</title>
+    <meta name="description" content="A card game indigenous to the country of Trinidad and Tobago. It is a pastime of Trinbagonians.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="w3.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+    <script src="allfours.js"></script>
+</head>
+<body>
+    <!-- Heading -->
+    <div class="container" id="heading">
+        <H1>All Fours</H1>
+    </div>
+    <div>
+        <!-- Game Control Panel -->
+        <div class="w3-sidebar w3-bar-block">
+            <div class="w3-card-4 w3-bar-item">
+                <div>
+                    <h3>Player 1: Roger</h3>
+                </div>
+                <div class="function-buttons">
+                    <button class="w3-btn" onclick="dealHand('beg1', getHand())">Beg</button>
+                    <button class="w3-btn" onclick="mainGameLoop()">Stand</button>
+                    <button class="w3-btn" id="quitBtn" onclick="UnitTestObjects(createDeck())">Quit</button>
+                </div>
+                <div class="hand" id="tophand">
+                    <!--
+                    <a href="#"><img id="2c" src="playing_cards/2_clubs.png" onclick="playCard('left', '2c')"></a>            
+                    <a href="#"><img id="jd" src="playing_cards/jack_diamonds.png" onclick="playCard('top', 'jd')"></a>           
+                    <a href="#"><img id="ah" src="playing_cards/ace_hearts.png" onclick="playCard('right', 'ah')"></a>
+                    -->
+                </div>
+                <div class="hand" id="bottomhand">
+                    <!--
+                    <a href="#"><img id="10s" src="playing_cards/10_spades.png" onclick="playCard('bottom', '10s')"></a>            
+                    <a href="#"><img id="kh" src="playing_cards/king_hearts.png" onclick="playCard('left', 'kh')"></a>            
+                    <a href="#"><img id="6c" src="playing_cards/6_clubs.png" onclick="playCard('right', '6c')"></a> 
+                    -->
+                </div>
+                <div class="hand" id="beg1"></div> 
+                <div class="hand" id="beg2"></div>            
+            </div>
+        </div>
+        <!-- Game Board -->
+        <div class="container" id="game_container">
+            <canvas id="game_board" width="700" height="450"></canvas>
+        </div>
+    </div>
+
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>Copyright &copy; 2018 Gallatin Engineering Ltd</p>
+        </div>
+    </footer>     
+</body>
+</html>
+
+<!--
+
+==================================================================
+|                                                                |
+|                                                                |
+|                       ALL FOURS                                |
+|                     BY: .muddicode                             |
+|                                                                |
+|                                                                |
+==================================================================
+
+-->
