@@ -1,4 +1,3 @@
-
 /*
 ==================================================================
 |                                                                |
@@ -181,18 +180,10 @@ function mainGameLoop() {
     displayTrump(trump);
     trumpUnitTest(trump);
     // beg handler
+    // scoreboard
 }
 
 
-/*
-function cardRotate() {
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d");
-    var img = document.getElementById("jack");
-    ctx.drawImage(img, 600, 350);
-    ctx.rotate(20*Math.PI/180);
-}
-*/
 /* var x = 10;
 var y = 10;
 var dx = 4;
@@ -206,26 +197,7 @@ function animate_card() {
     x += dx;
     y += dy;
 } */
-
-
  // Build the page using javascript only
 
 
-     /*
-    var face = card.charAt(0);
-    var suit = "";
-    var suitPrefix = card.charAt(1);
-    switch (suitPrefix) {
-        case 's':
-            suit = 'spades';
-            break;
-        case 'd':
-            suit = 'diamonds';
-            break;
-        case 'c':
-            suit = 'clubs';
-            break;
-        case 'h':
-            suit ='hearts';
-            break;
-    }; */
+     
