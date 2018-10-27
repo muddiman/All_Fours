@@ -8,6 +8,23 @@
 |                                                                |
 ==================================================================
 */
+
+/* 
+        @author: Roger Clarke (muddiman | .muddicode)
+        Copyright (c) 2018. All Rights Reserved.
+
+*/
+/*
+   Major Elements of A Game:
+   I. Setup Game
+   II. Game Loop:
+        1. Poll and handle elements
+        2. Update game elements
+        3. Draw Surface
+        4. Show Surface
+   III. Shut Down Game 
+*/
+
 /*  
 
     Because the fisrt letter of every suit AND face of all cards are unique letters
@@ -127,6 +144,7 @@ function loadCard(card, element) {
     var y = element.appendChild(x1);
     var z = y.appendChild(x2);
 }
+
 function getHand(deck, n) {
     // temporary function just to get the game to work
     // TODO: Randomize this function. ie: return random cards.
@@ -135,18 +153,18 @@ function getHand(deck, n) {
     return three_cards;  
 }
   
-  function dealHand(pos, cards) {
-      // three cards at a time. Hand: 3-card array
-      // pos: display position in the control panel is: tophand, bottomhand, firstbeg & secondbeg
-      for (i = 0; i < cards.length; i++) {
-          loadCard(cards[i], document.getElementById(pos));
-      }
-      /*
-      for (i = 3; i < cards.length; i++) {
-          loadCard(cards[i], document.getElementById(bottomhand));
-      }
-      */
-  }
+function dealHand(pos, cards) {
+    // three cards at a time. Hand: 3-card array
+    // pos: display position in the control panel is: tophand, bottomhand, firstbeg & secondbeg
+    for (i = 0; i < cards.length; i++) {
+        loadCard(cards[i], document.getElementById(pos));
+    }
+    /*
+    for (i = 3; i < cards.length; i++) {
+        loadCard(cards[i], document.getElementById(bottomhand));
+    }
+    */
+}
 
 function displayTrump(trump) {
     // Displays the kickcard/trump in the top left corner of the gameboard 
@@ -166,7 +184,48 @@ function trumpUnitTest(card) {
     console.log(card.getCardName());
 }
 
+function scoreboard() {
+    // draws scoreboard on the gameboard
+    // draw rectangle border
+    var c = document.getElementById("game_board");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = "red";
+    ctx.rect(gameWidth - 335, 15, 260, 120);
+    ctx.stroke(); 
+    // fill rectangle
+    ctx.fillStyle = "#993399";
+    ctx.fillRect(gameWidth - 335, 15, 260, 120);
+    // write in rectangle
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "30px Arial";
+    ctx.fillText("Team A:", gameWidth - 320, 50);
+    ctx.fillText("Team B:", gameWidth - 320, 115);
+    // score tiles
+    ctx.fillText("14", gameWidth - 140, 50);
+    ctx.fillText("10", gameWidth - 140, 115);
+}
+
+//  
+function humanPlayTurn(playeryHand) {
+    // click on a card
+    return card;
+}
+ 
+function computerPlayTurn(computerHand) {
+    //consult computer AI
+    computerAI(hand);
+    return card;
+}
+
+function determineWinner(called, played) {
+    // higher rank in called suit wins
+    // Except: other player plays trump
+}
+
 function mainGameLoop() {
+    // play rounds until  somebody reach 14 or quit() --> ESC key (do - while loop)
     // Deal subroutine
     // TODO: shuffle deck
     var theDeck = createDeck();
@@ -178,9 +237,16 @@ function mainGameLoop() {
     computer1Hand = getHand(theDeck, 9);
     var trump = theDeck[12];
     displayTrump(trump);
-    trumpUnitTest(trump);
+    // trumpUnitTest(trump);
+    do {
+        var callCard = humanPlayTurn(player1Hand);
+        var playedCard = computerPlayTurn(computer1Hand);
+        determineWinner(callCard, playedCard);
+        // player1Lift = callCard + playedCard;
+        // computerLift = callCard + playedCard;
+    } while (player1Hand == null);
     // beg handler
-    // scoreboard
+    
 }
 
 
