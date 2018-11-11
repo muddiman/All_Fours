@@ -12,9 +12,23 @@
 </head>
 <body>
     <!-- Heading -->
-    <div class="container" id="heading">
-        <H1>All Fours</H1>
-    </div>
+    <header id="heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <H1><span class="primary-text">All</span> Fours</H1>
+                </div>
+                <div class="col-12">
+                    <nav id="navbar">                        
+                        <a href="#">Home</a>
+                        <a href="#">About</a>
+                        <a href="#">Documentation</a>
+                        <a href="#">Contact</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
     <div>
         <!-- Game Control Panel -->
         <div class="w3-sidebar w3-bar-block">
@@ -25,7 +39,7 @@
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="dealHand('beg1', getHand())">Beg</button>
                     <button class="w3-btn" onclick="mainGameLoop()">Stand</button>
-                    <button class="w3-btn" id="quitBtn" onclick="scoreboard()">Quit</button>
+                    <button class="w3-btn" id="quitBtn" onclick="scoreboard()">Score</button>
                 </div>
                 <div class="hand" id="tophand">
                     <!--
@@ -34,13 +48,7 @@
                     <a href="#"><img id="ah" src="playing_cards/ace_hearts.png" onclick="playCard('right', 'ah')"></a>
                     -->
                 </div>
-                <div class="hand" id="bottomhand">
-                    <!--
-                    <a href="#"><img id="10s" src="playing_cards/10_spades.png" onclick="playCard('bottom', '10s')"></a>            
-                    <a href="#"><img id="kh" src="playing_cards/king_hearts.png" onclick="playCard('left', 'kh')"></a>            
-                    <a href="#"><img id="6c" src="playing_cards/6_clubs.png" onclick="playCard('right', '6c')"></a> 
-                    -->
-                </div>
+                <div class="hand" id="bottomhand"></div>
                 <div class="hand" id="beg1"></div> 
                 <div class="hand" id="beg2"></div>            
             </div>

@@ -1,17 +1,32 @@
 
-#heading{
+.col-12 {width:100%;}
+#heading {
     background-color: blue;
     padding-top: 0px;
-    width: 100%;
-    margin-bottom: 15px;
+    margin: 0;
+    border: 0;
+    margin-bottom: 5px;
 }
 h1 {
     color: aliceblue;
     padding-left: 50px;
-    padding-top: 0px;
-    padding-bottom:15px;
+    padding-top: 0;
+    padding-bottom:0;
     font-size: 50px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;   
+}
+.container {
+    margin: 0;
+    padding: 0;
+}
+#navbar a {
+   /* align-content: right; */
+   display: inline;
+   text-decoration: none;
+   color: white;
+   padding-left: 10px;
+   padding-top: 5px;
+   padding-bottom: 5px;
 }
 #game_board {
     border: 5px solid black; 

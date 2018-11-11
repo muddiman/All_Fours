@@ -99,7 +99,7 @@ function UnitTestObjects(deck) {
     };
 }
 
-function cardDisplay() {
+function cardDisplay(ctx) {
     // test function to display cards on game board
     var img1 = document.getElementById("kingHearts");
     var img2 = document.getElementById("jackDiamonds");
@@ -111,10 +111,10 @@ function cardDisplay() {
     animate_card();
 }
 // place a card on the game table
-function playCard(playPosition, cardId) {
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d");
-    var cardImg = document.getElementById(cardId);
+function playCard(ctx, playPosition, cardId) {
+    /* var c = document.getElementById("game_board");
+    var ctx = c.getContext("2d"); */
+    var cardImg = document.getElementById(cardId); 
     switch (playPosition) {
         case "left":
             ctx.drawImage(cardImg, xCenter-60, yCenter-30);
@@ -133,16 +133,18 @@ function playCard(playPosition, cardId) {
     cardImg.parentNode.removeChild(cardImg);
 }
 
-function loadCard(card, element) {
+function loadCard(card, hand_div) {
     // displays card in specified hand on webpage inside the game control panel
     var x1 = document.createElement("a");
     x1.href = "#";
     var x2 = document.createElement("img");   
     x2.id = card.getCardName();
     x2.src = "img/" + card.getCardName() + ".png";
-    x2.setAttribute("onclick", "playCard('left', '" + card.getCardName() + "')");
-    var y = element.appendChild(x1);
-    var z = y.appendChild(x2);
+    x1.appendChild(x2);
+    hand_div.appendChild(x1);
+    //x2.setAttribute("onclick", "playCard('left', '" + card.getCardName() + "')");
+    //var y = element.appendChild(x1); 
+    //y.appendChild(x2);
 }
 
 function getHand(deck, n) {
@@ -157,7 +159,7 @@ function dealHand(pos, cards) {
     // three cards at a time. Hand: 3-card array
     // pos: display position in the control panel is: tophand, bottomhand, firstbeg & secondbeg
     for (i = 0; i < cards.length; i++) {
-        loadCard(cards[i], document.getElementById(pos));
+        loadCard(cards[i], document.getElementById(pos)); 
     }
     /*
     for (i = 3; i < cards.length; i++) {
@@ -166,16 +168,16 @@ function dealHand(pos, cards) {
     */
 }
 
-function displayTrump(trump) {
+function displayTrump(ctx, trump) {
     // Displays the kickcard/trump in the top left corner of the gameboard 
     // peform a trick, place it elsewhere on the html document and quickly place it on the canvas
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d");  
+    /* var c = document.getElementById("game_board");
+    var ctx = c.getContext("2d"); */ 
     var cardImage = document.createElement('img');
     cardImage.id = trump.getCardName();
     cardImage.src = "img/" + trump.getCardName() + ".png";
     var x = document.getElementById('beg2');
-    x.appendChild(cardImage);    
+    //x.appendChild(cardImage);    
     ctx.drawImage(cardImage, 5, 5);
     // x.removeChild(cardImage);
 }
@@ -208,9 +210,27 @@ function scoreboard() {
 }
 
 //  
-function humanPlayTurn(playeryHand) {
-    // click on a card
-    return card;
+function humanPlayTurn(ctx) {
+    // waits for player to click on a card
+    /* display card on board (playCard) and returns card
+    // Get the modal
+    var modal = document.getElementById('id01');
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}       listens for card to be clicked on
+        gets the id of card clicked 
+        plays card in player spot 
+    */
+    // var cardId = event.target.id;
+    var pos = 'left';
+    document.getElementsByClassName('hand').addEventListener("click", playCard(ctx, pos, event.target.id));
+    //card.face = event.target.id[0];
+    //card.suit = event.target.id[1];
+    //return card;
 }
  
 function computerPlayTurn(computerHand) {
@@ -228,6 +248,9 @@ function mainGameLoop() {
     // play rounds until  somebody reach 14 or quit() --> ESC key (do - while loop)
     // Deal subroutine
     // TODO: shuffle deck
+
+    var c = document.getElementById("game_board");
+    var ctx = c.getContext("2d");
     var theDeck = createDeck();
     var player1Hand = getHand(theDeck, 0);
     dealHand('tophand', player1Hand);
@@ -236,10 +259,11 @@ function mainGameLoop() {
     dealHand('bottomhand', getHand(theDeck, 6));
     computer1Hand = getHand(theDeck, 9);
     var trump = theDeck[12];
-    displayTrump(trump);
+    displayTrump(ctx, trump);
     // trumpUnitTest(trump);
     do {
-        var callCard = humanPlayTurn(player1Hand);
+        //var callCard = humanPlayTurn(player1Hand);
+        humanPlayTurn(ctx);
         var playedCard = computerPlayTurn(computer1Hand);
         determineWinner(callCard, playedCard);
         // player1Lift = callCard + playedCard;
