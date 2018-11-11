@@ -169,6 +169,8 @@ function dealHand(pos, cards) {
 }
 
 function displayTrump(ctx, trump) {
+    // parameters:
+    // returns: 
     // Displays the kickcard/trump in the top left corner of the gameboard 
     // peform a trick, place it elsewhere on the html document and quickly place it on the canvas
     /* var c = document.getElementById("game_board");
@@ -176,10 +178,22 @@ function displayTrump(ctx, trump) {
     var cardImage = document.createElement('img');
     cardImage.id = trump.getCardName();
     cardImage.src = "img/" + trump.getCardName() + ".png";
-    var x = document.getElementById('beg2');
+    // var x = document.getElementById('beg2');
     //x.appendChild(cardImage);    
     ctx.drawImage(cardImage, 5, 5);
     // x.removeChild(cardImage);
+}
+
+function unitTestForDisplayTrump() {
+    // tests the function's inner code
+    // parameters:
+    // return:
+    var c = document.getElementById("game_board");
+    var ctx = c.getContext("2d"); 
+    var deck = createDeck();
+    var trumpCard = deck[0];
+    displayTrump(ctx, trumpCard);
+    console.log(trumpCard.cardFace);
 }
 
 function trumpUnitTest(card) {
@@ -253,6 +267,7 @@ function mainGameLoop() {
     var ctx = c.getContext("2d");
     var theDeck = createDeck();
     var player1Hand = getHand(theDeck, 0);
+
     dealHand('tophand', player1Hand);
     var computer1Hand = getHand(theDeck, 3);
     player1Hand = getHand(theDeck, 6);

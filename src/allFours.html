@@ -36,18 +36,14 @@
                 <div>
                     <h3>Player 1: Roger</h3>
                 </div>
+                <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="dealHand('beg1', getHand())">Beg</button>
+                    <button class="w3-btn" onclick="unitTestForDisplayTrump()">Unit Test</button>
                     <button class="w3-btn" onclick="mainGameLoop()">Stand</button>
                     <button class="w3-btn" id="quitBtn" onclick="scoreboard()">Score</button>
                 </div>
-                <div class="hand" id="tophand">
-                    <!--
-                    <a href="#"><img id="2c" src="playing_cards/2_clubs.png" onclick="playCard('left', '2c')"></a>            
-                    <a href="#"><img id="jd" src="playing_cards/jack_diamonds.png" onclick="playCard('top', 'jd')"></a>           
-                    <a href="#"><img id="ah" src="playing_cards/ace_hearts.png" onclick="playCard('right', 'ah')"></a>
-                    -->
-                </div>
+                <!-- Display of Player 1's hand -->
+                <div class="hand" id="tophand"></div>
                 <div class="hand" id="bottomhand"></div>
                 <div class="hand" id="beg1"></div> 
                 <div class="hand" id="beg2"></div>            
