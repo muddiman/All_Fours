@@ -140,3 +140,47 @@ function loadCard(face, suit, element) {
     // x2.onclick = "";
 }
 loadCard('5', 'clubs', document.getElementById('tophand'));
+
+
+// new gameboard, card object etc
+
+
+var singleCard;
+
+function startGame() {
+    singleCard = new card(30, 30, "red", 10, 120);
+    game_board.start();
+}
+
+var game_board = {
+    // object: game_board
+    canvas : document.getElementById("game_board"),
+    start : function() {
+        // this.canvas.width = 480; already defined in HTML
+        // this.canvas.height = 270; already defined in HTML
+        this.context = this.canvas.getContext("2d");
+        // document.body.insertBefore(this.canvas, document.body.childNodes[0]); Already positioned in HTML
+        this.interval = setInterval(updateGameBoard, 20); //refresh game_board 50x per minute
+    },
+    clear : function() {
+        // wipe the game_board clean
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+};
+
+function card(width, height, color, x, y) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+        ctx = game_board.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    };
+}
+
+function updateGameBoard() {
+    game_board.clear();
+    singleCard.update();
+}

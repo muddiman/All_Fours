@@ -1,19 +1,9 @@
 /*
-==================================================================
-|                                                                |
-|                                                                |
-|                       ALL FOURS                                |
-|                     BY: .muddicode                             |
-|                                                                |
-|                                                                |
-==================================================================
+                     Title:  ALL FOURS GAME
+                     Language: Javascript
+                     Programmer: .muddicode                             
 */
 
-/* 
-        @author: Roger Clarke (muddiman | .muddicode)
-        Copyright (c) 2018. All Rights Reserved.
-
-*/
 /*
    Major Elements of A Game:
    I. Setup Game
@@ -35,7 +25,7 @@
         object Game... will have a gameBoard, context
     var Game = {
         gb: document.getElementById("game_board"),
-        ctx: getContext("2d"),
+        gameBoard.ctx: getContext("2d"),
         gameWidth: 750,
         gameHeight: 450,
         xCenter: gameWidth/2,
@@ -47,10 +37,27 @@
     }
 */
 
-var gameWidth = 750;
-var gameHeight = 450; 
-var xCenter = 750/2;
-var yCenter = 450/2;
+var gameBoard = {
+//  Object: gameBoard
+    canvas : document.getElementById("game_board"),
+    width : 750,
+    height : 450,
+    ctx : this.canvas.getContext("2d"),
+    init : function () {
+    // initialize gameBoard by applying context
+        // this.ctx = this.canvas.getContext("2d");
+    },
+    clearBoard : function () {
+    // wipes the entire gameBoard clean
+        this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+};
+
+
+// var gameWidth = 750;
+// var gameHeight = 450; 
+var xCenter = gameBoard.width/2;
+var yCenter = gameBoard.height/2;
 
 
 // ask if player wishes to play All Fours
@@ -63,14 +70,15 @@ function startAsk() {
     }
 }
 
-// Card object constructor
+
 
 function Card(rank, face, suit) {
-    this.cardSuit = suit; // ['c', 'd', 'h', 's'],
-    this.cardFace = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],
+// Card object constructor
+    this.suit = suit; // ['c', 'd', 'h', 's'],
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],
     this.rank = rank;     // [0, 1,.. 12], to assist in determining who played the higher card
     this.getCardName = function () {
-        return this.cardFace + this.cardSuit; // used as cardId, image filename, etc
+        return this.face + this.suit; // used as cardId, image filename, etc
     };
 }
 
@@ -93,40 +101,43 @@ function createDeck() {
 function UnitTestObjects(deck) {
     for (i = 0; i < 52; i++) {
         console.log(i); 
-        //  aCard = deck[i].cardFace + " of " + deck[i].cardSuit;
+        //  aCard = deck[i].face + " of " + deck[i].fuit;
         var aCard = deck[i].getCardName();
         console.log(aCard);
-    };
+    }
 }
 
-function cardDisplay(ctx) {
-    // test function to display cards on game board
+function cardDisplay() {
+// test function to display cards on game board
     var img1 = document.getElementById("kingHearts");
     var img2 = document.getElementById("jackDiamonds");
-    ctx.drawImage(img1, xCenter-60, yCenter-30);
-    ctx.drawImage(img2, xCenter-40, yCenter-50);
-    ctx.drawImage(img1, xCenter-20, yCenter-30);
-    ctx.drawImage(img2, xCenter-40, yCenter-10);
+    gameBoard.ctx.drawImage(img1, xCenter-60, yCenter-30);
+    gameBoard.ctx.drawImage(img2, xCenter-40, yCenter-50);
+    gameBoard.ctx.drawImage(img1, xCenter-20, yCenter-30);
+    gameBoard.ctx.drawImage(img2, xCenter-40, yCenter-10);
     // img.moveTo(100,100);
     animate_card();
 }
-// place a card on the game table
-function playCard(ctx, playPosition, cardId) {
+function playCard(playPosition, cardId) {
+/*  place a card on the gameBoard
+    parameters: postion (relative to center) of the gameBoard, Id of the card object
+    Note: use card object instead; get the Id from card.getCardName function
+*/ 
     /* var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d"); */
+    var gameBoard.ctx = c.getContext("2d"); */
     var cardImg = document.getElementById(cardId); 
     switch (playPosition) {
         case "left":
-            ctx.drawImage(cardImg, xCenter-60, yCenter-30);
+            gameBoard.ctx.drawImage(cardImg, xCenter-60, yCenter-30);
             break;
         case "top":
-            ctx.drawImage(cardImg, xCenter-40, yCenter-50);
+            gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-50);
             break;
         case "right":
-            ctx.drawImage(cardImg, xCenter-20, yCenter-30);
+            gameBoard.ctx.drawImage(cardImg, xCenter-20, yCenter-30);
             break;
         case "bottom": 
-            ctx.drawImage(cardImg, xCenter-40, yCenter-10);
+            gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-10);
             break;
     }
     // remove cardId from hand
@@ -134,7 +145,7 @@ function playCard(ctx, playPosition, cardId) {
 }
 
 function loadCard(card, hand_div) {
-    // displays card in specified hand on webpage inside the game control panel
+// displays card in specified hand (HTML <div>) on webpage inside the game control panel
     var x1 = document.createElement("a");
     x1.href = "#";
     var x2 = document.createElement("img");   
@@ -148,16 +159,19 @@ function loadCard(card, hand_div) {
 }
 
 function getHand(deck, n) {
+    // gets the next 3 cards from the deck
     // temporary function just to get the game to work
-    // TODO: Randomize this function. ie: return random cards.
-    // var 
+    // TODO: Randomize the deck. ie: return random cards.
+    // parameters: deck of cards ie array of cards
+    // return: and array of 3 cards.
     var three_cards = [deck[n], deck[n+1], deck[n+2]];  
     return three_cards;  
 }
   
 function dealHand(pos, cards) {
-    // three cards at a time. Hand: 3-card array
-    // pos: display position in the control panel is: tophand, bottomhand, firstbeg & secondbeg
+    // send the 3 cards to be placed in the player 1 section
+    // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
+    // return: void
     for (i = 0; i < cards.length; i++) {
         loadCard(cards[i], document.getElementById(pos)); 
     }
@@ -168,64 +182,72 @@ function dealHand(pos, cards) {
     */
 }
 
-function displayTrump(ctx, trump) {
-    // parameters:
-    // returns: 
-    // Displays the kickcard/trump in the top left corner of the gameboard 
+function displayTrump(trump) {
+// Displays the kickcard/trump in the top left corner of the gameboard
+// parameters: a card
+// returns: void    
     // peform a trick, place it elsewhere on the html document and quickly place it on the canvas
     /* var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d"); */ 
+    var gameBoard.ctx = c.getContext("2d"); */ 
     var cardImage = document.createElement('img');
     cardImage.id = trump.getCardName();
     cardImage.src = "img/" + trump.getCardName() + ".png";
     // var x = document.getElementById('beg2');
-    //x.appendChild(cardImage);    
-    ctx.drawImage(cardImage, 5, 5);
+    // x.appendChild(cardImage);    
+    gameBoard.ctx.drawImage(cardImage, 5, 5);
     // x.removeChild(cardImage);
 }
 
 function unitTestForDisplayTrump() {
-    // tests the function's inner code
-    // parameters:
-    // return:
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d"); 
+// Unit test for the function displayTrump(): displays the trump card and prints cardFace & cardSuit in console
+// parameters: null
+// return: void
+    // var c = document.getElementById("game_board");
+    // var gameBoard.ctx = c.getContext("2d"); 
+    // gameBoard.init();
     var deck = createDeck();
+    // TODO: randomize trump card
     var trumpCard = deck[0];
-    displayTrump(ctx, trumpCard);
-    console.log(trumpCard.cardFace);
+    console.log(trumpCard.face);
+    console.log(trumpCard.suit);
+    displayTrump(trumpCard);
 }
 
 function trumpUnitTest(card) {
+// Unit tests for Card Object: displays card name in console
+// parameters: card object
+// return: void
     console.log(card.getCardName());
 }
 
 function scoreboard() {
     // draws scoreboard on the gameboard
     // draw rectangle border
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d");
-    ctx.beginPath();
-    ctx.lineWidth = 8;
-    ctx.strokeStyle = "red";
-    ctx.rect(gameWidth - 335, 15, 260, 120);
-    ctx.stroke(); 
+    // var c = document.getElementById("game_board");
+    // var gameBoard.ctx = c.getContext("2d"); 
+    gameBoard.ctx.beginPath();
+    gameBoard.ctx.lineWidth = 8;
+    gameBoard.ctx.strokeStyle = "red";
+    gameBoard.ctx.rect(gameWidth - 335, 15, 260, 120);
+    gameBoard.ctx.stroke(); 
     // fill rectangle
-    ctx.fillStyle = "#993399";
-    ctx.fillRect(gameWidth - 335, 15, 260, 120);
+    gameBoard.ctx.fillStyle = "#993399";
+    gameBoard.ctx.fillRect(gameWidth - 335, 15, 260, 120);
     // write in rectangle
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "30px Arial";
-    ctx.fillText("Team A:", gameWidth - 320, 50);
-    ctx.fillText("Team B:", gameWidth - 320, 115);
+    gameBoard.ctx.fillStyle = "#ffffff";
+    gameBoard.ctx.font = "30px Arial";
+    gameBoard.ctx.fillText("Team A:", gameWidth - 320, 50);
+    gameBoard.ctx.fillText("Team B:", gameWidth - 320, 115);
     // score tiles
-    ctx.fillText("14", gameWidth - 140, 50);
-    ctx.fillText("10", gameWidth - 140, 115);
+    gameBoard.ctx.fillText("14", gameWidth - 140, 50);
+    gameBoard.ctx.fillText("10", gameWidth - 140, 115);
 }
 
 //  
-function humanPlayTurn(ctx) {
-    // waits for player to click on a card
+function humanPlayTurn() {
+// waits for player to select a card to play by clicking on it
+// parameters: null
+// return: void
     /* display card on board (playCard) and returns card
     // Get the modal
     var modal = document.getElementById('id01');
@@ -241,30 +263,31 @@ function humanPlayTurn(ctx) {
     */
     // var cardId = event.target.id;
     var pos = 'left';
-    document.getElementsByClassName('hand').addEventListener("click", playCard(ctx, pos, event.target.id));
+    document.getElementsByClassName('hand').addEventListener("click", playCard(pos, event.target.id));
     //card.face = event.target.id[0];
     //card.suit = event.target.id[1];
     //return card;
 }
  
 function computerPlayTurn(computerHand) {
-    //consult computer AI
+//consults computer AI and selects a card to play
     computerAI(hand);
     return card;
 }
 
 function determineWinner(called, played) {
-    // higher rank in called suit wins
-    // Except: other player plays trump
+// determines who played the higher rank in called suit or trump
+// parameters: called and played card objects
+// return: player (who won)
 }
 
 function mainGameLoop() {
-    // play rounds until  somebody reach 14 or quit() --> ESC key (do - while loop)
-    // Deal subroutine
-    // TODO: shuffle deck
+// repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
+// parameters: null
+// return: void
+// Deal subroutine
+// TODO: shuffle deck
 
-    var c = document.getElementById("game_board");
-    var ctx = c.getContext("2d");
     var theDeck = createDeck();
     var player1Hand = getHand(theDeck, 0);
 
@@ -273,18 +296,21 @@ function mainGameLoop() {
     player1Hand = getHand(theDeck, 6);
     dealHand('bottomhand', getHand(theDeck, 6));
     computer1Hand = getHand(theDeck, 9);
-    var trump = theDeck[12];
-    displayTrump(ctx, trump);
+    var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
+    displayTrump(kickcard);
     // trumpUnitTest(trump);
     do {
         //var callCard = humanPlayTurn(player1Hand);
-        humanPlayTurn(ctx);
+        humanPlayTurn();
         var playedCard = computerPlayTurn(computer1Hand);
         determineWinner(callCard, playedCard);
-        // player1Lift = callCard + playedCard;
-        // computerLift = callCard + playedCard;
+        /* if (player1 == determinWnner(callCard, playedCard)) {
+                player1Lift = callCard + playedCard;
+            } else {
+                computerLift = callCard + playedCard;
+          }; */
     } while (player1Hand == null);
-    // beg handler
+    // TODO: the beg handler
     
 }
 
@@ -295,10 +321,10 @@ var dx = 4;
 var dy = 4;
 function animate_card() {
     requestAnimationFrame(animate_card);
-    ctx.clearRect(0, 0, gameWidth, gameHeight);
-    ctx.beginPath();
-    ctx.drawImage(img, x, y);
-    ctx.stroke();
+    gameBoard.ctx.clearRect(0, 0, gameWidth, gameHeight);
+    gameBoard.ctx.beginPath();
+    gameBoard.ctx.drawImage(img, x, y);
+    gameBoard.ctx.stroke();
     x += dx;
     y += dy;
 } */

@@ -65,3 +65,9 @@ footer div p {
     margin-bottom: 0px;
     width: 100%;
 }
+#controlPanel {
+    margin-right: 5px;
+    position: fixed;
+    right: 20px;
+    top: 150px;
+}

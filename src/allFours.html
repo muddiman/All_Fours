@@ -30,8 +30,12 @@
         </div>
     </header>
     <div>
+        <!-- Game Board -->
+        <div class="container" id="game_container">
+                <canvas id="game_board" width="700" height="450"></canvas>
+        </div>
         <!-- Game Control Panel -->
-        <div class="w3-sidebar w3-bar-block">
+        <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
                     <h3>Player 1: Roger</h3>
@@ -39,7 +43,7 @@
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="unitTestForDisplayTrump()">Unit Test</button>
-                    <button class="w3-btn" onclick="mainGameLoop()">Stand</button>
+                    <button class="w3-btn" onclick="mainGameLoop()">Play</button>
                     <button class="w3-btn" id="quitBtn" onclick="scoreboard()">Score</button>
                 </div>
                 <!-- Display of Player 1's hand -->
@@ -49,10 +53,7 @@
                 <div class="hand" id="beg2"></div>            
             </div>
         </div>
-        <!-- Game Board -->
-        <div class="container" id="game_container">
-            <canvas id="game_board" width="700" height="450"></canvas>
-        </div>
+        
     </div>
 
 
@@ -60,7 +61,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>Copyright &copy; 2018 Gallatin Engineering Ltd</p>
+            <p>Copyright &copy; 2018 Gallatin Engineering Ltd. Powered by Prodigy LLC.</p>
         </div>
     </footer>     
 </body>
