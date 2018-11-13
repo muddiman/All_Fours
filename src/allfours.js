@@ -42,10 +42,10 @@ var gameBoard = {
     canvas : document.getElementById("game_board"),
     width : 750,
     height : 450,
-    ctx : this.canvas.getContext("2d"),
+    // ctx : this.canvas.getContext("2d"),
     init : function () {
     // initialize gameBoard by applying context
-        // this.ctx = this.canvas.getContext("2d");
+        this.ctx = this.canvas.getContext("2d");
     },
     clearBoard : function () {
     // wipes the entire gameBoard clean
@@ -189,11 +189,14 @@ function displayTrump(trump) {
     // peform a trick, place it elsewhere on the html document and quickly place it on the canvas
     /* var c = document.getElementById("game_board");
     var gameBoard.ctx = c.getContext("2d"); */ 
-    var cardImage = document.createElement('img');
-    cardImage.id = trump.getCardName();
+    // var cardImage = document.createElement('img');
+    var cardImage = new Image();
+    // cardImage.id = trump.getCardName();
     cardImage.src = "img/" + trump.getCardName() + ".png";
     // var x = document.getElementById('beg2');
-    // x.appendChild(cardImage);    
+    // x.appendChild(cardImage); 
+    gameBoard.init();
+    gameBoard.clearBoard();   
     gameBoard.ctx.drawImage(cardImage, 5, 5);
     // x.removeChild(cardImage);
 }
@@ -291,6 +294,7 @@ function mainGameLoop() {
     var theDeck = createDeck();
     var player1Hand = getHand(theDeck, 0);
 
+    gameBoard.init();
     dealHand('tophand', player1Hand);
     var computer1Hand = getHand(theDeck, 3);
     player1Hand = getHand(theDeck, 6);

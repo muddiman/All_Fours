@@ -178,6 +178,8 @@ function card(width, height, color, x, y) {
         ctx.fillStyle = color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     };
+    this.image = new Image();
+    this.image.src = "img/" + this.getCardName() + ".png";
 }
 
 function updateGameBoard() {
