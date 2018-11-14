@@ -244,48 +244,33 @@ function displayTrump(trump) {
 // Displays the kickcard/trump in the top left corner of the gameboard
 // parameters: a card
 // returns: void    
-    // peform a trick, place it elsewhere on the html document and quickly place it on the canvas
-    /* var c = document.getElementById("game_board");
-    var gameBoard.ctx = c.getContext("2d"); */ 
-    // var cardImage = document.createElement('img');
-    var cardImage = new Image();
-    // cardImage.id = trump.getCardName();
-    cardImage.src = "img/" + trump.getCardName() + ".png";
-    // var x = document.getElementById('beg2');
-    // x.appendChild(cardImage); 
-    gameBoard.init();
-    gameBoard.clearBoard();   
-    gameBoard.ctx.drawImage(cardImage, 5, 5);
-    // x.removeChild(cardImage);
+    gameBoard.ctx.drawImage(trump.image, 5, 5);
 }
 
+/**
+ * @test: displays the trump card and prints cardFace & cardSuit in console
+ * @param: null 
+ * @return: void
+ */
 function unitTestForDisplayTrump() {
-// Unit test for the function displayTrump(): displays the trump card and prints cardFace & cardSuit in console
-// parameters: null
-// return: void
-    // var c = document.getElementById("game_board");
-    // var gameBoard.ctx = c.getContext("2d"); 
-    // gameBoard.init();
-    var deck = createDeck();
-    // TODO: randomize trump card
-    var trumpCard = deck[0];
+    var deck = createDeck(); 
+    var n = Math.floor(Math.random() * 52); // randomize trump card
+    var trumpCard = deck[n];
     console.log(trumpCard.face);
     console.log(trumpCard.suit);
     displayTrump(trumpCard);
 }
 
-function trumpUnitTest(card) {
-// Unit tests for Card Object: displays card name in console
-// parameters: card object
-// return: void
-    console.log(card.getCardName());
-}
-
+/**
+ * Displays the score in the top right corner of the game board
+ * @param: null
+ * @returns: void
+ */
 function scoreboard() {
     // draws scoreboard on the gameboard
     // draw rectangle border
-    // var c = document.getElementById("game_board");
-    // var gameBoard.ctx = c.getContext("2d"); 
+    // teamA, teamB, display(), update(teamA, teamB), init()
+    gameBoard.clearBoard();
     gameBoard.ctx.beginPath();
     gameBoard.ctx.lineWidth = 8;
     gameBoard.ctx.strokeStyle = "red";

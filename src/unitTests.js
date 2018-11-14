@@ -49,16 +49,16 @@ function trumpUnitTest(card) {
     console.log(card.getCardName());
 }
 
+/**
+ * @test: displays the trump card and prints cardFace & cardSuit in console
+ * @param: null 
+ * @return: void
+ */
 function unitTestForDisplayTrump() {
-// Unit test for the function displayTrump(): displays the trump card and prints cardFace & cardSuit in console
-// parameters: null
-// return: void
-    // var c = document.getElementById("game_board");
-    // var gameBoard.ctx = c.getContext("2d"); 
-    var deck = createDeck();
-    // TODO: randomize trump card
-    var trumpCard = deck[0];
+    var deck = createDeck(); 
+    var n = Math.floor(Math.random() * 52); // randomize trump card
+    var trumpCard = deck[n];
+    console.log(trumpCard.face);
+    console.log(trumpCard.suit);
     displayTrump(trumpCard);
-    console.log(trumpCard.cardFace);
-    console.log(trumpCard.cardSuit);
 }
