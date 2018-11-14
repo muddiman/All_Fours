@@ -79,14 +79,16 @@ function unitTestForGameBoard() {
     gameBoard.clearBoard();
 }
 
-
-// var gameWidth = 700;
-// var gameHeight = 450; 
+/* the globals */
 var xCenter = gameBoard.width/2;
 var yCenter = gameBoard.height/2;
 
 
-// ask if player wishes to play All Fours
+/** 
+ * ask if player wishes to play All Fours
+ * @param: null
+ * @returns: void
+ *
 function startAsk() {
     if (confirm("Click 'OK' to play All Fours or 'Cancel' to exit game.")) {
         game.quit = false;
@@ -95,7 +97,7 @@ function startAsk() {
         quit = true;
     }
 }
-
+*/
 
 
 function Card(rank, face, suit) {
@@ -112,10 +114,12 @@ function Card(rank, face, suit) {
     // write new card.functions as needed, ie update function & location function
 }
 
+/**
+ * @test: all properties of the Card object are initialized 
+ * @param: null 
+ * @return: void
+ */
 function unitTestForCardObjects() {
-// @test: all properties of the Card object are initialized
-// @param: null
-// @return: void
     var aCard = new Card(0,2,'c');
     var x = gameBoard.ctx;
     x.drawImage(aCard.image, 5,5);
@@ -123,10 +127,11 @@ function unitTestForCardObjects() {
     console.log(aCard.rank + "."+aCard.getCardName() + "."+aCard.image.src);
 }
 
+/**
+ * @param: null 
+ * @return: deck
+ */
 function createDeck() {
-// 
-// @param: null
-// @return: deck
     var suits = ['c', 'd', 'h', 's'];
     var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a']
     var n = 0;
@@ -142,10 +147,12 @@ function createDeck() {
     return deck;
 }
 
+/**
+ * @test: the deck-array. All 52 unique card objects, with all their parameters
+ * @param: null
+ * @return: void
+ */
 function unitTestForDeckArray() {
-// @test: the deck-array. All 52 unique card objects, with all their parameters
-// @param: deck (array of Cards)
-// @return: void
     var deck = createDeck();
     for (i = 0; i < 52; i++) {
         setTimeout(function () {
@@ -159,8 +166,11 @@ function unitTestForDeckArray() {
     };
 }
 
+/**
 function cardDisplay() {
 // test function to display cards on game board
+@param: null
+@returns: void
     var img1 = document.getElementById("kingHearts");
     var img2 = document.getElementById("jackDiamonds");
     gameBoard.ctx.drawImage(img1, xCenter-60, yCenter-30);
@@ -170,11 +180,15 @@ function cardDisplay() {
     // img.moveTo(100,100);
     animate_card();
 }
+*/
+
+/**  
+ * place a card on the gameBoard
+ * @param: postion (relative to center) of the gameBoard, Id of the card object
+ * Note: use card object instead; get the Id from card.getCardName function
+ * @returns: void
+*/
 function playCard(playPosition, cardId) {
-/*  place a card on the gameBoard
-    parameters: postion (relative to center) of the gameBoard, Id of the card object
-    Note: use card object instead; get the Id from card.getCardName function
-*/ 
     /* var c = document.getElementById("game_board");
     var gameBoard.ctx = c.getContext("2d"); */
     var cardImg = document.getElementById(cardId); 
@@ -192,7 +206,7 @@ function playCard(playPosition, cardId) {
             gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-10);
             break;
     }
-    // remove cardId from hand
+    // remove cardId (card object) from hand (<div>)
     cardImg.parentNode.removeChild(cardImg);
 }
 
