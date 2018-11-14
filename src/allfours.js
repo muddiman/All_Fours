@@ -23,26 +23,12 @@
    III. Shut Down Game 
 */
 
-/*  
-
+/*  Programming Note:
     Because the fisrt letter of every suit AND face of all cards are unique letters
     i can simplify the id of each card to a 'two-letter' string.
-    ie: ace of heart is 'ah', ten of clubs is 'tc' and nine of diamonds is '9d'
-    This simplifies coding tremendously.
+    ie: ace of heart is simply 'ah', ten of clubs is 'tc' and nine of diamonds is '9d'
+    This simplifies coding tremendously. All filenames of card images were adjusted accordingly. ie: 2d.png is the 'two of diamonds' image file.
 
-        object Game... will have a gameBoard, context
-    var Game = {
-        gb: document.getElementById("game_board"),
-        gameBoard.ctx: getContext("2d"),
-        gameWidth: 750,
-        gameHeight: 450,
-        xCenter: gameWidth/2,
-        yCenter: gameHeight/2,
-        createGameBoard() {
-            createElement("canvas").Id("game_board");
-
-        },
-    }
 */
 
 var gameBoard = {
@@ -167,10 +153,12 @@ function unitTestForDeckArray() {
 }
 
 /**
+ * @param: null
+ * @returns: void 
+ */
 function cardDisplay() {
 // test function to display cards on game board
-@param: null
-@returns: void
+
     var img1 = document.getElementById("kingHearts");
     var img2 = document.getElementById("jackDiamonds");
     gameBoard.ctx.drawImage(img1, xCenter-60, yCenter-30);
@@ -180,7 +168,6 @@ function cardDisplay() {
     // img.moveTo(100,100);
     animate_card();
 }
-*/
 
 /**  
  * place a card on the gameBoard
@@ -205,9 +192,14 @@ function playCard(playPosition, cardId) {
         case "bottom": 
             gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-10);
             break;
+        default:
+            gameBoard.ctx.drawImage(cardImg, xCenter-60, yCenter-30);
+
     }
-    // remove cardId (card object) from hand (<div>)
-    cardImg.parentNode.removeChild(cardImg);
+    // remove cardId (card object) from hand & DOM (<div>), if it is there
+    if (cardImg.parentNode === document.getElementById("tophand")) {
+        cardImg.parentNode.removeChild(cardImg);
+    }
 }
 
 function loadCard(card, hand_div) {
