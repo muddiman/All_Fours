@@ -33,8 +33,7 @@
 
 var gameBoard = {
 //  Object: gameBoard
-    canvas : document.createElement("canvas"),
-     
+    canvas : document.createElement("canvas"), 
     // ctx : this.canvas.getContext("2d"),
     init : function () {
     // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
@@ -266,27 +265,81 @@ function unitTestForDisplayTrump() {
  * @param: null
  * @returns: void
  */
-function scoreboard() {
+
+var scoreboard = {
+    teamA : 0,
+    teamB : 0,
+    init : function () {
+        this.teamA = 0;
+        this.teamB = 0;
+    },
+    update : function (teamApoints, teamBpoints) {
+        this.teamA = this.teamA + teamApoints;
+        this.teamB = this.teamB + teamBpoints;
+    },
+    display : function () {
+        displayScoreboard(this.teamA, this.teamB);
+    },
+    clear : function () {
+        // wipes the scoreboard clean
+        gameBoard.ctx.clearRect(gameboard.canvas.width - 335, 15, 260, 120);
+    }
+};
+
+function displayScoreboard(a, b) {
     // draws scoreboard on the gameboard
     // draw rectangle border
-    // teamA, teamB, display(), update(teamA, teamB), init()
-    gameBoard.clearBoard();
-    gameBoard.ctx.beginPath();
-    gameBoard.ctx.lineWidth = 8;
-    gameBoard.ctx.strokeStyle = "red";
-    gameBoard.ctx.rect(gameWidth - 335, 15, 260, 120);
-    gameBoard.ctx.stroke(); 
+
+    var x = gameBoard.ctx;
+    var c = gameBoard.canvas;
+    x.beginPath();
+    x.lineWidth = 8;
+    x.strokeStyle = "red";
+    x.rect(c.width - 335, 15, 260, 120);
+    x.stroke(); 
     // fill rectangle
-    gameBoard.ctx.fillStyle = "#993399";
-    gameBoard.ctx.fillRect(gameWidth - 335, 15, 260, 120);
+    x.fillStyle = "#993399";
+    x.fillRect(c.width - 335, 15, 260, 120);
     // write in rectangle
-    gameBoard.ctx.fillStyle = "#ffffff";
-    gameBoard.ctx.font = "30px Arial";
-    gameBoard.ctx.fillText("Team A:", gameWidth - 320, 50);
-    gameBoard.ctx.fillText("Team B:", gameWidth - 320, 115);
+    x.fillStyle = "#ffffff";
+    x.font = "30px Arial";
+    x.fillText("Team A:", c.width - 320, 50);
+    x.fillText("Team B:", c.width - 320, 115);
     // score tiles
-    gameBoard.ctx.fillText("14", gameWidth - 140, 50);
-    gameBoard.ctx.fillText("10", gameWidth - 140, 115);
+    x.fillText(a, c.width - 140, 50);
+    x.fillText(b, c.width - 140, 115);
+}
+
+/**
+ * @test: tests the scoreboard object
+ * @param: null
+ * @returns: void
+ */
+function unitTestForScoreboardObj() {
+    try {
+        scoreboard.init();
+    }
+    catch(err) {
+        console.log("Scoreboard not initializing");
+    }; 
+    console.log(scoreboard.teamA);
+    console.log(scoreboard.teamB);
+    scoreboard.display();
+    try {
+        scoreboard.clear(); //setTimeout(scoreboard.clear(), 5000);
+    }
+    catch(err) {
+        console.log(err);
+    };
+    scoreboard.update(3, 6);
+    console.log(scoreboard.teamA);
+    console.log(scoreboard.teamB);
+    scoreboard.display();
+    setTimeout(scoreboard.clear(), 5000);
+    scoreboard.update(8, 5)
+    console.log(scoreboard.teamA);
+    console.log(scoreboard.teamB);
+    scoreboard.display();
 }
 
 //  
@@ -368,7 +421,7 @@ var dx = 4;
 var dy = 4;
 function animate_card() {
     requestAnimationFrame(animate_card);
-    gameBoard.ctx.clearRect(0, 0, gameWidth, gameHeight);
+    gameBoard.ctx.clearRect(0, 0, c.width, gameHeight);
     gameBoard.ctx.beginPath();
     gameBoard.ctx.drawImage(img, x, y);
     gameBoard.ctx.stroke();
