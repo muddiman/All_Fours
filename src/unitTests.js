@@ -53,6 +53,21 @@ function unitTestForDeckArray() {
 }
 
 /**
+ * @test: pass random card into playCard @param 
+ * @param: null
+ * @returns: void
+ */
+function unitTestForPlayCard() {
+    var n = Math.floor(Math.random() * 52);
+    var deck = createDeck();
+    var randomCard = deck[n];
+    playCard("left", randomCard);
+    playCard("top", randomCard);
+    playCard("right", randomCard);
+    playCard("bottom", randomCard);
+}
+
+/**
  * @test: displays the trump card and prints cardFace & cardSuit in console
  * @param: null 
  * @return: void
@@ -64,6 +79,45 @@ function unitTestForDisplayTrump() {
     console.log(trumpCard.face);
     console.log(trumpCard.suit);
     displayTrump(trumpCard);
+}
+
+/**
+ * @test: tests the scoreboard object
+ * @param: null
+ * @returns: void
+ */
+function unitTestForScoreboardObj() {
+    scoreboard.init();
+    try {       
+        console.log(scoreboard.teamA);
+        console.log(scoreboard.teamB);
+    }
+    catch(err) {
+        console.log("Scoreboard not initializing");
+    }; 
+    
+    scoreboard.display();
+    try {
+        var pause = setTimeout(scoreboard.clear(), 50000);
+    }
+    catch(err) {
+        console.log(err);
+    };
+    try {
+        scoreboard.update(3, 6);
+        console.log(scoreboard.teamA);
+        console.log(scoreboard.teamB);
+    }
+    catch(err){
+        console.log(err);
+    }
+    scoreboard.display();
+    pause;
+    scoreboard.update(8, 5)
+    console.log(scoreboard.teamA);
+    console.log(scoreboard.teamB);
+    scoreboard.display();
+    clearTimeout(pause);
 }
 
 /* 

@@ -65,8 +65,8 @@ function unitTestForGameBoard() {
 }
 
 /* the globals */
-var xCenter = gameBoard.width/2;
-var yCenter = gameBoard.height/2;
+// var xCenter = gameBoard.width/2;
+// var yCenter = gameBoard.height/2;
 
 
 /** 
@@ -170,45 +170,59 @@ function cardDisplay() {
 
 /**  
  * place a card on the gameBoard
- * @param: postion (relative to center) of the gameBoard, Id of the card object
- * Note: use card object instead; get the Id from card.getCardName function
+ * @param: card object
  * @returns: void
 */
-function playCard(playPosition, cardId) {
-    /* var c = document.getElementById("game_board");
-    var gameBoard.ctx = c.getContext("2d"); */
-    var cardImg = document.getElementById(cardId); 
+function playCard(playPosition, card) {
+    var c = gameBoard.canvas;
+    var x = gameBoard.ctx; 
+    var xCenter = c.width/2;
+    var yCenter = c.height/2;
     switch (playPosition) {
         case "left":
-            gameBoard.ctx.drawImage(cardImg, xCenter-60, yCenter-30);
+            x.drawImage(card.image, xCenter-60, yCenter-30);
             break;
         case "top":
-            gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-50);
+            x.drawImage(card.image, xCenter-40, yCenter-50);
             break;
         case "right":
-            gameBoard.ctx.drawImage(cardImg, xCenter-20, yCenter-30);
+            x.drawImage(card.image, xCenter-20, yCenter-30);
             break;
         case "bottom": 
-            gameBoard.ctx.drawImage(cardImg, xCenter-40, yCenter-10);
+            x.drawImage(card.image, xCenter-40, yCenter-10);
             break;
         default:
-            gameBoard.ctx.drawImage(cardImg, xCenter-60, yCenter-30);
-
+            x.drawImage(card.image, xCenter-60, yCenter-30);
     }
     // remove cardId (card object) from hand & DOM (<div>), if it is there
-    if (cardImg.parentNode === document.getElementById("tophand")) {
-        cardImg.parentNode.removeChild(cardImg);
+    if (card.image.parentNode === document.getElementById("tophand")) {
+        card.image.parentNode.removeChild(card.image);
     }
+}
+
+/**
+ * @test: pass random card into playCard @param 
+ * @param: null
+ * @returns: void
+ */
+function unitTestForPlayCard() {
+    var n = Math.floor(Math.random() * 52);
+    var deck = createDeck();
+    var randomCard = deck[n];
+    playCard("left", randomCard);
+    playCard("top", randomCard);
+    playCard("right", randomCard);
+    playCard("bottom", randomCard);
 }
 
 function loadCard(card, hand_div) {
 // displays card in specified hand (HTML <div>) on webpage inside the game control panel
     var x1 = document.createElement("a");
     x1.href = "#";
-    var x2 = document.createElement("img");   
-    x2.id = card.getCardName();
-    x2.src = "img/" + card.getCardName() + ".png";
-    x1.appendChild(x2);
+    // var x2 = document.createElement("img");   
+    // x2.id = card.getCardName();
+    // x2.src = "img/" + card.getCardName() + ".png";
+    // x1.appendChild(card.image);
     hand_div.appendChild(x1);
     //x2.setAttribute("onclick", "playCard('left', '" + card.getCardName() + "')");
     //var y = element.appendChild(x1); 
@@ -282,16 +296,17 @@ var scoreboard = {
     },
     clear : function () {
         // wipes the scoreboard clean
-        gameBoard.ctx.clearRect(gameboard.canvas.width - 335, 15, 260, 120);
+        var c = gameBoard.canvas;
+        var x = gameBoard.ctx;
+        x.clearRect(c.width - 335, 15, 260, 120);
     }
 };
 
 function displayScoreboard(a, b) {
     // draws scoreboard on the gameboard
     // draw rectangle border
-
-    var x = gameBoard.ctx;
     var c = gameBoard.canvas;
+    var x = gameBoard.ctx;
     x.beginPath();
     x.lineWidth = 8;
     x.strokeStyle = "red";
@@ -316,30 +331,37 @@ function displayScoreboard(a, b) {
  * @returns: void
  */
 function unitTestForScoreboardObj() {
-    try {
-        scoreboard.init();
+    scoreboard.init();
+    try {       
+        console.log(scoreboard.teamA);
+        console.log(scoreboard.teamB);
     }
     catch(err) {
         console.log("Scoreboard not initializing");
     }; 
-    console.log(scoreboard.teamA);
-    console.log(scoreboard.teamB);
+    
     scoreboard.display();
     try {
-        scoreboard.clear(); //setTimeout(scoreboard.clear(), 5000);
+        var pause = setTimeout(scoreboard.clear(), 50000);
     }
     catch(err) {
         console.log(err);
     };
-    scoreboard.update(3, 6);
-    console.log(scoreboard.teamA);
-    console.log(scoreboard.teamB);
+    try {
+        scoreboard.update(3, 6);
+        console.log(scoreboard.teamA);
+        console.log(scoreboard.teamB);
+    }
+    catch(err){
+        console.log(err);
+    }
     scoreboard.display();
-    setTimeout(scoreboard.clear(), 5000);
+    pause;
     scoreboard.update(8, 5)
     console.log(scoreboard.teamA);
     console.log(scoreboard.teamB);
     scoreboard.display();
+    clearTimeout(pause);
 }
 
 //  
@@ -399,7 +421,7 @@ function mainGameLoop() {
     var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
     displayTrump(kickcard);
     // trumpUnitTest(trump);
-    do {
+    do { // do-while loop
         //var callCard = humanPlayTurn(player1Hand);
         humanPlayTurn();
         var playedCard = computerPlayTurn(computer1Hand);
