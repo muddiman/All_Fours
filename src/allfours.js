@@ -452,17 +452,43 @@ function determineWinner(called, played) {
         }
         return this.cards;
     },
-    cut : function() {
-        //statements;
+    cut : function(n) {
+    /** randomly mixes up the cards in the deck
+     *  @param: null
+     *  @returns: cuts deck
+     */
+        var temp = this.cards[n];
+        this.cards = this.cards + temp;
         return this.cards;
     },
-    deal : function() {
+    deal : function(human, computer) {
+    /** randomly mixes up the cards in the deck
+     *  @param: human, computer (players' hand --array-of-cards )
+     *  @returns: randomized deck
+     */
+        while (human.length < 6) {
+            human = this.cards.pop;
+            computer = this.cards.pop;
+        }
         this.trump = this.cards[12];
-        return this.cards;
+        return human, computer;
     },
     beg : function() {
-        this.trump = this.cards[19];
+    /** randomly mixes up the cards in the deck
+     *  @param: null
+     *  @returns: void
+     */
+        while (human.length < 3) {
+            human = this.cards.pop;
+            computer = this.cards.pop;
+        }
         if (this.trump.suit != this.cards[19].suit) {
+            this.trump = this.cards[19];
+        } else {
+            while (human.length < 3) {
+                human = this.cards.pop;
+                computer = this.cards.pop;
+            }
             this.trump = this.cards[26];
         }
         return this.cards;
@@ -470,63 +496,73 @@ function determineWinner(called, played) {
  };
 
 function mainGameLoop() {
-/* repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
-// parameters: null
-// return: void
+/** 
+ *  repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
+*   @param: null
+*   @return: void
+
 //  mainGameLoop:        
         Deal subroutine: shuffle, cut, distribute
 //      gameLoop:
             playedRoundLoop: 
                 players play cards: 
-                determinewinner()
+                determineWinner()
             countForGame()
 //          assessPoints(): high, low, jack, game, hangJack
-/ TODO: shuffle deck
 */
-    var theDeck = createDeck(); // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()
+    // var theDeck = createDeck(); // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()
     var player1Hand = getHand(theDeck, 0);
+    var computerHand = [];
+    var humanHand = [];
+    var humanPoints = 0;
+    var computerPoints = 0;
 
     gameBoard.init();
-    deck.init();
-    deck.shuffle();
-    deck.deal();
+    do {
+    //gameLoop:
+        deck.init();
+        deck.shuffle();
+        deck.deal();
 
-    dealHand('tophand', player1Hand);
-    var computer1Hand = getHand(theDeck, 3);
-    player1Hand = getHand(theDeck, 6);
-    dealHand('bottomhand', getHand(theDeck, 6));
-    computer1Hand = getHand(theDeck, 9);
-    var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
-    displayTrump(kickcard);           
-    // trumpUnitTest(trump);
-    do { // do-while loop
-        /* if (winner === computer) {
-            callCard = computerPlayedCard();
-        } else {
-            callCard = humanPlayedCard();
-        }
-        //var callCard = humanPlayTurn(player1Hand);
-          humanPlayedCard = humanSelectCard();
-            computerPlayedCard = computerAI();
-            determineWinner(); // returns winner
-            if (winner === human) {
-                playerLift = callCard + playedCard;
+        dealHand('tophand', player1Hand);
+        var computer1Hand = getHand(theDeck, 3);
+        player1Hand = getHand(theDeck, 6);
+        dealHand('bottomhand', getHand(theDeck, 6));
+        computer1Hand = getHand(theDeck, 9);
+        var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
+        displayTrump(kickcard);           
+        //playedRoundLoop:
+        do { // do-while loop
+            /* if (winner === computer) {
+                callCard = computerPlayedCard();
             } else {
-                computerLift = callCard + playedCard;
+                callCard = humanPlayedCard();
             }
+            //var callCard = humanPlayTurn(player1Hand);
+            humanPlayedCard = humanSelectCard();
+                computerPlayedCard = computerAI();
+                determineWinner(); // returns winner
+                if (winner === human) {
+                    playerLift = callCard + playedCard;
+                } else {
+                    computerLift = callCard + playedCard;
+                }
 
-        */
-        humanPlayTurn();
-        var playedCard = computerPlayTurn(computer1Hand);
-        determineWinner(callCard, playedCard);
-        /* if (player1 == determinWnner(callCard, playedCard)) {
-                player1Lift = callCard + playedCard;
-            } else {
-                computerLift = callCard + playedCard;
-          }; */
-    } while (player1Hand == null);
-    // TODO: the beg handler
-    
+            */
+            humanPlayTurn();
+            var playedCard = computerPlayTurn(computer1Hand);
+            determineWinner(callCard, playedCard);
+            /* if (player1 == determinWnner(callCard, playedCard)) {
+                    player1Lift = callCard + playedCard;
+                } else {
+                    computerLift = callCard + playedCard;
+            }; */
+        } 
+        while (player1Hand == null);
+        // calcGame()
+        // assessPoints() 
+    } 
+    while (humanPoints || computerPoints < 14);    
 }
 
 

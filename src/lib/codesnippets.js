@@ -100,3 +100,21 @@ finally {
 function unitTestForFunction() {
     statements; // Error handling code
 }
+
+/**
+ *  ERROR
+ */
+window.onerror = function(message, source, lineNumber, colNumber,errorObject) {
+    this.console.log("Error Details:");
+    this.console.log(`Message: ${message}`);
+    this.console.log(`Source: ${source}`);
+    this.console.log(`Line Numbers: ${lineNumber}`);
+    this.console.log(`Col Number: ${colNumber}`);
+    this.console.log("Error Object: ", errorObject);
+}
+
+
+    
+
+
+}
