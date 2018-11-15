@@ -146,3 +146,20 @@ finally {
 function unitTestForFunction() {
     statements; // Error handling code
 }
+
+/**
+ * UNIT TEST CODE
+ * @param:
+ * @returns:
+ */
+function unitTest.testfunction = function(method) {
+    var variables = "";
+    var expected_value = "";
+    statements; // Error handling code
+    if (method(params) === expected_value){
+        return "Pass";
+    } else {
+        return "Fail";
+    }
+};
+console.log(unitTest.function());

@@ -365,9 +365,9 @@ function unitTestForScoreboardObj() {
 }
 
 //  
-function humanPlayTurn() {
+function humanPlayTurn(hand) {
 // waits for player to select a card to play by clicking on it
-// parameters: null
+// parameters: hand, array of cards
 // return: void
     /* display card on board (playCard) and returns card
     // Get the modal
@@ -383,10 +383,20 @@ function humanPlayTurn() {
         plays card in player spot 
     */
     // var cardId = event.target.id;
-    var pos = 'left';
-    document.getElementsByClassName('hand').addEventListener("click", playCard(pos, event.target.id));
-    //card.face = event.target.id[0];
-    //card.suit = event.target.id[1];
+    var capture;
+    var pos = 'left'; // Player 1 always play left of center
+    document.getElementsByClassName('hand').addEventListener("click", function () {
+        capture = event.target;
+    });
+    var i;
+    for (i = 0; i < hand.length; i++) {
+        if (hand[i].getCardName() === capture.id) {
+            playCard(pos, hand[i]);
+            capture.parentNode.removeChild(capture);
+            delete hand[i];
+            return hand;
+        }
+    }
     //return card;
 }
  
@@ -403,13 +413,20 @@ function determineWinner(called, played) {
 }
 
 function mainGameLoop() {
-// repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
+/* repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
 // parameters: null
 // return: void
-// Deal subroutine
-// TODO: shuffle deck
-
-    var theDeck = createDeck();
+//  mainGameLoop:        
+        Deal subroutine: shuffle, cut, distribute
+//      gameLoop:
+            playedRoundLoop: 
+                players play cards: 
+                determinewinner()
+            countForGame()
+//          assessPoints(): high, low, jack, game, hangJack
+/ TODO: shuffle deck
+*/
+    var theDeck = createDeck(); // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()
     var player1Hand = getHand(theDeck, 0);
 
     gameBoard.init();
@@ -422,7 +439,22 @@ function mainGameLoop() {
     displayTrump(kickcard);
     // trumpUnitTest(trump);
     do { // do-while loop
+        /* if (winner === computer) {
+            callCard = computerPlayedCard();
+        } else {
+            callCard = humanPlayedCard();
+        }
         //var callCard = humanPlayTurn(player1Hand);
+          humanPlayedCard = humanSelectCard();
+            computerPlayedCard = computerAI();
+            determineWinner(); // returns winner
+            if (winner === human) {
+                playerLift = callCard + playedCard;
+            } else {
+                computerLift = callCard + playedCard;
+            }
+
+        */
         humanPlayTurn();
         var playedCard = computerPlayTurn(computer1Hand);
         determineWinner(callCard, playedCard);
