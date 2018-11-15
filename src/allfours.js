@@ -5,7 +5,8 @@
 */
 
 /**
- *  @author: Roger Clarke (muddiman | .muddicode)
+ *  @copyright: (c) 2018 Roger Clarke. All rights reserved.
+ *   @author: Roger Clarke (muddiman | .muddicode)
  *      see: https://www.roger-clarke.com
  *  @license: Dual license - MIT & GPL
  *       See: http://www.gnu.org/licenses/gpl.html
@@ -118,7 +119,7 @@ function unitTestForCardObjects() {
  */
 function createDeck() {
     var suits = ['c', 'd', 'h', 's'];
-    var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a']
+    var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
     var n = 0;
     var deck = [];
     for (y = 0; y < suits.length; y++)  {
@@ -412,6 +413,62 @@ function determineWinner(called, played) {
 // return: player (who won)
 }
 
+ /**
+  * OBJECTS
+  */
+ var deck = {
+ // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()    
+    cards : [],
+    trump : null,
+    init : function() {
+    /** creates deck (array of all 52 cards)
+     *  @param: null
+     *  @returns: deck
+     */
+    var suits = ['c', 'd', 'h', 's'];
+    var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
+    var n = 0;
+    for (y = 0; y < suits.length; y++)  {
+        var rank = 1;
+        for (x = 0; x < faces.length; x++) {
+            this.cards[n] = new Card(rank, faces[x], suits[y]);
+            n++;
+            rank++;
+        }
+    }
+    return this.cards;
+    },
+    shuffle : function() {
+    /** randomly mixes up the cards in the deck
+     *  @param:
+     *  @returns: randomized deck
+     */
+        var i, j;
+        for (i = 0; i < this.cards.length; i++) {
+            j = Math.floor(Math.random() * 52);
+            var temp = this.cards[i];
+            this.cards[i] = this.cards[j];
+            this.cards[j] = temp;
+        }
+        return this.cards;
+    },
+    cut : function() {
+        //statements;
+        return this.cards;
+    },
+    deal : function() {
+        this.trump = this.cards[12];
+        return this.cards;
+    },
+    beg : function() {
+        this.trump = this.cards[19];
+        if (this.trump.suit != this.cards[19].suit) {
+            this.trump = this.cards[26];
+        }
+        return this.cards;
+    }
+ };
+
 function mainGameLoop() {
 /* repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
 // parameters: null
@@ -430,13 +487,17 @@ function mainGameLoop() {
     var player1Hand = getHand(theDeck, 0);
 
     gameBoard.init();
+    deck.init();
+    deck.shuffle();
+    deck.deal();
+
     dealHand('tophand', player1Hand);
     var computer1Hand = getHand(theDeck, 3);
     player1Hand = getHand(theDeck, 6);
     dealHand('bottomhand', getHand(theDeck, 6));
     computer1Hand = getHand(theDeck, 9);
     var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
-    displayTrump(kickcard);
+    displayTrump(kickcard);           
     // trumpUnitTest(trump);
     do { // do-while loop
         /* if (winner === computer) {
