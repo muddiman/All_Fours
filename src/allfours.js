@@ -29,8 +29,10 @@
     i can simplify the id of each card to a 'two-letter' string.
     ie: ace of heart is simply 'ah', ten of clubs is 'tc' and nine of diamonds is '9d'
     This simplifies coding tremendously. All filenames of card images were adjusted accordingly. ie: 2d.png is the 'two of diamonds' image file.
-
 */
+
+/* the globals */
+// NONE
 
 var gameBoard = {
 //  Object: gameBoard
@@ -54,6 +56,11 @@ var gameBoard = {
     }
 };
 
+/**
+ * TEST: if game board is created on positioned correctly in the DOM
+ * @param null
+ * @returns void 
+ */
 function unitTestForGameBoard() {
 // @test: if game board is created in intended place in the DOM
 // @param: null
@@ -64,11 +71,6 @@ function unitTestForGameBoard() {
     x.fillRect(0,0, 150,75);
     gameBoard.clearBoard();
 }
-
-/* the globals */
-// var xCenter = gameBoard.width/2;
-// var yCenter = gameBoard.height/2;
-
 
 /** 
  * ask if player wishes to play All Fours
@@ -113,10 +115,22 @@ function unitTestForCardObjects() {
     console.log(aCard.rank + "."+aCard.getCardName() + "."+aCard.image.src);
 }
 
+ /**
+  *     Player object constructor (or class)
+  *     
+  */
+ function Player() {    // change to "Team" when coding the 4-player version: function Team(playerA, playerB)
+     this.hand = [];
+     this.points = 0;
+     this.lift = [];
+     //this.player1 = playerA;
+     //this.player2 = playerB;  
+ }
+
 /**
  * @param: null 
  * @return: deck
- */
+ *
 function createDeck() {
     var suits = ['c', 'd', 'h', 's'];
     var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
@@ -132,6 +146,7 @@ function createDeck() {
     }
     return deck;
 }
+*/
 
 /**
  * @test: the deck-array. All 52 unique card objects, with all their parameters
@@ -155,7 +170,7 @@ function unitTestForDeckArray() {
 /**
  * @param: null
  * @returns: void 
- */
+ *
 function cardDisplay() {
 // test function to display cards on game board
 
@@ -168,6 +183,7 @@ function cardDisplay() {
     // img.moveTo(100,100);
     animate_card();
 }
+*/
 
 /**  
  * place a card on the gameBoard
@@ -208,8 +224,8 @@ function playCard(playPosition, card) {
  */
 function unitTestForPlayCard() {
     var n = Math.floor(Math.random() * 52);
-    var deck = createDeck();
-    var randomCard = deck[n];
+    // var deck = createDeck();
+    var randomCard = deck.cards[n];
     playCard("left", randomCard);
     playCard("top", randomCard);
     playCard("right", randomCard);
@@ -220,6 +236,7 @@ function loadCard(card, hand_div) {
 // displays card in specified hand (HTML <div>) on webpage inside the game control panel
     var x1 = document.createElement("a");
     x1.href = "#";
+    x1.appendChild(card.image);
     // var x2 = document.createElement("img");   
     // x2.id = card.getCardName();
     // x2.src = "img/" + card.getCardName() + ".png";
@@ -229,7 +246,11 @@ function loadCard(card, hand_div) {
     //var y = element.appendChild(x1); 
     //y.appendChild(x2);
 }
-
+/**
+ * @param {*} deck 
+ * @param {*} n 
+ * @returns {Array} cards
+ *
 function getHand(deck, n) {
     // gets the next 3 cards from the deck
     // temporary function just to get the game to work
@@ -239,21 +260,24 @@ function getHand(deck, n) {
     var three_cards = [deck[n], deck[n+1], deck[n+2]];  
     return three_cards;  
 }
-  
-function dealHand(pos, cards) {
-    // send the 3 cards to be placed in the player 1 section
+*/
+
+/**
+ * sends the cards to be loaded onto the DOM, Player 1 section ("tophand" <div>)
+ * @param {*} player 
+ * @returns void
+ */
+function displayHand(player) {
     // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
-    // return: void
-    for (i = 0; i < cards.length; i++) {
-        loadCard(cards[i], document.getElementById(pos)); 
+    for (i = 0; i < player.hand.length; i++) {
+        loadCard(player.hand[i], document.getElementById("tophand")); 
     }
-    /*
-    for (i = 3; i < cards.length; i++) {
-        loadCard(cards[i], document.getElementById(bottomhand));
-    }
-    */
 }
 
+/**
+ * 
+ * @param {*} trump 
+ */
 function displayTrump(trump) {
 // Displays the kickcard/trump in the top left corner of the gameboard
 // parameters: a card
@@ -267,9 +291,9 @@ function displayTrump(trump) {
  * @return: void
  */
 function unitTestForDisplayTrump() {
-    var deck = createDeck(); 
+    // var deck = createDeck(); 
     var n = Math.floor(Math.random() * 52); // randomize trump card
-    var trumpCard = deck[n];
+    var trumpCard = deck.cards[n];
     console.log(trumpCard.face);
     console.log(trumpCard.suit);
     displayTrump(trumpCard);
@@ -366,7 +390,7 @@ function unitTestForScoreboardObj() {
 }
 
 //  
-function humanPlayTurn(hand) {
+function humanPlayTurn(human) {
 // waits for player to select a card to play by clicking on it
 // parameters: hand, array of cards
 // return: void
@@ -385,20 +409,37 @@ function humanPlayTurn(hand) {
     */
     // var cardId = event.target.id;
     var capture;
-    var pos = 'left'; // Player 1 always play left of center
-    document.getElementsByClassName('hand').addEventListener("click", function () {
+    var pos = 'bottom'; // Player 1 always play left of center
+    document.getElementById('tophand').addEventListener("click", function () {
         capture = event.target;
     });
     var i;
-    for (i = 0; i < hand.length; i++) {
-        if (hand[i].getCardName() === capture.id) {
-            playCard(pos, hand[i]);
+    for (i = 0; i < human.hand.length; i++) {
+        if (human.hand[i].getCardName() === capture.id) {
+            playCard(pos, human.hand[i]);
             capture.parentNode.removeChild(capture);
-            delete hand[i];
-            return hand;
+            delete human.hand[i];
         }
     }
-    //return card;
+    return human.hand;
+}
+
+function unitTestForHumanPlayTurn() {
+    var android = new Player();
+    var test = "";
+    var expected_value = 5;
+    var i;
+    for (i = 0; i < android.hand.length; i++) {
+        hand[i] = deck.cards;
+    }
+    // Error handling code
+    humanPlayTurn(android);
+    if (android.hand.length === expected_value) {
+        test = "Pass";
+    } else {
+        test = "Fail";
+    }
+    console.log(Test);
 }
  
 function computerPlayTurn(computerHand) {
@@ -436,7 +477,7 @@ function determineWinner(called, played) {
             rank++;
         }
     }
-    return this.cards;
+    // return this.cards;
     },
     shuffle : function() {
     /** randomly mixes up the cards in the deck
@@ -450,80 +491,100 @@ function determineWinner(called, played) {
             this.cards[i] = this.cards[j];
             this.cards[j] = temp;
         }
-        return this.cards;
+        //return this.cards;
     },
     cut : function(n) {
     /** randomly mixes up the cards in the deck
      *  @param: null
      *  @returns: cuts deck
      */
-        var temp = this.cards[n];
+      /*  var temp = this.cards.slice(0, n);
         this.cards = this.cards + temp;
-        return this.cards;
+        return this.cards; */
     },
     deal : function(human, computer) {
     /** randomly mixes up the cards in the deck
      *  @param: human, computer (players' hand --array-of-cards )
      *  @returns: randomized deck
      */
-        while (human.length < 6) {
-            human = this.cards.pop;
-            computer = this.cards.pop;
+        while (human.hand.length <= 6) {
+            human.hand = this.cards.shift();
+            computer.hand = this.cards.shift();
         }
-        this.trump = this.cards[12];
-        return human, computer;
+        this.trump = this.cards.shift();
+        //return human, computer;
     },
-    beg : function() {
+    beg : function(human, computer) {
     /** randomly mixes up the cards in the deck
      *  @param: null
      *  @returns: void
      */
-        while (human.length < 3) {
-            human = this.cards.pop;
-            computer = this.cards.pop;
+        while (human.length <= 9) {
+            human.hand = this.cards.shift();
+            computer.hand = this.cards.shift();
         }
-        if (this.trump.suit != this.cards[19].suit) {
-            this.trump = this.cards[19];
+        if (this.trump.suit != this.cards[0].suit) {
+            this.trump = this.cards.shift();
         } else {
-            while (human.length < 3) {
-                human = this.cards.pop;
-                computer = this.cards.pop;
+            this.trump = this.cards.shift();
+            while (human.length <= 12) {
+                human = this.cards.shift();
+                computer = this.cards.shift();
             }
-            this.trump = this.cards[26];
+            if (this.trump.suit === this.cards[0].suit) {
+                this.trump = this.cards.shift();
+                this.trump = this.cards.shift();
+            } else {
+                this.trump = this.cards.shift();
+            }
         }
-        return this.cards;
+        // return this.cards;
     }
  };
 
-function mainGameLoop() {
-/** 
- *  repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
+ /** 
+*   repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
 *   @param: null
 *   @return: void
+*/
+function mainGameLoop() {
 
-//  mainGameLoop:        
-        Deal subroutine: shuffle, cut, distribute
-//      gameLoop:
+/*  mainGameLoop:        
+     Deal subroutine: shuffle, cut, distribute
+     gameLoop:
             playedRoundLoop: 
                 players play cards: 
                 determineWinner()
             countForGame()
 //          assessPoints(): high, low, jack, game, hangJack
 */
-    // var theDeck = createDeck(); // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()
-    var player1Hand = getHand(theDeck, 0);
-    var computerHand = [];
-    var humanHand = [];
-    var humanPoints = 0;
-    var computerPoints = 0;
+    // var player1Hand = getHand(theDeck, 0);
+    var computer = new Player();
+    var human = new Player();
 
     gameBoard.init();
-    do {
+    scoreboard.init();
+    scoreboard.display();
+    //do {
     //gameLoop:
         deck.init();
         deck.shuffle();
-        deck.deal();
+        deck.deal(human, computer);
+        displayHand(human);
 
+        displayTrump(deck.trump);
+        //gameRoundLoop:
+            // winner plays first
+            var calledCard = humanPlayTurn(human);
+            //var playedCard = humanPlayTurn(human);
+            // calledCard = computerPlayTurn(computer);
+            // playedCard = computerPlayTurn(computer);
+            // determineWinner(calledCard, playedCard);
+            // human.lift = calledCard + playedCard;
+            // computer.lift = calledCard + playedCard;
+            
+    }
+        /*
         dealHand('tophand', player1Hand);
         var computer1Hand = getHand(theDeck, 3);
         player1Hand = getHand(theDeck, 6);
@@ -548,22 +609,22 @@ function mainGameLoop() {
                     computerLift = callCard + playedCard;
                 }
 
-            */
-            humanPlayTurn();
+            
+            humanPlayTurn(humanHand);
             var playedCard = computerPlayTurn(computer1Hand);
             determineWinner(callCard, playedCard);
             /* if (player1 == determinWnner(callCard, playedCard)) {
                     player1Lift = callCard + playedCard;
                 } else {
                     computerLift = callCard + playedCard;
-            }; */
+            }; 
         } 
-        while (player1Hand == null);
+        while (player1Hand != null);
         // calcGame()
         // assessPoints() 
     } 
-    while (humanPoints || computerPoints < 14);    
-}
+    while (humanPoints || computerPoints < 14);    */
+
 
 
 /* var x = 10;

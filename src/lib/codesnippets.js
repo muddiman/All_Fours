@@ -65,6 +65,14 @@ for (x in object) {
 /**
  * WHILE LOOP
  */
+while (condition) {
+    //code block to be executed;
+}
+
+do {
+    //code block to be executed;
+}
+while (condition);
 
  /**
   * OBJECTS
@@ -74,7 +82,7 @@ for (x in object) {
     property2 : "value2",
     property3 : 5566,
     method : function() {
-        statements;
+        //statements;
         return this.property1 + " " + this.property2;
     }
 };  

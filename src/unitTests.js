@@ -9,8 +9,8 @@
 
 /**  
  * @test: if game board is created in intended place in the DOM
- * @param: null
- * @return: void 
+ * @param {*} null
+ * @return void 
 */
 function unitTestForGameBoard() { 
     gameBoard.init();
@@ -161,5 +161,25 @@ function unitTest.testfunction = function(method) {
     } else {
         return "Fail";
     }
+    console.log(unitTest.function());
+}
+
+/**
+ * UNIT TEST
+ * @param: params, expected
+ * @return: void
+ */
+var results = {
+    bad     : 0,
+    total   : 0,
 };
-console.log(unitTest.function());
+
+function test(params, expected) {
+    results.total++;
+    var capturedResult = function(params);
+    if (capturedResult != expected) {
+        results.bad++;
+        console.log("Test failed: Did not return expected result");
+        console.log("Expected: " + expected + ", Function returned: " + capturedResult);
+    }
+}
