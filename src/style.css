@@ -1,4 +1,7 @@
 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;   
+}
 .col-12 {width:100%;}
 #heading {
     background-color: blue;
@@ -13,7 +16,6 @@ h1 {
     padding-top: 0;
     padding-bottom:0;
     font-size: 50px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;   
 }
 .container {
     margin: 0;
@@ -60,6 +62,7 @@ footer div p {
     text-align: center;
     background-color: black;
     color: white;
+    font-weight: bold;
     padding: 20px;
     margin-top: 40px;
     margin-bottom: 0px;

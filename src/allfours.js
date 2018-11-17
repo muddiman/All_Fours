@@ -5,12 +5,14 @@
 */
 
 /**
- *  @copyright: (c) 2018 Roger Clarke. All rights reserved.
- *   @author: Roger Clarke (muddiman | .muddicode)
- *      see: https://www.roger-clarke.com
- *  @license: Dual license - MIT & GPL
- *       See: http://www.gnu.org/licenses/gpl.html
- *            http://www.
+ *  @copyright (c) 2018 Roger Clarke. All rights reserved.
+ *  @author    Roger Clarke (muddiman | .muddicode)
+ *  @link      https://www.roger-clarke.com
+ *  @version   1.0
+ *  @since     2018-10-1
+ *  @license   Dual license - MIT & GPL
+ *  @See:      http://www.gnu.org/licenses/gpl.html
+ *             http://www.
  */
 
 /*
@@ -74,8 +76,8 @@ function unitTestForGameBoard() {
 
 /** 
  * ask if player wishes to play All Fours
- * @param: null
- * @returns: void
+ * @param null
+ * @returns void
  *
 function startAsk() {
     if (confirm("Click 'OK' to play All Fours or 'Cancel' to exit game.")) {
@@ -124,7 +126,10 @@ function unitTestForCardObjects() {
      this.points = 0;
      this.lift = [];
      //this.player1 = playerA;
-     //this.player2 = playerB;  
+     //this.player2 = playerB;
+     //this.team = "";
+     //this.setPlayerName = function (name) {this.name = name;}
+     //this.setPlayerTeam = function (team) {this.team = team;}
  }
 
 /**
@@ -187,7 +192,8 @@ function cardDisplay() {
 
 /**  
  * place a card on the gameBoard
- * @param: card object
+ * @param card object
+ * @param playPosition --Position relative to the center of the gameboard
  * @returns: void
 */
 function playCard(playPosition, card) {
@@ -231,21 +237,21 @@ function unitTestForPlayCard() {
     playCard("right", randomCard);
     playCard("bottom", randomCard);
 }
-
+/**
+ * displays card in specified hand (HTML <div>) on webpage inside the game control panel
+ * @param {*} card object
+ * @param {*} hand_div html <div> where the cards will be displayed
+ */
 function loadCard(card, hand_div) {
-// displays card in specified hand (HTML <div>) on webpage inside the game control panel
     var x1 = document.createElement("a");
     x1.href = "#";
     x1.appendChild(card.image);
-    // var x2 = document.createElement("img");   
-    // x2.id = card.getCardName();
-    // x2.src = "img/" + card.getCardName() + ".png";
-    // x1.appendChild(card.image);
     hand_div.appendChild(x1);
     //x2.setAttribute("onclick", "playCard('left', '" + card.getCardName() + "')");
     //var y = element.appendChild(x1); 
     //y.appendChild(x2);
 }
+
 /**
  * @param {*} deck 
  * @param {*} n 
@@ -275,13 +281,11 @@ function displayHand(player) {
 }
 
 /**
- * 
- * @param {*} trump 
+ * Displays the kickcard/trump in the top left corner of the gameboard
+ * @param {*} trump -Card
+ * @returns void 
  */
 function displayTrump(trump) {
-// Displays the kickcard/trump in the top left corner of the gameboard
-// parameters: a card
-// returns: void    
     gameBoard.ctx.drawImage(trump.image, 5, 5);
 }
 
@@ -291,7 +295,6 @@ function displayTrump(trump) {
  * @return: void
  */
 function unitTestForDisplayTrump() {
-    // var deck = createDeck(); 
     var n = Math.floor(Math.random() * 52); // randomize trump card
     var trumpCard = deck.cards[n];
     console.log(trumpCard.face);
@@ -409,18 +412,22 @@ function humanPlayTurn(human) {
     */
     // var cardId = event.target.id;
     var capture;
+    var id = "";
     var pos = 'bottom'; // Player 1 always play left of center
     document.getElementById('tophand').addEventListener("click", function () {
         capture = event.target;
-    });
-    var i;
-    for (i = 0; i < human.hand.length; i++) {
-        if (human.hand[i].getCardName() === capture.id) {
-            playCard(pos, human.hand[i]);
-            capture.parentNode.removeChild(capture);
-            delete human.hand[i];
+        id = capture.getAttributeNode("id").value;
+        var i;
+        for (i = 0; i < human.hand.length; i++) {
+            if (human.hand[i].image.id === id) {
+                playCard(pos, human.hand[i]);
+                capture.parentNode.removeChild(capture);
+                delete human.hand[i];
+                break;
+            }
         }
-    }
+    });
+    // stop listening
     return human.hand;
 }
 
@@ -507,9 +514,11 @@ function determineWinner(called, played) {
      *  @param: human, computer (players' hand --array-of-cards )
      *  @returns: randomized deck
      */
-        while (human.hand.length <= 6) {
-            human.hand = this.cards.shift();
-            computer.hand = this.cards.shift();
+        var n = 0;
+        while (human.hand.length < 6) {
+            human.hand[n] = this.cards.shift();
+            computer.hand[n] = this.cards.shift();
+            n++;
         }
         this.trump = this.cards.shift();
         //return human, computer;
