@@ -7,12 +7,12 @@
 /**
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
- *  @link      https://www.roger-clarke.com
+ *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
  *  @version   1.0
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
- *             http://www.
+ *             http://www.mit.edu/license
  */
 
 /*
