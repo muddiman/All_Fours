@@ -174,7 +174,7 @@ var results = {
     total   : 0,
 };
 
-function test(params, expected) {
+function unittest(params, expected) {
     results.total++;
     var capturedResult = function(params);
     if (capturedResult != expected) {

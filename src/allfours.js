@@ -39,7 +39,6 @@
 var gameBoard = {
 //  Object: gameBoard
     canvas : document.createElement("canvas"), 
-    // ctx : this.canvas.getContext("2d"),
     init : function () {
     // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
         this.canvas.width = 700;
@@ -110,12 +109,39 @@ function Card(rank, face, suit) {
  * @return: void
  */
 function unitTestForCardObjects() {
-    var aCard = new Card(0,2,'c');
     var x = gameBoard.ctx;
-    x.drawImage(aCard.image, 5,5);
-    console.log(aCard.face + aCard.suit);
-    console.log(aCard.rank + "."+aCard.getCardName() + "."+aCard.image.src);
+    var r = 0; // r:rank => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    var f = 2; // f:face => [2, 3, 4, 5, 6, 7, 8, 9, t, j,  q,  k,  a]
+    var s = 'c'; // s:suit => ['c', 's', 'd', 'h']
+    try {
+        var aCard = new Card(r,f,s);
+        x.drawImage(aCard.image, 5,5);
+        console.log({aCard}); 
+    } catch (err) {
+        console.log(err.name + ': ', err.message);
+        console.log('Unit Test: Failed.');
+    }
 }
+/**
+ * UNIT TEST
+ * @param: params, expected
+ * @return: void
+ *
+var results = {
+    bad     : 0,
+    total   : 0,
+};
+
+function unittest(params, expected) {
+    results.total++;
+    var capturedResult = function(params);
+    if (capturedResult != expected) {
+        results.bad++;
+        console.log("Test failed: Did not return expected result");
+        console.log("Expected: " + expected + ", Function returned: " + capturedResult);
+    }
+}
+*/
 
  /**
   *     Player object constructor (or class)
@@ -459,6 +485,18 @@ function determineWinner(called, played) {
 // determines who played the higher rank in called suit or trump
 // parameters: called and played card objects
 // return: player (who won)
+    if (called.suit === played.suit) {
+        if (called.rank > played.rank) {
+            return console.log('Player 1 wins!');
+        } else { 
+            return console.log('Player 2 wins!');
+        }
+    }
+    if (played.suit === deck.trump.suit) {
+        return console.log('Player 2 wins!');
+    } else {
+        return console.log('Player 1 wins!');
+    }
 }
 
  /**
@@ -574,24 +612,36 @@ function mainGameLoop() {
     gameBoard.init();
     scoreboard.init();
     scoreboard.display();
+    // var dealer = human;
     //do {
     //gameLoop:
+        // if (dealer === computer) {dealer = human;} else {dealer = computer;}
         deck.init();
         deck.shuffle();
         deck.deal(human, computer);
         displayHand(human);
 
-        displayTrump(deck.trump);
+        displayTrump(deck.trump); // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
+        // dealer.points = kickcardPoints
+        var winner = human;
         //gameRoundLoop:
-            // winner plays first
-            var calledCard = humanPlayTurn(human);
-            //var playedCard = humanPlayTurn(human);
-            // calledCard = computerPlayTurn(computer);
-            // playedCard = computerPlayTurn(computer);
-            // determineWinner(calledCard, playedCard);
-            // human.lift = calledCard + playedCard;
-            // computer.lift = calledCard + playedCard;
-            
+        while (human.hand.length > 0) {
+            var playedCard;
+            var calledCard;
+            // winner plays first 
+            if (winner === human) {
+                calledCard = humanPlayTurn(human);
+                playedCard = computerPlayTurn(computer);
+            } else {
+                calledCard = computerPlayTurn(computer);
+                playedCard = humanPlayTurn(computer);
+            }
+            winner = determineWinner(calledCard, playedCard); // winner: Player object
+            winner.lift = calledCard + playedCard;
+            // TODO: write computerPlayTurn
+        }
+        // DETERMINE POINTS: hi, low, jack, game, hangjack
+        // human.lift > computer.lift;
     }
         /*
         dealHand('tophand', player1Hand);
