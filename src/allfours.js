@@ -1,7 +1,8 @@
 /*
                      Title:  ALL FOURS GAME
                      Language: Javascript
-                     Programmer: .muddicode                             
+                     Programmer: .muddicode 
+                     Code: Main Program                            
 */
 
 /**
@@ -151,33 +152,13 @@ function unittest(params, expected) {
      this.hand = [];
      this.points = 0;
      this.lift = [];
+     this.name = "";
      //this.player1 = playerA;
      //this.player2 = playerB;
      //this.team = "";
      //this.setPlayerName = function (name) {this.name = name;}
      //this.setPlayerTeam = function (team) {this.team = team;}
  }
-
-/**
- * @param: null 
- * @return: deck
- *
-function createDeck() {
-    var suits = ['c', 'd', 'h', 's'];
-    var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
-    var n = 0;
-    var deck = [];
-    for (y = 0; y < suits.length; y++)  {
-        var rank = 1;
-        for (x = 0; x < faces.length; x++) {
-            deck[n] = new Card(rank, faces[x], suits[y]);
-            n++;
-            rank++;
-        }
-    }
-    return deck;
-}
-*/
 
 /**
  * @test: the deck-array. All 52 unique card objects, with all their parameters
@@ -197,24 +178,6 @@ function unitTestForDeckArray() {
         }, 1500);
     };
 }
-
-/**
- * @param: null
- * @returns: void 
- *
-function cardDisplay() {
-// test function to display cards on game board
-
-    var img1 = document.getElementById("kingHearts");
-    var img2 = document.getElementById("jackDiamonds");
-    gameBoard.ctx.drawImage(img1, xCenter-60, yCenter-30);
-    gameBoard.ctx.drawImage(img2, xCenter-40, yCenter-50);
-    gameBoard.ctx.drawImage(img1, xCenter-20, yCenter-30);
-    gameBoard.ctx.drawImage(img2, xCenter-40, yCenter-10);
-    // img.moveTo(100,100);
-    animate_card();
-}
-*/
 
 /**  
  * place a card on the gameBoard
@@ -273,26 +236,7 @@ function loadCard(card, hand_div) {
     x1.href = "#";
     x1.appendChild(card.image);
     hand_div.appendChild(x1);
-    //x2.setAttribute("onclick", "playCard('left', '" + card.getCardName() + "')");
-    //var y = element.appendChild(x1); 
-    //y.appendChild(x2);
 }
-
-/**
- * @param {*} deck 
- * @param {*} n 
- * @returns {Array} cards
- *
-function getHand(deck, n) {
-    // gets the next 3 cards from the deck
-    // temporary function just to get the game to work
-    // TODO: Randomize the deck. ie: return random cards.
-    // parameters: deck of cards ie array of cards
-    // return: and array of 3 cards.
-    var three_cards = [deck[n], deck[n+1], deck[n+2]];  
-    return three_cards;  
-}
-*/
 
 /**
  * sends the cards to be loaded onto the DOM, Player 1 section ("tophand" <div>)
@@ -418,25 +362,13 @@ function unitTestForScoreboardObj() {
     clearTimeout(pause);
 }
 
-//  
-function humanPlayTurn(human) {
-// waits for player to select a card to play by clicking on it
-// parameters: hand, array of cards
-// return: void
-    /* display card on board (playCard) and returns card
-    // Get the modal
-    var modal = document.getElementById('id01');
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}       listens for card to be clicked on
-        gets the id of card clicked 
-        plays card in player spot 
-    */
-    // var cardId = event.target.id;
+/**
+ * 
+ * @param {*} human a player
+ * @returns void
+  */  
+function humanPlayTurn(humanHand) {
+    var card;
     var capture;
     var id = "";
     var pos = 'bottom'; // Player 1 always play left of center
@@ -444,17 +376,18 @@ function humanPlayTurn(human) {
         capture = event.target;
         id = capture.getAttributeNode("id").value;
         var i;
-        for (i = 0; i < human.hand.length; i++) {
-            if (human.hand[i].image.id === id) {
-                playCard(pos, human.hand[i]);
+        for (i = 0; i < humanHand.length; i++) {
+            if (humanHand[i].image.id === id) {
+                playCard(pos, humanHand[i]);
                 capture.parentNode.removeChild(capture);
-                delete human.hand[i];
+                card = humanHand[i];
+                delete humanHand[i];
                 break;
             }
         }
     });
     // stop listening
-    return human.hand;
+    return card;
 }
 
 function unitTestForHumanPlayTurn() {
@@ -474,20 +407,41 @@ function unitTestForHumanPlayTurn() {
     }
     console.log(Test);
 }
- 
-function computerPlayTurn(computerHand) {
-//consults computer AI and selects a card to play
-    computerAI(hand);
-    return card;
+
+/**
+ * 
+ * @param {*} called Card 
+ * @param {*} computerHand Players.Hand 
+ */
+function computerPlayTurn(called, computerHand) {
+//play same suit
+console.log({computerHand});
+var chosenCard;
+var i;
+var n;
+for (i = 0; i < computerHand.length; i++) {
+    if (computerHand[i].suit === called.suit) {
+        chosenCard = computerHand[i];
+        // delete computerHand[i];
+        playCard('top',chosenCard);
+        return chosenCard;
+    }
+} // play any card
+n = Math.floor(Math.random() * 6);
+chosenCard = computerHand[n];
+// delete computerHand[n];
+playCard('top',chosenCard);
+return chosenCard;
 }
 
 function determineWinner(called, played) {
 // determines who played the higher rank in called suit or trump
 // parameters: called and played card objects
 // return: player (who won)
+// pause
     if (called.suit === played.suit) {
         if (called.rank > played.rank) {
-            return console.log('Player 1 wins!');
+            return console.log('Player 1 wins!'); // replace console.log with canvas text
         } else { 
             return console.log('Player 2 wins!');
         }
@@ -623,22 +577,24 @@ function mainGameLoop() {
 
         displayTrump(deck.trump); // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
         // dealer.points = kickcardPoints
-        var winner = human;
+        var winner = human;  // eventually write a subroutine for "first jack deal"
         //gameRoundLoop:
         while (human.hand.length > 0) {
             var playedCard;
             var calledCard;
             // winner plays first 
             if (winner === human) {
-                calledCard = humanPlayTurn(human);
-                playedCard = computerPlayTurn(computer);
+                calledCard = humanPlayTurn(human.hand); // make program wait for input
+                playedCard = computerPlayTurn(calledCard, computer.hand);
             } else {
-                calledCard = computerPlayTurn(computer);
-                playedCard = humanPlayTurn(computer);
+                calledCard = computerPlayTurn(computer.hand);
+                playedCard = humanPlayTurn(human.hand);
             }
             winner = determineWinner(calledCard, playedCard); // winner: Player object
-            winner.lift = calledCard + playedCard;
-            // TODO: write computerPlayTurn
+            console.log(winner.name, + ' Wins!');
+            winner.lift.push(calledCard, playedCard);
+
+            // TODO: 
         }
         // DETERMINE POINTS: hi, low, jack, game, hangjack
         // human.lift > computer.lift;
