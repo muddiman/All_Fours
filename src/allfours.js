@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   1.0
+ *  @version   0.1.1
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
@@ -329,6 +329,7 @@ function displayScoreboard(a, b) {
  * @returns: void
  */
 function unitTestForScoreboardObj() {
+    var pause;
     scoreboard.init();
     try {       
         console.log(scoreboard.teamA);
@@ -336,15 +337,15 @@ function unitTestForScoreboardObj() {
     }
     catch(err) {
         console.log("Scoreboard not initializing");
-    }; 
+    } 
     
     scoreboard.display();
     try {
-        var pause = setTimeout(scoreboard.clear(), 50000);
+        pause = setTimeout(scoreboard.clear(), 50000);
     }
     catch(err) {
         console.log(err);
-    };
+    }
     try {
         scoreboard.update(3, 6);
         console.log(scoreboard.teamA);
@@ -355,7 +356,7 @@ function unitTestForScoreboardObj() {
     }
     scoreboard.display();
     pause;
-    scoreboard.update(8, 5)
+    scoreboard.update(8, 5);
     console.log(scoreboard.teamA);
     console.log(scoreboard.teamB);
     scoreboard.display();
@@ -372,7 +373,24 @@ function humanPlayTurn(humanHand) {
     var capture;
     var id = "";
     var pos = 'bottom'; // Player 1 always play left of center
+    
+    // start listening
     document.getElementById('tophand').addEventListener("click", function () {
+        capture = event.target;
+        id = capture.getAttributeNode("id").value;
+        var i;
+        for (i = 0; i < humanHand.length; i++) {
+            if (humanHand[i].image.id === id) {
+                playCard(pos, humanHand[i]);
+                capture.parentNode.removeChild(capture);
+                card = humanHand[i];
+                delete humanHand[i];
+                break;
+            }
+        } 
+    });
+    // stop listening
+    document.getElementById('tophand').removeEventListener("click", function () {
         capture = event.target;
         id = capture.getAttributeNode("id").value;
         var i;
@@ -386,7 +404,6 @@ function humanPlayTurn(humanHand) {
             }
         }
     });
-    // stop listening
     return card;
 }
 
@@ -416,6 +433,7 @@ function unitTestForHumanPlayTurn() {
 function computerPlayTurn(called, computerHand) {
 //play same suit
 console.log({computerHand});
+console.log({called});
 var chosenCard;
 var i;
 var n;
@@ -584,7 +602,9 @@ function mainGameLoop() {
             var calledCard;
             // winner plays first 
             if (winner === human) {
-                calledCard = humanPlayTurn(human.hand); // make program wait for input
+                // while (calledCard == null) {
+                    calledCard = humanPlayTurn(human.hand); // make program wait for input
+                // }
                 playedCard = computerPlayTurn(calledCard, computer.hand);
             } else {
                 calledCard = computerPlayTurn(computer.hand);
@@ -602,60 +622,20 @@ function mainGameLoop() {
         /*
         dealHand('tophand', player1Hand);
         var computer1Hand = getHand(theDeck, 3);
-        player1Hand = getHand(theDeck, 6);
-        dealHand('bottomhand', getHand(theDeck, 6));
-        computer1Hand = getHand(theDeck, 9);
-        var kickcard = theDeck[12]; // kickcard gets the next card from the deck after all hands has been dealt
-        displayTrump(kickcard);           
-        //playedRoundLoop:
-        do { // do-while loop
-            /* if (winner === computer) {
-                callCard = computerPlayedCard();
-            } else {
-                callCard = humanPlayedCard();
-            }
-            //var callCard = humanPlayTurn(player1Hand);
-            humanPlayedCard = humanSelectCard();
-                computerPlayedCard = computerAI();
-                determineWinner(); // returns winner
-                if (winner === human) {
-                    playerLift = callCard + playedCard;
-                } else {
-                    computerLift = callCard + playedCard;
-                }
-
-            
-            humanPlayTurn(humanHand);
-            var playedCard = computerPlayTurn(computer1Hand);
-            determineWinner(callCard, playedCard);
-            /* if (player1 == determinWnner(callCard, playedCard)) {
-                    player1Lift = callCard + playedCard;
-                } else {
-                    computerLift = callCard + playedCard;
-            }; 
-        } 
+   
         while (player1Hand != null);
         // calcGame()
         // assessPoints() 
     } 
     while (humanPoints || computerPoints < 14);    */
 
+/*
+Libs:
+Engine (server side)
+Display Library
+Testing Library
+AI Library
+Frontend
+*/
 
-
-/* var x = 10;
-var y = 10;
-var dx = 4;
-var dy = 4;
-function animate_card() {
-    requestAnimationFrame(animate_card);
-    gameBoard.ctx.clearRect(0, 0, c.width, gameHeight);
-    gameBoard.ctx.beginPath();
-    gameBoard.ctx.drawImage(img, x, y);
-    gameBoard.ctx.stroke();
-    x += dx;
-    y += dy;
-} */
- // Build the page using javascript only
-
-
-     
+   
