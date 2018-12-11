@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.1.1
+ *  @version   0.3.2
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -108,14 +108,14 @@ function startAsk() {
 
 function Card(rank, face, suit) {
 // Card object constructor (game components are usually created writing a constructor for each type of component)
-    this.suit = suit; // ['c', 'd', 'h', 's'],
-    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],
+    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank;     // [0, 1,.. 12], to assist in determining who played the higher card
     this.getCardName = function () {
-        return this.face + this.suit; // used as cardId, image filename, etc
+        return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
     };
     this.image = new Image();
-    this.image.onload = console.log(this.getCardName());
+    this.image.onload = console.log(this.getCardName() +' loaded');      // image creation callback function (to be changed into a useful function)
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
     // write new card.functions as needed, ie update function & location function
@@ -161,15 +161,26 @@ function unittest(params, expected) {
 }
 */
 
+
+/*
+        function Team() {
+            this.name = "";                         // MAX_CHARACTERS=8;
+            this.members = [Player, Player];        // array of Player; MAX_TEAM_MEMBERS=2;
+            this.points = 0;                
+            this.lift = [Cards, Cards, Cards];
+            this.setTeamName = function (name) {this.name = name;};
+            this.getTeamName = function (name) {this.name = name;}
+        }
+*/
  /**
   *     Player object constructor (or class)
   *     
   */
  function Player() {    // change to "Team" when coding the 4-player version: function Team(playerA, playerB)
-     this.hand = [];
-     this.points = 0;
-     this.lift = [];
-     this.name = "";
+     this.hand = [];    // MAX_CARDS_IN_HAND=12;
+     this.points = 0;   // MAX_POINTS=14;
+     this.lift = [];    // MAX_CARDS_IN_LIFT=48;
+     this.name = "";    // MAX_CHARACTERS=12;
      //this.player1 = playerA;
      //this.player2 = playerB;
      //this.team = "";
@@ -254,6 +265,7 @@ function testgetCoords() {
 
 }
 
+/*
 async function selectCard() {
     // var c=gameBoard.canvas;
     //var z=gameBoard.ctx;
@@ -299,7 +311,8 @@ async function selectCard() {
         }              
         console.log(n);
     return n;
-}
+} */
+
 /**
  *      captures clicks, convert into user's choice and store that choice in the userInput object
  */
@@ -310,8 +323,8 @@ function mouseEventHandler() {
         gameBoard.canvas.addEventListener('click', function (event) {   
             posX = event.clientX;
             posY = event.clientY;
-            console.log(posX);
-            console.log(posY);
+            console.log('(' +posX+ ',  '+posY+ ')');
+           //  console.log(posY);
         });
         // parse the coords obtained into card choice [0 .. 11] ie 12 possible choices
         if (350 < posY < 496) {
@@ -340,10 +353,10 @@ function mouseEventHandler() {
         } else {
             n=null;
         } 
-    } while (n != null);
-    playerInput.setUserInput(n);
+    } while (n != null);                // while loop hangs game. incorrectly set to !=null so the game can run to end.
+    playerInput.setUserInput(n);        // store user's choice into memory
     console.log(n);
-    gameBoard.canvas.addEventListener('click', function (event) {
+    gameBoard.canvas.removeEventListener('click', function (event) {
         posX = event.clientX;
         posY = event.clientY;
         console.log(posX, +', '+ posY);
@@ -415,10 +428,10 @@ function displayHand(player) {
         // c.drawImage(player.hand[i].image, 60 + (72*i), yCenter + 100); // display cards on the game board
         // playCard('left', player.hand[i]);
     } 
-   // showHand(player);  
+   // displayUserHand(player);  
 }
 
-function showHand(player) {
+function displayUserHand(player) {
     // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
     var c = gameBoard.canvas;
    // c.clearBoard();
@@ -776,6 +789,13 @@ function determineWinner(called, played) {
     }
  };
 
+async function loadGameAssets() {
+    await gameBoard.init();
+    await scoreboard.init();
+    await scoreboard.display();
+    await deck.init();
+}
+
  /** 
 *   repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
 *   @param: null
@@ -792,37 +812,33 @@ async function mainGameLoop() {
             countForGame()
 //          assessPoints(): high, low, jack, game, hangJack
 */
+
+    // read game settings from .JSON FILE
     // var player1Hand = getHand(theDeck, 0);
     var computer = new Player();
     var human = new Player();
     computer.name='Computer';
     human.name='You';
 
-    await gameBoard.init();
-    scoreboard.init();
-    await scoreboard.display();
-    // var dealer = human;
-    //do {
-    //gameLoop:
-        // if (dealer === computer) {dealer = human;} else {dealer = computer;}
-        await deck.init();
         deck.shuffle();
         deck.deal(human, computer);
         // displayHand(human);
-        showHand(human);
+        await displayUserHand(human);
         // console.log(deck.trump);
-        displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
+        await displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
         // dealer.points = kickcardPoints
         var winner = human;  // eventually write a subroutine for "first jack deal"
         //gameRoundLoop:
         while (human.hand.length > 0) {
-            var playedCard;
-            var calledCard;
+            var playedCard;     // add playedBy attribute
+            var calledCard;     // add playedBy attribute
             // winner plays first 
             if (winner === human) {
-                // while (calledCard == null) {
+            while (!calledCard) {
+                setTimeout({}, 5000);
+            }
                 calledCard = humanPlayTurn(human.hand); // make program wait for input
-                // }
+                
                 playedCard = computerPlayTurn(calledCard, computer.hand);
             } else {
                 calledCard = computerPlayTurn(computer.hand);
@@ -838,22 +854,24 @@ async function mainGameLoop() {
         // human.lift > computer.lift;
     }
         /*
-        dealHand('tophand', player1Hand);
-        var computer1Hand = getHand(theDeck, 3);
-   
-        while (player1Hand != null);
+        function calcGame(Player.lift) {
+            return score;
+        }
+
+        while (Cards in lift);
         // calcGame()
-        // assessPoints() 
+        // assessPoints()       // hi, low, jack, game 
     } 
     while (humanPoints || computerPoints < 14);    */
 
 /*
 Libs:
-Engine (server side)
-Display Library
-Testing Library
-AI Library
-Frontend
+BackEnd:
+    Engine (server side)
+    AI Library
+FrontEnd:
+    Display Library
+    Testing Library
 */
 
    

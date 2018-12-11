@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.1.1
+ *  @version   0.3.2
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
@@ -56,7 +56,7 @@ export var gameBoard = {
                this.ctx = this.canvas.getContext("2d");
                document.getElementById("game_container").appendChild(this.canvas);   // attach gameBoard to the DOM
                // this.frameNo =0;
-               // this.interval = setInterval(updateGameArea, 20);      // 50fps
+               // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
                // background-color set in 'style.css'
            },
            // if 'setInterval is used, there should be stop function
@@ -64,7 +64,11 @@ export var gameBoard = {
            clearBoard : function () {
            // wipes the entire gameBoard clean
                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-           }
+           },
+           clearSection : function (x, y, width, height) {
+           // wipes a section of gameBoard clean
+           this.ctx.clearRect(this.x, this.y, this.width, this.height);
+        },
        };
 
 function animate(object) {

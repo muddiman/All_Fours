@@ -40,13 +40,13 @@
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
-                    <h3>Player 1: Roger</h3>
+                    <h3>Unit Test Console</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="unitTestForDisplayTrump()">Test</button>
                     <button class="w3-btn" onclick="message()">Message</button>
-                    <button class="w3-btn" id="quitBtn" onclick="testgetCoords()">Test Coords</button>
+                    <button class="w3-btn" id="quitBtn" onclick="mainGameLoop()">Start Game</button>
                 </div>
                 <!-- Display of Player 1's hand -->
                 <div class="hand" id="tophand"></div>
@@ -66,7 +66,8 @@
 
     <script>
         window.onload = function () {
-           mainGameLoop();
+           // mainGameLoop();
+           loadGameAssets();
            
         }
     </script>     

@@ -45,7 +45,7 @@ function summary(numberOfTests, pass, fail, runtime ) {
     }
 }
 
-var Tests = [       // An array of test objects
+var Tests = [       // An array of test objects, included in a JSON file
     {
         parameter : 'place parameters here',
         parameterTwo : 'place parameters here',

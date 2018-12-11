@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<HTML lang="en">
+<HEAD>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Access game options and customizations">
+    <link rel="stylesheet" type="text/css" media="screen" href="title-style.css" />
+    <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+<TITLE>All Fours Game Title Screen</TITLE>
+
+<SCRIPT src="title-script.js"></SCRIPT>
+
+</HEAD>
+<BODY onload="setTimeout(homeScreen, 3000)">
+
+    <!--        Home/Title Screen               -->
+    <div class="modal" id="home_screen" style="display: none;"> 
+        <form class="modal-content animate" method="POST">
+         <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa">
+          <div class="imgcontainer">
+            <span title="Close Modal" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
+            <!--    Game Logo Here -->
+          </div>
+      
+          <div class="container">
+                      
+            <button type="submit">Play Game</button>
+            <button type="submit">Settings</button>
+            <button type="submit">Login</button>
+            <button type="submit">Register</button>
+            <label>
+              <input name="remember" type="checkbox" checked="checked"> Remember me
+            </label>
+          </div>
+          <p>Don't have an account? Sign up <a href="/register/">here</a>.</p>
+          <p>Please login to play. <a href="/register/">here</a>.</p>
+          <div class="container" id="lower_card_div" style="background-color:#f1f1f1">
+            <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button>
+            <!--    Home Icon & Settings Icon (bottom left corner)      -->
+          </div>
+          <div class="footnote-icons">
+            <a href="#"><i class="fas fa-cog" title="Settings" onclick="menuFunction()"></i></a>  
+            <a href="#"><i class="fas fa-home" title="Home" onclick="homeScreen()"></i></a>
+          </div>
+        </form>
+    </div>
+
+    <!--        Login Screen                    -->
+    <div class="modal" id="loginform" style="display: none;"> 
+        <form class="modal-content animate" method="POST">
+        <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa">
+          <div class="imgcontainer">
+            <span title="Close Modal" class="close" onclick="document.getElementById('loginform').style.display='none'">×</span>
+            <img class="avatar" alt="Avatar" src="https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png">
+          </div>
+      
+          <div class="container">
+            <fieldset>
+                <!--  <legend>Log In</legend>  -->
+                <p><label for="id_username">Username:</label> <input name="username" id="id_username" autofocus="" required="" type="text" maxlength="254"></p>
+                <p><label for="id_password">Password:</label> <input name="password" id="id_password" required="" type="password"></p>
+            </fieldset>             
+            <button type="submit">Login</button>
+            <label>
+              <input name="remember" type="checkbox" checked="checked"> Remember me
+            </label>
+          </div>
+          <p>Don't have an account? Sign up <a href="/register/">here</a>.</p>
+          <div class="container" id="lower_card_div" style="background-color:#f1f1f1">
+            <button class="cancelbtn" onclick="document.getElementById('loginform').style.display='none'" type="button">Cancel</button>
+            <span class="psw">Forgot <a href="#">password?</a></span>
+          </div>
+        </form>
+    </div>
+
+
+
+    <script src="game-loader.js">
+      window.onload = loadMain();   
+
+    </script>
+    <!--        Sign Up Screen                  -->
+    <!--        Options/Settings Screen         -->
+        <!-- WRITE SETTINGS parameters into .JSON file or JavaScript Object
+        Define system and asset needs. Poll browser, poll size of screen/window, poll input device, sound/no_sound etc
+         -->
+        
+
+    <!--        Login Screen                    -->
+
+</BODY>
+</HTML>
+
+<!--
+
+==================================================================
+|                                                                |
+|                                                                |
+|                       ALL FOURS                                |
+|                     BY: .muddicode                             |
+|                       VER. 0.3.2                               |
+|                                                                |
+==================================================================
+
+-->
