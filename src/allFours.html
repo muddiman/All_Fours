@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
     <link rel="manifest" href="manifest.json">
-    <script src="allfours.js"></script> 
-    <script src="lib/testing/humanTest.js"></script>   
+    <script src="allfours.js"></script>   
 </head>
 
 <body>
@@ -45,9 +44,9 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="unitTestForPlayCard()">Unit Test</button>
-                    <button class="w3-btn" onclick="unittest()">Play</button>
-                    <button class="w3-btn" id="quitBtn" onclick="displayScoreboard(6, 10)">Score</button>
+                    <button class="w3-btn" onclick="unitTestForDisplayTrump()">Test</button>
+                    <button class="w3-btn" onclick="message()">Message</button>
+                    <button class="w3-btn" id="quitBtn" onclick="testgetCoords()">Test Coords</button>
                 </div>
                 <!-- Display of Player 1's hand -->
                 <div class="hand" id="tophand"></div>
@@ -67,7 +66,8 @@
 
     <script>
         window.onload = function () {
-            mainGameLoop();
+           mainGameLoop();
+           
         }
     </script>     
 </body>

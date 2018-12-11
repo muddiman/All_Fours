@@ -11,14 +11,27 @@
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
  *  @version   0.1.1
  *  @since     2018-10-1
- *  @license   Dual license - MIT & GPL
- *  @See:      http://www.gnu.org/licenses/gpl.html
- *             http://www.mit.edu/license
+ *  @download  https://www.github.com/muddiman/All_Fours
+ *  @license   NOT for 'commercial use'.
+ *  @See:      http://www.roger-clarke.com/allfours/license.html
+ *             Free to use for personal or academic purposes.
+ *             Please site the source code using the following format:
+ *             "Clarke, Roger A. (2018) All Fours Game (ver. 0.1.1) [Source Code]. New York, 
+ *             NY. http://www.roger-clarke.com, https://www.github.com/muddiman". 
  */
+
+ /**
+  *     Alpha:  Completed Functional/playable/useable Program w/most of the final features included
+  *     Beta:   Completed Program w/ALL of the features included, bug-fixes found in alpha version
+  *     Release Candidate: Final version of game, all bugs found in beta, fixed. released to select segment of the public
+  *     Version: 0.0.0 (a.b.c) -- where a --> major update, redesign, cumulative group of new features
+  *                                     b --> addition of features, cumulative group of bug fixes
+  *                                     c --> bug fixes
+  */
 
 /*
    Major Elements of A Game:
-   I. Setup Game
+   I. Setup Game (Options)
    II. Game Loop:
         1. Poll and handle elements
         2. Update game elements
@@ -28,6 +41,7 @@
 */
 
 /*  Programming Note:
+    Assets Outstanding: Back of cards, background music, sound effects.
     Because the fisrt letter of every suit AND face of all cards are unique letters
     i can simplify the id of each card to a 'two-letter' string.
     ie: ace of heart is simply 'ah', ten of clubs is 'tc' and nine of diamonds is '9d'
@@ -35,15 +49,17 @@
 */
 
 /* the globals */
-// NONE
+/* game board dimensions */
+const WIDTH=700;    // window.innerWidth;       // for fullscreen gaming
+const HEIGHT=450;   // window.innerHeight;      // for fullscreen gaming
 
 var gameBoard = {
 //  Object: gameBoard
     canvas : document.createElement("canvas"), 
     init : function () {
     // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
-        this.canvas.width = 700;
-        this.canvas.height = 450;
+        this.canvas.width = WIDTH;
+        this.canvas.height = HEIGHT;
         this.canvas.id = "game_board";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
@@ -99,6 +115,7 @@ function Card(rank, face, suit) {
         return this.face + this.suit; // used as cardId, image filename, etc
     };
     this.image = new Image();
+    this.image.onload = console.log(this.getCardName());
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
     // write new card.functions as needed, ie update function & location function
@@ -226,6 +243,149 @@ function unitTestForPlayCard() {
     playCard("right", randomCard);
     playCard("bottom", randomCard);
 }
+
+function testgetCoords() {
+    gameBoard.canvas.addEventListener("click", function (event) {
+        var x=event.clientX; // x-20=0 on game board; 155 - 400
+        var y=event.clientY; // y is much more flexible;    350 + 96
+        console.log(x);
+        console.log(y);
+    });
+
+}
+
+async function selectCard() {
+    // var c=gameBoard.canvas;
+    //var z=gameBoard.ctx;
+    // var xCenter=c.width/2;
+    var n=0;
+    // 
+        try {
+            await gameBoard.canvas.addEventListener("click", (event) => {  
+                var x = event.clientX; // x-20=0 on game board; 155 - 400
+                var y = event.clientY; // y is much more flexible;    350 + 96
+                console.log(x);
+                console.log(y);
+                if (350 < y < 496) {
+                    switch (x-155) {
+                        case x < 72/2:
+                            n=0;
+                            break;
+                        case 72/2 < x < 72*2/2:
+                            n=1;
+                            break;
+                        case 72*2/2 < x < 72*3/2:
+                            n=2;
+                            break;
+                        case 72*3/2 < x < 72*4/2:
+                            n=3;
+                            break;
+                        case 72*4/2 < x < 72*5/2:
+                            n=4;
+                            break;
+                        case 72*5/2 < x < (72*6/2)+36:
+                            n=5;
+                            break;
+                        default:
+                            n=0;    // change to zero from  null; 
+                    }
+                } else {
+                    n=0;
+                }                
+            });           
+            gameBoard.canvas.removeEventListener("click", {});
+        } catch(err) {
+            console.error(err);
+        }              
+        console.log(n);
+    return n;
+}
+/**
+ *      captures clicks, convert into user's choice and store that choice in the userInput object
+ */
+function mouseEventHandler() {
+    var posX, posY;
+    var n=null;
+    do {
+        gameBoard.canvas.addEventListener('click', function (event) {   
+            posX = event.clientX;
+            posY = event.clientY;
+            console.log(posX);
+            console.log(posY);
+        });
+        // parse the coords obtained into card choice [0 .. 11] ie 12 possible choices
+        if (350 < posY < 496) {
+            switch (x-155) {
+                case x < 72/2:
+                    n=0;
+                    break;
+                case 72/2 < x < 72*2/2:
+                    n=1;
+                    break;
+                case 72*2/2 < x < 72*3/2:
+                    n=2;
+                    break;
+                case 72*3/2 < x < 72*4/2:
+                    n=3;
+                    break;
+                case 72*4/2 < x < 72*5/2:
+                    n=4;
+                    break;
+                case 72*5/2 < x < (72*6/2)+36:
+                    n=5;
+                    break;
+                default:
+                    n=null;    // change to zero from  null; 
+            }
+        } else {
+            n=null;
+        } 
+    } while (n != null);
+    playerInput.setUserInput(n);
+    console.log(n);
+    gameBoard.canvas.addEventListener('click', function (event) {
+        posX = event.clientX;
+        posY = event.clientY;
+        console.log(posX, +', '+ posY);
+    });               
+}
+
+/**
+ *  handles user Input is an Object
+ */ 
+var playerInput = {
+    selection:      null,
+    setUserInput:   function (choice) {
+                        this.selection = choice;        // places the user's selection from mouse into memory
+                    },
+    getUserInput:   function () {
+                        return this.selection;          // retrieves user's stored selection from memory
+                    }, 
+};
+
+
+
+function confirmCardSelection(card) {
+    // Enlarges Card and place front & center of the Hand
+    var z=gameBoard.ctx;
+    z.drawImage(card.image, gameBoard.width/2 - 71, gameBoard.height-2*96, 2*71, 2*96);
+    z.scale(2,2);
+    gameBoard.canvas.addEventListener("click", function (event) {
+        var x=event.clientX;
+        var y=event.clientY;
+        if (250 < y < 496) {
+            if (280 < x < 420) {
+                playCard('bot', card);
+                return card;
+            } else {
+                // remove enlarged image;
+            }     
+        } else {
+            // remove enlarged image;
+        }
+    });
+}
+
 /**
  * displays card in specified hand (HTML <div>) on webpage inside the game control panel
  * @param {*} card object
@@ -235,6 +395,7 @@ function loadCard(card, hand_div) {
     var x1 = document.createElement("a");
     x1.href = "#";
     x1.appendChild(card.image);
+    gameBoard.ctx.drawImage(card.image, 200,200);
     hand_div.appendChild(x1);
 }
 
@@ -245,9 +406,29 @@ function loadCard(card, hand_div) {
  */
 function displayHand(player) {
     // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
+    var c = gameBoard.ctx;
+    var xCenter = c.width/2;
+    var yCenter = c.height/2;
     for (i = 0; i < player.hand.length; i++) {
+        // console.log(player.hand[i].getCardName());
         loadCard(player.hand[i], document.getElementById("tophand")); 
-    }
+        // c.drawImage(player.hand[i].image, 60 + (72*i), yCenter + 100); // display cards on the game board
+        // playCard('left', player.hand[i]);
+    } 
+   // showHand(player);  
+}
+
+function showHand(player) {
+    // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
+    var c = gameBoard.canvas;
+   // c.clearBoard();
+    var x = gameBoard.ctx;
+    var xCenter = c.width/2;
+    var yCenter = c.height/2;
+    for (i = 0; i < player.hand.length; i++) {
+        // console.log(player.hand[i].image.src);
+        x.drawImage(player.hand[i].image, xCenter - (72*(6-i)/2), 340, 71, 96); // display cards on the game board        // playCard('left', player.hand[i]);
+    }   
 }
 
 /**
@@ -256,7 +437,21 @@ function displayHand(player) {
  * @returns void 
  */
 function displayTrump(trump) {
-    gameBoard.ctx.drawImage(trump.image, 5, 5);
+    // gameBoard.clearBoard();
+    var x = gameBoard.ctx;
+    x.drawImage(trump.image, 5, 5);     // upper left corner (x,y) => (5,5)
+   // x.scale(2,2);
+}
+
+function acquireImage() {
+    var x = gameBoard.ctx;
+    var imgData = x.getImageData(5, 5, 71, 96); // capture image from gameboard
+    x.putImageData(imgData, 200, 200);  // place captured image info elsewhere
+   if (x.getImageData(200,200, 71,96)) {
+       return console.log('Pass: image object exists.');
+   } else {
+       return console.log('Fail: image object does NOT exist!');
+   }
 }
 
 /**
@@ -300,27 +495,65 @@ var scoreboard = {
     }
 };
 
+function message() {
+    var c=gameBoard.ctx;
+    c.beginPath();
+    c.lineWidth = 2;
+    c.strokeStyle = "white";
+    c.rect(170,100, 400, 200);
+    c.stroke();
+    c.globalAlpha=0.4;
+    c.fillStyle="#252525";  // black
+    c.fillRect(170,100, 400,200);
+    // c.globalAlpha=0.1;
+    c.font = "50px Arial";
+    c.fillStyle = "#ffffff";    // white
+    c.fillText("HANG JACK!!!", 200, 200);
+    
+    // c.scale(0.5, 0.5);
+    // c.rotate(100*Math.PI/180);
+    // rgba 0.8
+}
+
+function cleanBoard() {
+    var c=gameBoard.ctx;
+    gameBoard.clearBoard();
+    // c.clearRect(170, 100, 400, 200);
+}
+
+/**
+ * draws scoreboard on the gameboard
+ * @param {*} a Team A's current score - int
+ * @param {*} b Team B's current score - int
+ * @returns void
+ */
 function displayScoreboard(a, b) {
-    // draws scoreboard on the gameboard
-    // draw rectangle border
     var c = gameBoard.canvas;
     var x = gameBoard.ctx;
+    var upperLeftCornerX = c.width - 265;   //   (LxB: 260 x 120 box; x,y => 400,5)
+    var upperLeftCornerY = 5;
+    var width = 260;
+    var height = 120;
     x.beginPath();
-    x.lineWidth = 8;
-    x.strokeStyle = "red";
-    x.rect(c.width - 335, 15, 260, 120);
+    x.lineWidth = 4;
+    x.strokeStyle = "black";
+    x.rect(upperLeftCornerX, upperLeftCornerY, width, height);
     x.stroke(); 
     // fill rectangle
-    x.fillStyle = "#993399";
-    x.fillRect(c.width - 335, 15, 260, 120);
-    // write in rectangle
-    x.fillStyle = "#ffffff";
+    x.shadowBlur = 40;
+    x.shadowOffsetX=10;
+    x.shadowOffsetY=10;
+    x.shadowColor = "black";
+    x.fillStyle = "#ff0000";    // red
+    x.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);  
+    // text
+    x.fillStyle = "#ffffff";    // white
     x.font = "30px Arial";
-    x.fillText("Team A:", c.width - 320, 50);
-    x.fillText("Team B:", c.width - 320, 115);
-    // score tiles
-    x.fillText(a, c.width - 140, 50);
-    x.fillText(b, c.width - 140, 115);
+    x.fillText("Team A:", upperLeftCornerX + 15, 40);
+    x.fillText("Team B:", upperLeftCornerX + 15, 105);
+    // score tiles (numbers)
+    x.fillText(a, upperLeftCornerX + 215, 40);
+    x.fillText(b, upperLeftCornerX + 215, 105);
 }
 
 /**
@@ -341,7 +574,7 @@ function unitTestForScoreboardObj() {
     
     scoreboard.display();
     try {
-        pause = setTimeout(scoreboard.clear(), 50000);
+        pause = setTimeout(scoreboard.clear(), 5000);
     }
     catch(err) {
         console.log(err);
@@ -365,47 +598,30 @@ function unitTestForScoreboardObj() {
 
 /**
  * 
- * @param {*} human a player
- * @returns void
+ * @param {*} human.hand  the human player's hand (array of cards)
+ * @returns card or null
   */  
-function humanPlayTurn(humanHand) {
-    var card;
-    var capture;
-    var id = "";
-    var pos = 'bottom'; // Player 1 always play left of center
-    
-    // start listening
-    document.getElementById('tophand').addEventListener("click", function () {
-        capture = event.target;
-        id = capture.getAttributeNode("id").value;
-        var i;
-        for (i = 0; i < humanHand.length; i++) {
-            if (humanHand[i].image.id === id) {
-                playCard(pos, humanHand[i]);
-                capture.parentNode.removeChild(capture);
-                card = humanHand[i];
-                delete humanHand[i];
-                break;
-            }
-        } 
-    });
-    // stop listening
-    document.getElementById('tophand').removeEventListener("click", function () {
-        capture = event.target;
-        id = capture.getAttributeNode("id").value;
-        var i;
-        for (i = 0; i < humanHand.length; i++) {
-            if (humanHand[i].image.id === id) {
-                playCard(pos, humanHand[i]);
-                capture.parentNode.removeChild(capture);
-                card = humanHand[i];
-                delete humanHand[i];
-                break;
-            }
-        }
-    });
+async function humanPlayTurn(humanHand) {
+    var pos = 'bottom';         // Player 1 always play left of center 
+    var i=null;
+    mouseEventHandler();
+    while (i != null) {
+        i = await playerInput.getUserInput();
+    }
+    var card = humanHand[i];
+    playCard(pos, card);
     return card;
-}
+}   
+ /*   if (confirmCardSelection(card)) {
+        console.log(card.id);
+        playCard(pos,card);
+        return card;
+    } else {
+        console.log('No Card Selected');
+        return null;
+    }
+*/
+
 
 function unitTestForHumanPlayTurn() {
     var android = new Player();
@@ -430,15 +646,15 @@ function unitTestForHumanPlayTurn() {
  * @param {*} called Card 
  * @param {*} computerHand Players.Hand 
  */
-function computerPlayTurn(called, computerHand) {
+function computerPlayTurn(calledCard, computerHand) {
 //play same suit
 console.log({computerHand});
-console.log({called});
+console.log({calledCard});
 var chosenCard;
 var i;
 var n;
 for (i = 0; i < computerHand.length; i++) {
-    if (computerHand[i].suit === called.suit) {
+    if (computerHand[i].suit === calledCard.suit) {
         chosenCard = computerHand[i];
         // delete computerHand[i];
         playCard('top',chosenCard);
@@ -463,8 +679,7 @@ function determineWinner(called, played) {
         } else { 
             return console.log('Player 2 wins!');
         }
-    }
-    if (played.suit === deck.trump.suit) {
+    } else if (played.suit === deck.trump.suit) {
         return console.log('Player 2 wins!');
     } else {
         return console.log('Player 1 wins!');
@@ -566,7 +781,7 @@ function determineWinner(called, played) {
 *   @param: null
 *   @return: void
 */
-function mainGameLoop() {
+async function mainGameLoop() {
 
 /*  mainGameLoop:        
      Deal subroutine: shuffle, cut, distribute
@@ -580,20 +795,23 @@ function mainGameLoop() {
     // var player1Hand = getHand(theDeck, 0);
     var computer = new Player();
     var human = new Player();
+    computer.name='Computer';
+    human.name='You';
 
-    gameBoard.init();
+    await gameBoard.init();
     scoreboard.init();
-    scoreboard.display();
+    await scoreboard.display();
     // var dealer = human;
     //do {
     //gameLoop:
         // if (dealer === computer) {dealer = human;} else {dealer = computer;}
-        deck.init();
+        await deck.init();
         deck.shuffle();
         deck.deal(human, computer);
-        displayHand(human);
-
-        displayTrump(deck.trump); // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
+        // displayHand(human);
+        showHand(human);
+        // console.log(deck.trump);
+        displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
         // dealer.points = kickcardPoints
         var winner = human;  // eventually write a subroutine for "first jack deal"
         //gameRoundLoop:
@@ -603,7 +821,7 @@ function mainGameLoop() {
             // winner plays first 
             if (winner === human) {
                 // while (calledCard == null) {
-                    calledCard = humanPlayTurn(human.hand); // make program wait for input
+                calledCard = humanPlayTurn(human.hand); // make program wait for input
                 // }
                 playedCard = computerPlayTurn(calledCard, computer.hand);
             } else {
