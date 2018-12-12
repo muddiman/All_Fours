@@ -7,6 +7,7 @@ function homeScreen() {
         clickOutsideForm();
 }
 
+/*  TODO: disable closing home screen until game is fully loaded  */
 function clickOutsideForm() {
     var modal = document.getElementById('home_screen');
     window.onclick = function(event) {

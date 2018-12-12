@@ -26,6 +26,10 @@ function foo() {
 }
 */
 
+//import deck from '../allfours.js';
+//import * as gfx from 'graphicslib.js';
+
+
 /*  Load counter object    */
 var counter = {
     scriptsLoaded: 0,
@@ -39,24 +43,40 @@ var cardImageAssets = {              // a deck of cards
     loadImages:         function () {
                             deck.init();
                         },
+    checkImages:        function ()  {
+                            if (deck.cards.length === 52)   {
+                                allImagesLoaded = true;
+                            } else {
+                                allImagesLoaded = false;
+                            }
+                        },
+    allImagesLoaded:    false,                    
     errorMsg:           "Sorry, All card images did not load.",
     successMsg:         "All card images loaded successfully.",                    
 };
 var gameBoardAssets = {                // draws game board
     loadImages:         function ()  {
-                            gameBoard.init();
+                            gfx.gameBoard.init();
                         },
+    checkImages:        function () {
+                            if (Document.getElementbyId("game_board"))   {
+                                allImagesLoaded=TRUE;
+                            } else {
+                                allImagesLoaded=FALSE;
+                            }
+                        },
+    allImagesLoaded:    false,
     errorMsg:           "Sorry, the game board did not load.",
     successMsg:         "The game board loaded successfully.",
 };
 
 /*  Array of assets  */
-var assets = [cardImageAssets, gameBoardAssets,];           //  [cardImages, initializeCanvas, imgAssets, sprites, audioAssets,];
+var assets = [cardImageAssets, gameBoardAssets];           //  [cardImages, initializeCanvas, imgAssets, sprites, audioAssets,];
 
 /*  Script Objects  */
 var mainScript = {
     filepath: "../allfours.js", 
-    errorMsg: "Something happened. Game Script did not load!",
+    errorMsg: "Something happened. Main Game Script did not load!",
     successMsg: "Main program loaded sucessfully",
 };
 var inputScript = {
@@ -76,7 +96,7 @@ var DisplayInterface = {
 };
 
 /*  Array of script objects */
-var scripts = [mainScript, inputScript, gfxEngine, DisplayInterface,];
+var scripts = [mainScript, inputScript, gfxEngine, DisplayInterface];
 
 /*  customizable confirmation message    */
 function callback(message) {
@@ -87,20 +107,22 @@ function callback(message) {
 function loadScript(s) {
     var script_tag = document.createElement('script');
     script_tag.src=s.filepath;
-    document.head.appendChild(script_tag);
+    document.body.appendChild(script_tag);
+    setTimeout(function ()  {    
     if (document.getElementsByTagName('script').length != counter.scriptsLoaded + 1) {           //  check: if scripts exists on the DOM
         counter.scriptsNotLoaded++;
         callback(s.errorMsg);
     } else {
         callback(s.successMsg);
         counter.scriptsLoaded++;            
-    } 
+    }
+}, 3000);
 }
 
 /*  for each asset  */
 function loadAsset(a) {
     a.loadImages();
-    if (deck.cards.length === 52)   {        //  check
+    if (a.checkImages === true)   {        //  check
         callback(a.successMsg);
         counter.assetsLoaded++;
     } else {            
@@ -109,10 +131,10 @@ function loadAsset(a) {
     }
 } 
 
-/*  load all sequentially   */
+/*  load all  scripts sequentially   */
 function loadAllScripts(scriptObjects) {
     for (var scriptObject in scriptObjects ) {
-        loadScript(scriptObject);
+        loadScript(scriptObjects[scriptObject]);
     }
     var msg = "All scripts loaded.";
     var error = "Could not load all scripts. " + counter.scriptsNotLoaded + " scripting files did not load.";
@@ -122,9 +144,11 @@ function loadAllScripts(scriptObjects) {
         callback(msg);
     }
 }
+
+/*  load all assets sequentially    */
 function loadAllAssets(assetObjects) {
     for (var assetObject in assetObjects ) {
-        loadAsset(assetObject);
+        loadAsset(assetObjects[assetObject]);
     }
     var msg = "All assets loaded.";
     var error = "Could not load all assets. " + counter.assetsNotLoaded + " image sets did not load.";
@@ -139,5 +163,16 @@ function loadAllAssets(assetObjects) {
 function loadMain() {
     loadAllScripts(scripts);
     loadAllAssets(assets);
-    window.alert('Game Loaded Succesfully!');
+    if (counter.assetsNotLoaded === 0 && counter.scriptsNotLoaded === 0)    {
+        window.alert('Game Loaded Succesfully! Close Title Screen hit START to begin.');
+    } else {
+        console.log('Game did not load successfully. Cannot play game at this time.');
+    }
+    // remove title screen so user can get to play game on canvas behind title UI/screen
+
+
+    // var modal = document.getElementById('home_screen');
+    // modal.style.display = "none";
+
+    // a better way: remove restriction on closing the title UI till everything loads
 }
