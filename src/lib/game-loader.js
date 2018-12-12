@@ -26,8 +26,8 @@ function foo() {
 }
 */
 
-//import deck from '../allfours.js';
-//import * as gfx from 'graphicslib.js';
+import deck from '../allfours.js';
+import * as gfx from 'graphicslib.js';
 
 
 /*  Load counter object    */
@@ -71,7 +71,10 @@ var gameBoardAssets = {                // draws game board
 };
 
 /*  Array of assets  */
-var assets = [cardImageAssets, gameBoardAssets];           //  [cardImages, initializeCanvas, imgAssets, sprites, audioAssets,];
+var assets = [
+    cardImageAssets, 
+    gameBoardAssets
+    ];           //  [cardImages, initializeCanvas, imgAssets, sprites, audioAssets,];
 
 /*  Script Objects  */
 var mainScript = {
@@ -96,7 +99,12 @@ var DisplayInterface = {
 };
 
 /*  Array of script objects */
-var scripts = [mainScript, inputScript, gfxEngine, DisplayInterface];
+var scripts = [
+    mainScript, 
+    inputScript, 
+    gfxEngine, 
+    DisplayInterface
+    ];
 
 /*  customizable confirmation message    */
 function callback(message) {
@@ -106,9 +114,13 @@ function callback(message) {
 /*  for each script */
 function loadScript(s) {
     var script_tag = document.createElement('script');
+    var h = document.getElementsByTagName('HEAD');
     script_tag.src=s.filepath;
-    document.body.appendChild(script_tag);
-    setTimeout(function ()  {    
+    //try {
+       // h.appendChild(script_tag);      // error occurs here
+    //} catch (error) {
+        //console.log(error);
+    //} 
     if (document.getElementsByTagName('script').length != counter.scriptsLoaded + 1) {           //  check: if scripts exists on the DOM
         counter.scriptsNotLoaded++;
         callback(s.errorMsg);
@@ -116,7 +128,6 @@ function loadScript(s) {
         callback(s.successMsg);
         counter.scriptsLoaded++;            
     }
-}, 3000);
 }
 
 /*  for each asset  */
