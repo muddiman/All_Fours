@@ -71,6 +71,31 @@ export var gameBoard = {
         },
        };
 
+function GAMEBOARD(WIDTH, HEIGHT, ID) {
+    this.canvas = document.createElement("canvas"); 
+    this.init = function () {    // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+                    this.canvas.width = WIDTH;
+                    this.canvas.height = HEIGHT;
+                    this.canvas.id = ID;
+                    this.ctx = this.canvas.getContext("2d");
+                    document.getElementById("game_container").appendChild(this.canvas);   // attach gameBoard to the DOM
+                    // this.frameNo =0;
+                    // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
+                    // background-color set in 'style.css'
+                };
+    // if 'setInterval is used, there should be stop function
+    // stop : function () {clearInterval(this.interval);}
+    this.clearBoard = function () {
+                    // wipes the entire gameBoard clean
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                };
+    this.clearSection = function (x, y, width, height) {
+                        // wipes a section of gameBoard clean
+                        this.ctx.clearRect(this.x, this.y, this.width, this.height);
+                };
+}
+module.exports = new GAMEBOARD(w,h,i)
+
 // Animation Board has its own transparent game board
 // var gb[3] = new canvas
 // ab = gb[3]

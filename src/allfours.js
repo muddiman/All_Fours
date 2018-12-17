@@ -56,7 +56,7 @@ const CARDW=72;     // card width
 const CARDH=96;     // card height
 
 var gameBoard = {
-//  Object: gameBoard
+//  Object: gameBoard --> TODO: turn into a "class"
     canvas : document.createElement("canvas"), 
     init : function () {
     // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
@@ -91,21 +91,6 @@ function unitTestForGameBoard() {
     x.fillRect(0,0, 150,75);
     gameBoard.clearBoard();
 }
-
-/** 
- * ask if player wishes to play All Fours
- * @param null
- * @returns void
- *
-function startAsk() {
-    if (confirm("Click 'OK' to play All Fours or 'Cancel' to exit game.")) {
-        game.quit = false;
-        mainGameLoop();
-    } else {
-        quit = true;
-    }
-}
-*/
 
 
 function Card(rank, face, suit) {
@@ -149,6 +134,7 @@ function unitTestForCardObjects() {
         console.log('Unit Test: Failed.');
     }
 }
+
 /**
  * UNIT TEST
  * @param: params, expected
@@ -243,10 +229,6 @@ function playCard(playPosition, card) {
         default:
             x.drawImage(card.image, xCenter-60, yCenter-30);
     }
-    // remove cardId (card object) from hand & DOM (<div>), if it is there
-    if (card.image.parentNode === document.getElementById("tophand")) {
-        card.image.parentNode.removeChild(card.image);
-    }
 }
 
 /**
@@ -274,53 +256,6 @@ function testgetCoords() {
 
 }
 
-/*
-async function selectCard() {
-    // var c=gameBoard.canvas;
-    //var z=gameBoard.ctx;
-    // var xCenter=c.width/2;
-    var n=0;
-    // 
-        try {
-            await gameBoard.canvas.addEventListener("click", (event) => {  
-                var x = event.clientX; // x-20=0 on game board; 155 - 400
-                var y = event.clientY; // y is much more flexible;    350 + 96
-                console.log(x);
-                console.log(y);
-                if (350 < y < 496) {
-                    switch (x-155) {
-                        case x < 72/2:
-                            n=0;
-                            break;
-                        case 72/2 < x < 72*2/2:
-                            n=1;
-                            break;
-                        case 72*2/2 < x < 72*3/2:
-                            n=2;
-                            break;
-                        case 72*3/2 < x < 72*4/2:
-                            n=3;
-                            break;
-                        case 72*4/2 < x < 72*5/2:
-                            n=4;
-                            break;
-                        case 72*5/2 < x < (72*6/2)+36:
-                            n=5;
-                            break;
-                        default:
-                            n=0;    // change to zero from  null; 
-                    }
-                } else {
-                    n=0;
-                }                
-            });           
-            gameBoard.canvas.removeEventListener("click", {});
-        } catch(err) {
-            console.error(err);
-        }              
-        console.log(n);
-    return n;
-} */
 
 /**
  *      captures clicks, and stores the position in the userInput object
@@ -340,37 +275,20 @@ function mouseEventHandler() {
     });
 }
 
-/**
- * gets the postion of the mouse pointer on the 'canvas'
- * @param {*} e  event
- * @returns mouse pointer's position in the form of an array --> [x,y]
- 
-function onMouseClick(e) {      
-
+function touchEventHandler(){
+    document.getElementById('game_board').addEventListener('touch', function (e) {
+        var x = e.clientX;
+        var y = e.clientY;
+        var posArr = [x,y];     // position array
+        // console.log(posArr);
+        inputMgr.setUserInput(posArr).then(function (resolve) {
+            inputMgr.updateSelection();
+            console.log(resolve);  
+        }).catch(function(reject) {
+            console.log(reject);
+        }); 
+    });    
 }
-*/
-
-    // playerInput.setUserInput();
- /*   var posX, posY;
-    var n=null;
-    do {
-        gameBoard.canvas.addEventListener('click', function (event) {   
-            posX = event.clientX;
-            posY = event.clientY;
-            console.log('(' +posX+ ',  '+posY+ ')');
-           //  console.log(posY);
-        });
-         
-    } while (n != null);                // while loop hangs game. incorrectly set to !=null so the game can run to end.
-    playerInput.setUserInput(n);        // store user's choice into memory
-    console.log(n);
-    gameBoard.canvas.removeEventListener('click', function (event) {
-        posX = event.clientX;
-        posY = event.clientY;
-        console.log(posX, +', '+ posY);
-    }); */              
-//}
-
 
 /**
  *  handles user Input is an Object
@@ -467,38 +385,6 @@ function confirmCardSelection(card) {
     });
 }
 
-/**
- * displays card in specified hand (HTML <div>) on webpage inside the game control panel
- * @param {*} card object
- * @param {*} hand_div html <div> where the cards will be displayed
- */
-function loadCard(card, hand_div) {
-    var x1 = document.createElement("a");
-    x1.href = "#";
-    x1.appendChild(card.image);
-    gameBoard.ctx.drawImage(card.image, 200,200);
-    hand_div.appendChild(x1);
-}
-
-/**
- * sends the cards to be loaded onto the DOM, Player 1 section ("tophand" <div>)
- * @param {*} player 
- * @returns void
- *
-function displayHand(player) {
-    // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
-    var c = gameBoard.ctx;
-    var xCenter = c.width/2;
-    var yCenter = c.height/2;
-    for (i = 0; i < player.hand.length; i++) {
-        // console.log(player.hand[i].getCardName());
-        loadCard(player.hand[i], document.getElementById("tophand")); 
-        // c.drawImage(player.hand[i].image, 60 + (72*i), yCenter + 100); // display cards on the game board
-        // playCard('left', player.hand[i]);
-    } 
-   // displayUserHand(player);  
-}
-*/
 
 function displayUserHand(player) {
     return new Promise(function(resolve) {
@@ -693,8 +579,7 @@ function humanPlayTurn(humanHand) {
             console.log(error);
             reject(error);
         });
-    });
-    
+    });  
 }   
 
 
@@ -917,7 +802,7 @@ async function mainGameLoop() {
                 winner = humanPlayTurn(human.hand).then(function(resolve){
                     return determineWinner(calledCard, resolve);
                 }).then(function(resolve) {
-                    console.log(winner.name, + ' Wins!');
+                    console.log(resolve.name, + ' Wins!');
                     winner.lift.push(calledCard, playedCard);
                     console.log('END OF GAME!!!');
                 });
