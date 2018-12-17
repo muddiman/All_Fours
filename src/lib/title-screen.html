@@ -10,9 +10,10 @@
 <TITLE>All Fours Game Title Screen</TITLE>
 
 <SCRIPT src="title-script.js"></SCRIPT>
-<script src="game-loader.js">
-      window.onload = loadMain();   
-</script>
+<SCRIPT src="exp.js"></SCRIPT>
+<!--  <script src="game-loader.js">
+      window.onload = main();   
+</script> -->                           
 
 </HEAD>
 <BODY onload="setTimeout(homeScreen, 2000)">
@@ -24,29 +25,26 @@
           <div class="imgcontainer">
             <span title="Close Modal" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
             <!--    Game Logo Here -->
+            <H2>ALL FOURS</H2>
           </div>
       
           <div class="container">
                       
-            <button type="submit">Play Game</button>
+            <button type="submit" onclick="mainGameLoop()">Play Game</button>
             <button type="submit">Settings</button>
             <button type="submit">Login</button>
             <button type="submit">Register</button>
-            <label>
-              <input name="remember" type="checkbox" checked="checked"> Remember me
-            </label>
+            
           </div>
-          <p>Don't have an account? Sign up <a href="/register/">here</a>.</p>
-          <p>Please login to play. <a href="/register/">here</a>.</p>
           <div class="container" id="lower_card_div" style="background-color:#f1f1f1">
             <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button>
             <!--    Home Icon & Settings Icon (bottom left corner)      -->
           </div>
           <div class="footnote-icons">
-            <a href="#"><i class="fas fa-cog" title="Settings" onclick="loadMain()"></i></a>  
+            <a href="#"><i class="fas fa-cog" title="Settings" onclick="loadGame()"></i></a>  
             <a href="#"><i class="fas fa-home" title="Home" onclick="homeScreen()"></i></a>
           </div>
-          <div class="copy"><p class="copyright">Copyright &copy 2018 All rights reserved. Roger Clarke.</p></div>
+          <div class="copy"><p class="copyright">Copyright &copy; 2018 All rights reserved. Roger Clarke.</p></div>
         </form>
     </div>  
 
@@ -100,7 +98,7 @@
 |                                                                |
 |                       ALL FOURS                                |
 |                     BY: .muddicode                             |
-|                       VER. 0.3.2                               |
+|                       VER. 0.4.3                               |
 |                                                                |
 ==================================================================
 

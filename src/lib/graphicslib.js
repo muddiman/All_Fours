@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.3.2
+ *  @version   0.4.3
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
@@ -71,6 +71,9 @@ export var gameBoard = {
         },
        };
 
+// Animation Board has its own transparent game board
+// var gb[3] = new canvas
+// ab = gb[3]
 function animate(object) {
     var x, y;
     var frames = [];                // an array of screen_shots
@@ -124,6 +127,10 @@ function __drawSpriteInternal(spt, sheet, posX, posY) {
  * @param {*} b 
  */
 
+
+// score Board has its own transparent game board
+// var gb[2] = new canvas
+// sb = gb[2]
  /**
 * draws scoreboard on the gameboard
 * @param {*} a Team A's current score - int
@@ -174,6 +181,10 @@ export function displayScoreboard(a, b) {
  * @returns: null
  * @param {*} text -> message to display on gameBoard - string
  */
+// Message Board has its own transparent game board
+// var gb[1] = new canvas
+// mb = gb[1]
+
 export function message(text) {
        var gb = gameBoard.canvas;
        var gbx = gameBoard.ctx;
@@ -188,3 +199,7 @@ export function message(text) {
 
 //     Draw image of card onto the gameBoard according the positioning parameters
 
+// module.exports = new GAME_BOARD
+// module.exports = new MESSAGE
+// module.exports = new SCORE_BOARD
+// module.exports = new ANIMATION

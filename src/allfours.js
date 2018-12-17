@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.3.2
+ *  @version   0.4.3
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -50,8 +50,10 @@
 
 /* the globals */
 /* game board dimensions */
-const WIDTH=700;    // window.innerWidth;       // for fullscreen gaming
-const HEIGHT=450;   // window.innerHeight;      // for fullscreen gaming
+const WIDTH=700;    //use window.innerWidth;  for fullscreen gaming
+const HEIGHT=450;   //use window.innerHeight; for fullscreen gaming
+const CARDW=72;     // card width
+const CARDH=96;     // card height
 
 var gameBoard = {
 //  Object: gameBoard
@@ -85,7 +87,7 @@ function unitTestForGameBoard() {
 // @return: void  
     gameBoard.init();
     var x = gameBoard.ctx;
-    x.fillStyle= "#FF0000";
+    x.fillStyle= "#FF0000"; 
     x.fillRect(0,0, 150,75);
     gameBoard.clearBoard();
 }
@@ -112,10 +114,17 @@ function Card(rank, face, suit) {
     this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank;     // [0, 1,.. 12], to assist in determining who played the higher card
     this.getCardName = function () {
-        return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
-    };
+                            return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
+                        };
     this.image = new Image();
+    // this.image.listen = this.image.addEventListener('click', this.onMouseClick);
+    // this.image.stopListen = this.image.removeEventListener('click', this.onMouseClick);
+
     this.image.onload = console.log(this.getCardName() +' loaded');      // image creation callback function (to be changed into a useful function)
+
+                            // this.image.addEventListener('click', this.onMouseClick);
+                            // this.image.addEventListener('load', () => {console.log(this.getCardName +' loaded');});
+                        
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
     // write new card.functions as needed, ie update function & location function
@@ -196,7 +205,7 @@ function unittest(params, expected) {
 function unitTestForDeckArray() {
     var deck = createDeck();
     for (i = 0; i < 52; i++) {
-        setTimeout(function () {
+        setTimeout(function (i) {
             console.log(i); 
             var aCard = deck[i];
             var x = gameBoard.ctx;
@@ -314,10 +323,35 @@ async function selectCard() {
 } */
 
 /**
- *      captures clicks, convert into user's choice and store that choice in the userInput object
+ *      captures clicks, and stores the position in the userInput object
  */
 function mouseEventHandler() {
-    var posX, posY;
+    document.getElementById('game_board').addEventListener('click', function (e) {
+        var x = e.clientX;
+        var y = e.clientY;
+        var posArr = [x,y];     // position array
+        // console.log(posArr);
+        inputMgr.setUserInput(posArr).then(function (resolve) {
+            inputMgr.updateSelection();
+            console.log(resolve);  
+        }).catch(function(reject) {
+            console.log(reject);
+        }); 
+    });
+}
+
+/**
+ * gets the postion of the mouse pointer on the 'canvas'
+ * @param {*} e  event
+ * @returns mouse pointer's position in the form of an array --> [x,y]
+ 
+function onMouseClick(e) {      
+
+}
+*/
+
+    // playerInput.setUserInput();
+ /*   var posX, posY;
     var n=null;
     do {
         gameBoard.canvas.addEventListener('click', function (event) {   
@@ -326,33 +360,7 @@ function mouseEventHandler() {
             console.log('(' +posX+ ',  '+posY+ ')');
            //  console.log(posY);
         });
-        // parse the coords obtained into card choice [0 .. 11] ie 12 possible choices
-        if (350 < posY < 496) {
-            switch (x-155) {
-                case x < 72/2:
-                    n=0;
-                    break;
-                case 72/2 < x < 72*2/2:
-                    n=1;
-                    break;
-                case 72*2/2 < x < 72*3/2:
-                    n=2;
-                    break;
-                case 72*3/2 < x < 72*4/2:
-                    n=3;
-                    break;
-                case 72*4/2 < x < 72*5/2:
-                    n=4;
-                    break;
-                case 72*5/2 < x < (72*6/2)+36:
-                    n=5;
-                    break;
-                default:
-                    n=null;    // change to zero from  null; 
-            }
-        } else {
-            n=null;
-        } 
+         
     } while (n != null);                // while loop hangs game. incorrectly set to !=null so the game can run to end.
     playerInput.setUserInput(n);        // store user's choice into memory
     console.log(n);
@@ -360,20 +368,80 @@ function mouseEventHandler() {
         posX = event.clientX;
         posY = event.clientY;
         console.log(posX, +', '+ posY);
-    });               
-}
+    }); */              
+//}
+
 
 /**
  *  handles user Input is an Object
  */ 
-var playerInput = {
-    selection:      null,
-    setUserInput:   function (choice) {
-                        this.selection = choice;        // places the user's selection from mouse into memory
-                    },
-    getUserInput:   function () {
-                        return this.selection;          // retrieves user's stored selection from memory
-                    }, 
+var inputMgr = {
+    clickPosition:      null,
+    cardSelection:      null,
+    init:               function () {
+                            this.updateSelection();
+                        },
+    setUserInput:       function (pos) { 
+                            return new Promise(function (resolve, reject) { 
+                                console.log(pos);
+                                this.clickPosition = pos;        // stores the user's position from mouse event handler into memory
+                                if (this.clickPosition ==null) {
+                                    reject('Error: Could not register position');    
+                                } else {
+                                    resolve('Position Saved!');
+                                }
+                            });
+                           
+                        },
+    getUserInput:       function () {
+                            return new Promise (function (resolve, reject) {
+                                if (this.cardSelection !=null) {
+                                    resolve(this.cardSelection);    // retrieves user's stored selection from memory
+                                } else {
+                                    reject('Error: Could not retrieve selected a card!'); // change to an Error Object
+                                }      
+                            });
+                        },
+    updateSelection:    function () {                       //  updates the user selected card every 200ms (5x per sec)
+                            setInterval(this.getCardSelection, 200);
+                        },
+    getCardSelection:   function () {
+                        // parses the coords saved onClick into a card choice [0 .. 11] ie max of 12 possible choices
+                        var n=null;
+                        var x=this.clickPosition[0];
+                        console.log(x);
+                        var y=this.clickPosition[1];
+                        console.log(y);
+                        var p=x-160;
+                        if (y > 450) {
+                            switch (true) {
+                                case (p < 36):
+                                    n=0;
+                                    break;
+                                case (p < 72):
+                                    n=1;
+                                    break;
+                                case (p < 108):
+                                    n=2;
+                                    break;
+                                case p < 144:
+                                    n=3;
+                                    break;
+                                case p < 180:
+                                    n=4;
+                                    break;
+                                case (p < 252):
+                                    n=5;
+                                    break;
+                                default:
+                                    n='Out of Range';    // change to zero from  null; 
+                            }
+                        } else {
+                            n='Please click on a card!';
+                        }
+                        this.cardSelection=n;
+                        console.log(n);
+    },
 };
 
 
@@ -416,7 +484,7 @@ function loadCard(card, hand_div) {
  * sends the cards to be loaded onto the DOM, Player 1 section ("tophand" <div>)
  * @param {*} player 
  * @returns void
- */
+ *
 function displayHand(player) {
     // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
     var c = gameBoard.ctx;
@@ -430,18 +498,18 @@ function displayHand(player) {
     } 
    // displayUserHand(player);  
 }
+*/
 
 function displayUserHand(player) {
-    // parameters: pos - <div> id in the control panel ie: tophand, bottomhand, firstbeg & secondbeg, cards - array of 3 cards
-    var c = gameBoard.canvas;
-   // c.clearBoard();
-    var x = gameBoard.ctx;
-    var xCenter = c.width/2;
-    var yCenter = c.height/2;
-    for (i = 0; i < player.hand.length; i++) {
-        // console.log(player.hand[i].image.src);
-        x.drawImage(player.hand[i].image, xCenter - (72*(6-i)/2), 340, 71, 96); // display cards on the game board        // playCard('left', player.hand[i]);
-    }   
+    return new Promise(function(resolve) {
+        var c = gameBoard.canvas;
+         var x = gameBoard.ctx;
+         var xCenter = c.width/2;
+         var yCenter = c.height/2;
+         for (i = 0; i < player.hand.length; i++) {
+             x.drawImage(player.hand[i].image, xCenter - (72*(6-i)/2), 340, 71, 96); // display cards on the game board        // playCard('left', player.hand[i]);
+         }
+    });
 }
 
 /**
@@ -613,27 +681,22 @@ function unitTestForScoreboardObj() {
  * 
  * @param {*} human.hand  the human player's hand (array of cards)
  * @returns card or null
-  */  
-async function humanPlayTurn(humanHand) {
-    var pos = 'bottom';         // Player 1 always play left of center 
-    var i=null;
-    mouseEventHandler();
-    while (i != null) {
-        i = await playerInput.getUserInput();
-    }
-    var card = humanHand[i];
-    playCard(pos, card);
-    return card;
+ */  
+function humanPlayTurn(humanHand) {
+    return new Promise(function(resolve,reject) {
+        var pos = 'bottom';         // Player 1 always play bottom of center 
+        inputMgr.getUserInput().then(function(result) {
+            var cardChoice = humanHand[result];
+            playCard(pos, cardChoice);
+            resolve(cardChoice);
+        }).catch(function(error) {
+            console.log(error);
+            reject(error);
+        });
+    });
+    
 }   
- /*   if (confirmCardSelection(card)) {
-        console.log(card.id);
-        playCard(pos,card);
-        return card;
-    } else {
-        console.log('No Card Selected');
-        return null;
-    }
-*/
+
 
 
 function unitTestForHumanPlayTurn() {
@@ -659,14 +722,14 @@ function unitTestForHumanPlayTurn() {
  * @param {*} called Card 
  * @param {*} computerHand Players.Hand 
  */
-function computerPlayTurn(calledCard, computerHand) {
+function computerPlayTurn(computerHand) {
 //play same suit
 console.log({computerHand});
-console.log({calledCard});
-var chosenCard;
+//console.log({calledCard});
+var chosenCard, calledCard;
 var i;
 var n;
-for (i = 0; i < computerHand.length; i++) {
+/* for (i = 0; i < computerHand.length; i++) {
     if (computerHand[i].suit === calledCard.suit) {
         chosenCard = computerHand[i];
         // delete computerHand[i];
@@ -674,6 +737,7 @@ for (i = 0; i < computerHand.length; i++) {
         return chosenCard;
     }
 } // play any card
+*/
 n = Math.floor(Math.random() * 6);
 chosenCard = computerHand[n];
 // delete computerHand[n];
@@ -686,17 +750,20 @@ function determineWinner(called, played) {
 // parameters: called and played card objects
 // return: player (who won)
 // pause
-    if (called.suit === played.suit) {
-        if (called.rank > played.rank) {
-            return console.log('Player 1 wins!'); // replace console.log with canvas text
-        } else { 
-            return console.log('Player 2 wins!');
+    return new Promise(function(resolve){
+        if (called.suit === played.suit) {
+            if (called.rank > played.rank) {
+                msgs = 'Player 1 wins!'; // replace console.log with canvas text
+            } else { 
+                msgs ='Player 2 wins!';
+            }
+        } else if (played.suit === deck.trump.suit) {
+            msgs='Player 2 wins!';
+        } else {
+            msgs='Player 1 wins!';
         }
-    } else if (played.suit === deck.trump.suit) {
-        return console.log('Player 2 wins!');
-    } else {
-        return console.log('Player 1 wins!');
-    }
+        resolve(console.log(msgs));
+    });
 }
 
  /**
@@ -788,12 +855,16 @@ function determineWinner(called, played) {
         // return this.cards;
     }
  };
-
+/**
+ *  to make sure all the games assets are fully loaded before the game runs
+ *  this will be handled by game-loader.js in the final version
+ */
 async function loadGameAssets() {
     await gameBoard.init();
     await scoreboard.init();
     await scoreboard.display();
     await deck.init();
+    // await inputMgr.init();
 }
 
  /** 
@@ -818,38 +889,47 @@ async function mainGameLoop() {
     var computer = new Player();
     var human = new Player();
     computer.name='Computer';
-    human.name='You';
+    human.name='Roger';
 
         deck.shuffle();
         deck.deal(human, computer);
         // displayHand(human);
-        await displayUserHand(human);
+        displayUserHand(human).then(mouseEventHandler()); // then setUserInput
         // console.log(deck.trump);
         await displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
         // dealer.points = kickcardPoints
         var winner = human;  // eventually write a subroutine for "first jack deal"
         //gameRoundLoop:
-        while (human.hand.length > 0) {
+       // while (human.hand.length > 0) {
             var playedCard;     // add playedBy attribute
             var calledCard;     // add playedBy attribute
             // winner plays first 
-            if (winner === human) {
-            while (!calledCard) {
-                setTimeout({}, 5000);
-            }
-                calledCard = humanPlayTurn(human.hand); // make program wait for input
+            //if (winner === human) {
+           // while (!calledCard) {
+                //setTimeout({}, 100);
+            //}
+              //  calledCard = humanPlayTurn(human.hand); // make program wait for input
                 
-                playedCard = computerPlayTurn(calledCard, computer.hand);
-            } else {
-                calledCard = computerPlayTurn(computer.hand);
-                playedCard = humanPlayTurn(human.hand);
-            }
-            winner = determineWinner(calledCard, playedCard); // winner: Player object
-            console.log(winner.name, + ' Wins!');
-            winner.lift.push(calledCard, playedCard);
+               // playedCard = computerPlayTurn(calledCard, computer.hand);
+           // } else {
+            calledCard = computerPlayTurn(computer.hand);
+            setTimeout(function () {
+                winner = humanPlayTurn(human.hand).then(function(resolve){
+                    return determineWinner(calledCard, resolve);
+                }).then(function(resolve) {
+                    console.log(winner.name, + ' Wins!');
+                    winner.lift.push(calledCard, playedCard);
+                    console.log('END OF GAME!!!');
+                });
+            }, 5000);
+            //     
+                
+            //}
+            // winner = await determineWinner(calledCard, playedCard); // winner: Player object
+            
 
             // TODO: 
-        }
+        // }
         // DETERMINE POINTS: hi, low, jack, game, hangjack
         // human.lift > computer.lift;
     }
@@ -874,4 +954,8 @@ FrontEnd:
     Testing Library
 */
 
-   
+  /* 
+            break up the "mainGameLoop" into separate modules (functions)
+            and call each one separately, and sequentially... noting its
+            completion from the console. 
+  */

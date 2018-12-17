@@ -122,7 +122,31 @@ window.onerror = function(message, source, lineNumber, colNumber,errorObject) {
 }
 
 
-    
+//  *************************************************************************************
 
+/**
+ *  Promise
+ */
 
-}
+ let promiseFunction = new Promise(function (resolve, reject) {
+     // statements
+     let isFinished = true;
+
+     if (isFinished) {
+         resolve('finished');
+     } else {
+         reject('not finish');
+     }
+ });
+ // calling the promse
+ promiseFunction.then(function (fromResolve) {
+     console.log('the program is ' + fromResovle);
+ });
+
+ let loadScript = new Promise(function (resolve, reject) {
+     //
+     resolve('Script is successfully loaded');
+ });
+ loadScript.then(checkScript(fromResolve)).catch(function (fromReject) {
+     console.log(fromReject)
+ });
