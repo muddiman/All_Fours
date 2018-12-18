@@ -7,7 +7,7 @@
 /*  Asset Objects   */
 var cardImageAssets = {              // a deck of cards
     loadImages:         function () {
-                            return DECK.deck.init();
+                            DECK.deck.init();
                         },
     checkImages:        function ()  {
                             this.loadImages();
@@ -60,9 +60,10 @@ var assets = [
 
     /*  for each asset  */
     let loadAsset = function (a) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
         //function loadAsset(a, callback) {
             a.loadImages();
+            console.log('Loading ...' + a);
             resolve(a);                // return callback(a);    
         });   // resolve(a)
     };
@@ -89,16 +90,16 @@ function loadAllAssets(assetObjectsArr) {
     assetObjectsArr.forEach(element => { 
         //  Promise.all([loadAsset(element), checkAsset(), msg()]).then(function(){console.log('All Assets Loaded.');});         
     //for (var assetObject in assetObjectsArr ) {
-        loadAsset(element).then(function(result) {
-            return checkAsset(result);
+        loadAsset(element).then(function(passedObj) {
+            return checkAsset(passedObj);
         }).then(function (fromResolve) {
             successCounter++;
             msg(fromResolve);
-        });
         }).catch(function (fromReject) {
             errorCounter++;
             msg(fromReject);
         });
+    });
 
     var msg = "All "+ successCounter +" assets loaded.";
     var error = "Could not load all assets. " + errorCounter + " image sets did not load.";
@@ -111,13 +112,14 @@ function loadAllAssets(assetObjectsArr) {
 
 /*  function calls to load everything   */
 function loadGame() {
-    var GFX = require("./graphicslib");         // Graphics Library
-    var DECK = require("./cards");              // Card Library
+    //var GFX = require("./graphicslib");         // Graphics Library
+    //var DECK = require("./cards");              // Card Library
 
     //import {*} as gfx from "../graphicslib.js";
     console.time("loadTime");
    // console.log(loadAllScripts(scripts));
     console.log(loadAllAssets(assets));
     console.log('GAME LOADED!');
+    console.log('Game did not load!');
     console.timeEnd("loadTime");
 }
