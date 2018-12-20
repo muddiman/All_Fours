@@ -79,7 +79,7 @@
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
         z-index: 1; /* Sit on top */
-        right: 0;
+        left: 400;
         top: 0;
         width: 400px; /* Full width */
         height: 600px; /* Full height */

@@ -91,7 +91,25 @@ function unitTestForGameBoard() {
     x.fillRect(0,0, 150,75);
     gameBoard.clearBoard();
 }
+/*
+    function GameBoard(ID, WIDTH, HEIGHT, OPACITY) {
+        canvas = document.createElement("canvas");
+        this.init = function () {         
+            this.canvas.id = ID;
+            this.canvas.width = WIDTH;
+            this.canvas.height = HEIGHT;
+            this.ctx = this.canvas.getContext('2d');
+            Document.getElementById("game_container").appendChild(this.canvas);
+            this.canvas.style="background-color: rgba(255, 255, 255," + OPACITY + ")";     // in rgba format
+            console.log("New " + this.canvas.id + " canvas initialized.");
+        }
+        this.clearBoard = function (){  
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
 
+    }
+*/
+// var gCachedAssets = {};
 
 function Card(rank, face, suit) {
 // Card object constructor (game components are usually created writing a constructor for each type of component)
@@ -262,7 +280,7 @@ function testgetCoords() {
  */
 function mouseEventHandler() {
     document.getElementById('game_board').addEventListener('click', function (e) {
-        var x = e.clientX;
+        var x = e.clientX;      // click location
         var y = e.clientY;
         var posArr = [x,y];     // position array
         // console.log(posArr);
@@ -780,8 +798,7 @@ async function mainGameLoop() {
         deck.deal(human, computer);
         // displayHand(human);
         displayUserHand(human).then(mouseEventHandler()); // then setUserInput
-        // console.log(deck.trump);
-        await displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
+        displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
         // dealer.points = kickcardPoints
         var winner = human;  // eventually write a subroutine for "first jack deal"
         //gameRoundLoop:
@@ -797,6 +814,43 @@ async function mainGameLoop() {
                 
                // playedCard = computerPlayTurn(calledCard, computer.hand);
            // } else {
+               /*
+                do {
+                    if (winner == human) {
+                        humanPlayTurn(human.hand).then(function (resolvedCard){
+                            calledCard = resolvedCard;
+                            return computerPlayTurn(computer.hand);
+                        }).then(function (returnedCard) {
+                            playedCard = returnedCard; 
+                            return determineWinner(calledCard, playedCard);
+                        }).then(function (resolvedPlayer) {
+                            winner = resolvedPlayer; 
+                            winner.lift.push(calledCard, playedCard);
+                            msgBoard = winner + " won!";
+                            message(msgBoard);
+                            setTimeout(function () {
+                                clearBoard;
+                            }, 3000);
+                        });
+                    } else {
+                        computerPlayTurn(computer.hand).then(function (resolvedCard){
+                            calledCard = resolvedCard;
+                            return humanPlayTurn(human.hand);
+                        }).then(function (returnedCard) {
+                            playedCard = returnedCard; 
+                            return determineWinner(calledCard, playedCard);
+                        }).then(function (resolvedPlayer) {
+                            winner = resolvedPlayer; 
+                            winner.lift.push(calledCard, playedCard);
+                            msgBoard = winner + " won!";
+                            message(msgBoard);
+                            setTimeout(function () {
+                                clearBoard;
+                            }, 3000);
+                        });
+                    }
+                } while (human.hand.length > 0);
+               */
             calledCard = computerPlayTurn(computer.hand);
             setTimeout(function () {
                 winner = humanPlayTurn(human.hand).then(function(resolve){
@@ -815,7 +869,7 @@ async function mainGameLoop() {
 
             // TODO: 
         // }
-        // DETERMINE POINTS: hi, low, jack, game, hangjack
+        // DISTRIBUTE POINTS: hi, low, jack, game, hangjack
         // human.lift > computer.lift;
     }
         /*

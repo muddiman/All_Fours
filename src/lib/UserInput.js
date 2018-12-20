@@ -27,7 +27,7 @@
  */
  function mouseEventHandler() {
     document.getElementById('game_board').addEventListener('click', function (e) {
-        var x = e.clientX;
+        var x = e.clientX;      // click location
         var y = e.clientY;
         var posArr = [x,y];     // position array
         // console.log(posArr);

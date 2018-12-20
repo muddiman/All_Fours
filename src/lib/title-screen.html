@@ -16,7 +16,8 @@
 </script> -->                           
 
 </HEAD>
-<BODY onload="setTimeout(homeScreen, 2000)">
+<BODY onload="setTimeout(homeScreen, 1000)">
+<!-- Game Menu -->
 
     <!--        Home/Title Screen               -->
     <div class="modal" id="home_screen" style="display: none;"> 
@@ -32,7 +33,7 @@
                       
             <button type="submit" onclick="mainGameLoop()">Play Game</button>
             <button type="submit">Settings</button>
-            <button type="submit">Login</button>
+            <button type="submit" onclick="test()">Login</button>
             <button type="submit">Register</button>
             
           </div>
@@ -42,7 +43,7 @@
           </div>
           <div class="footnote-icons">
             <a href="#"><i class="fas fa-cog" title="Settings" onclick="loadGame()"></i></a>  
-            <a href="#"><i class="fas fa-home" title="Home" onclick="homeScreen()"></i></a>
+            <a href="#"><i class="fas fa-home" title="Home" onclick="mainGameLoop()"></i></a>
           </div>
           <div class="copy"><p class="copyright">Copyright &copy; 2018 All rights reserved. Roger Clarke.</p></div>
         </form>

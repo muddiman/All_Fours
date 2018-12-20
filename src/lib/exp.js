@@ -19,8 +19,8 @@ var cardImageAssets = {              // a deck of cards
                             return this.allImagesLoaded;
                         },
     allImagesLoaded:    false,                    
-    errorMsg:           "Sorry, All card images did not load.",
-    successMsg:         "All card images loaded successfully.",                    
+    errorMsg:           "Sorry, could not load all card images.",
+    successMsg:         "All card images successfully loaded.",                    
 };
 var gameBoardAssets = {                // draws game board
     loadImages:         function ()  {
@@ -57,14 +57,20 @@ var assets = [
     };
  */
 
+    /*      Asset Cache     */
+    var gCachedAssets = {};
+
 
     /*  for each asset  */
     let loadAsset = function (a) {
         return new Promise(function (resolve) {
         //function loadAsset(a, callback) {
+            
             a.loadImages();
-            console.log('Loading ...' + a);
-            resolve(a);                // return callback(a);    
+            console.log('Loading ...' + a.name);
+            resolve(a);                // return callback(a)
+            
+
         });   // resolve(a)
     };
     
@@ -83,13 +89,24 @@ var assets = [
     };
 
 /*  load all assets sequentially    */
-function loadAllAssets(assetObjectsArr) {
+function loadAllAssets(assetObjectsArr, callbackFcn) {
     var successCounter=0;
     var errorCounter=0;
+    var loadBatch = {
+        count: 0,
+        total: assetObjectsArr.count,
+        cb: callbackFcn
+    };
     
     assetObjectsArr.forEach(element => { 
         //  Promise.all([loadAsset(element), checkAsset(), msg()]).then(function(){console.log('All Assets Loaded.');});         
     //for (var assetObject in assetObjectsArr ) {
+        if (gCachedAssets[element.name] == null) {
+                gCachedAssets[element.name] = element;
+            
+        } else {    // asset already loaded
+            callbackFcn(gCachedAssets[element.name]);
+        }
         loadAsset(element).then(function(passedObj) {
             return checkAsset(passedObj);
         }).then(function (fromResolve) {
@@ -108,7 +125,13 @@ function loadAllAssets(assetObjectsArr) {
     } else {
         return msg;
     }
+    function onLoadedCallback(element, batch) {
+        
+    }
 }
+
+var gCachedAssets = {};
+
 
 /*  function calls to load everything   */
 function loadGame() {
