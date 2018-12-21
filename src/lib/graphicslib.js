@@ -96,18 +96,38 @@ function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
 }
 // module.exports = new CANVAS_LAYER(w,h,i);
 
+function onImageLoad(src) {
+    console.log(src);
+}
+
+let loadFrames = function () {
+    return new Promise(function (resolve, reject) {
+    var frames = [];
+    var n=4;
+    for (var i=0; i<5;i++) {
+        frames[i] = new Image();
+        frames[i].onload = onImageLoad(frames[i].src);
+    frames[i].src = "img/ken-sprites/Ken_Sprite_0" + n + ".png"; // assets[i];
+        n++;
+    }
+    resolve(frames);
+    });
+};
+
 // Animation Board has its own transparent game board
 // var gb[3] = new canvas
 // ab = gb[3]
-function animate(object) {
-    var x, y;
-    var frames = [];                // an array of screen_shots
-    var fps = 30;                   // frame rate in frames per second
+function animate(framesArr, frameRate, x, y) {
+    // var x, y;
+    gameBoard.init();
+    var frames = framesArr;
+    var frameNo=0;                // an array of screen_shots
+    var fps = frameRate;                   // frame rate in frames per second
     var period = (1/fps)*1000 ;     // converted to milliseconds(ms)
     function frame() {
         gameBoard.clearBoard();
-        gameBoard.ctx.drawImage(frames[frame], x,y);        // draw frame on game board;
-        var frame = (frame + 1) % frames.length;            // loop back counter with out all the conditionals or loop statements
+        gameBoard.ctx.drawImage(frames[frameNo], x,y);        // draw frame on game board;
+        frameNo = (frameNo + 1) % frames.length;            // loop back counter with out all the conditionals or loop statements
     }
     var animation = setInterval(frame, period);
     clearInterval(animation);   // stops animation
@@ -280,6 +300,21 @@ function test() {
     var textMsg = "Roger A. Clarke is a serious programmer.";
    // message(textMsg, mb);
     tickertape(textMsg);
+    var a = new CANVAS_LAYER(WIDTH, HEIGHT, "anime_board");
+    a.init();
+    var ab = a.canvas;
+    var abx = a.ctx;
+    ab.style="position: absolute; left: 0; top: 0; z-index: 1;";
+    ab.style.backgroundColor="blue";
+    // var frames = loadFrames();
+    loadFrames().then(function (resolve) {
+        //animate(resolve, 3, WIDTH/2, HEIGHT/2);
+        var framez = resolve;
+        for (var i=0; i<3; i++) {
+            abx.drawImage(framez[i], 100 + 100*i, 200);
+        }
+    });
+
 }
 
 
