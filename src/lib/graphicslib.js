@@ -107,7 +107,7 @@ let loadFrames = function () {
     for (var i=0; i<5;i++) {
         frames[i] = new Image();
         frames[i].onload = onImageLoad(frames[i].src);
-    frames[i].src = "img/ken-sprites/Ken_Sprite_0" + n + ".png"; // assets[i];
+        frames[i].src = "img/ken-sprites/Ken_Sprite_0" + n + ".png"; // assets[i];
         n++;
     }
     resolve(frames);
@@ -227,7 +227,7 @@ function displayScoreboard(a, b) {
 // var gb[1] = new canvas
 // mb = gb[1]
 
-function message(text,msgLayer) {
+function message(text, msgLayer) {
       // var msgLayer = new CANVAS_LAYER(WIDTH, HEIGHT, 0, "msg_layer");
        //msgLayer.init();
        document.getElementById("msg_board").style="position: absolute; left: 0; top: 0; z-index: 1;";
@@ -305,13 +305,14 @@ function test() {
     var ab = a.canvas;
     var abx = a.ctx;
     ab.style="position: absolute; left: 0; top: 0; z-index: 1;";
-    ab.style.backgroundColor="blue";
+    ab.style.backgroundColor="rgba(0,0,254, 0.2)";
     // var frames = loadFrames();
     loadFrames().then(function (resolve) {
         //animate(resolve, 3, WIDTH/2, HEIGHT/2);
         var framez = resolve;
-        for (var i=0; i<3; i++) {
-            abx.drawImage(framez[i], 100 + 100*i, 200);
+        for (var i=0; i<5; i++) {
+            abx.drawImage(framez[i], 100, 200, 100, 110);
+            console.log(framez[i].src);
         }
     });
 
