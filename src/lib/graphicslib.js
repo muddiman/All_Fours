@@ -83,7 +83,7 @@ function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
                     // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
                     // background-color set in 'style.css'
                 };
-    // if 'setInterval is used, there should be stop function
+    // if 'setInterval' is used, there should be stop function
     // stop = function () {clearInterval(this.interval);}
     this.clearBoard = function () {
                     // wipes the entire gameBoard clean
@@ -109,7 +109,7 @@ function animate(object) {
         gameBoard.ctx.drawImage(frames[frame], x,y);        // draw frame on game board;
         var frame = (frame + 1) % frames.length;            // loop back counter with out all the conditionals or loop statements
     }
-    var animation = setInterval(frame,period);
+    var animation = setInterval(frame, period);
     clearInterval(animation);   // stops animation
 }  
 
@@ -159,6 +159,7 @@ function __drawSpriteInternal(spt, sheet, posX, posY) {
 */
 function displayScoreboard(a, b) {
    var c = gameBoard.canvas;
+    document.getElementById('game_board').style="position: absolute; left: 0; top: 0; z-index: 0;";
    gameBoard.init();
    var x = gameBoard.ctx;
    var upperLeftCornerX = c.width - 265;   //   (LxB: 260 x 120 box; x,y => 400,5)
@@ -206,9 +207,10 @@ function displayScoreboard(a, b) {
 // var gb[1] = new canvas
 // mb = gb[1]
 
-function message(text) {
-       var msgLayer = new CANVAS_LAYER(WIDTH, HEIGHT, 0, "msg_layer");
-       msgLayer.init();
+function message(text,msgLayer) {
+      // var msgLayer = new CANVAS_LAYER(WIDTH, HEIGHT, 0, "msg_layer");
+       //msgLayer.init();
+       document.getElementById("msg_board").style="position: absolute; left: 0; top: 0; z-index: 1;";
        var mgx = msgLayer.ctx;
        var mBoxWidth = 400;      // message box dimensions
        var mboxHeight = 200;
@@ -229,22 +231,57 @@ function message(text) {
        // mgx.globalAlpha=0.1;
        mgx.font = "50px Arial";
        mgx.fillStyle = "red";    // white
-       mgx.fillText("HANG JACK!!!", 200, 200);      
+       mgx.fillText(text, 200, 200);      
+}
+
+function tickertape(message) {
+    var width=window.innerWidth;
+    var height=50;
+    var x=0;
+    var y=0;
+    var t = new CANVAS_LAYER(width, height, "tck_board");
+    var tb = t.canvas;
+    t.init();
+    var tbx = t.ctx;
+   // document.getElementById("game_container").appendChild(document.getElementById("tck_board"));
+    tb.style="position: absolute; left: 0; top: 0; z-index: 1;";
+    tb.style.backgroundColor="rgba(0,0,0, 0.7)";
+    tbx.font = "30px Microsoft Yahei UI";        // document.getElementById("tck_board")   digital-clock-font
+    tbx.fillStyle= "yellow";
+    //tbx.fillText(message, 690, 40);
+    x=width;
+    y=40;
+    setInterval(function () {       // anonymous function for handling the animation
+        if (x<-200) {
+            x=width;
+        } 
+        t.clearBoard();
+        x--;
+        tbx.fillText(message, x, y);
+    }, 20);
 }
 
 function test() {
+    var i=0;
     var randomX = 0;
     var randomY = 0;
     // var gb=gameBoard.canvas;
     gameBoard.init();
-    setInterval(function() {
-        displayScoreboard(randomX, randomY);
-        //gameBoard.clearBoard();
-    }, 20);
-    // var gb = new CANVAS_LAYER(WIDTH, HEIGHT, "game_board");
-    var textMsg = "Computer Wins!!!";
-    message(textMsg);
+   /* setInterval(function() {
+       //for (i=0;i<1000;i++) {
+        //displayScoreboard(randomX, randomY);
+        gameBoard.clearBoard();
+        i++;
+        displayScoreboard(randomX+i, randomY+i);
+       }, 100);
+    //}, 20); */
+    var mb = new CANVAS_LAYER(WIDTH, HEIGHT, "msg_board");
+    mb.init();
+    var textMsg = "Roger A. Clarke is a serious programmer.";
+   // message(textMsg, mb);
+    tickertape(textMsg);
 }
+
 
 //     Draw image of card onto the gameBoard according the positioning parameters
 
