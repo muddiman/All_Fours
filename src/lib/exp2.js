@@ -133,4 +133,6 @@ function loadGame() {
         alert('Game did not load!');
     });
     console.timeEnd("loadTime");
+    var ticker = require('./graphicslib').tickertape();
+    tickertape('me');
 }

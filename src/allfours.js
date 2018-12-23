@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.4.3
+ *  @version   0.5.3
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -21,9 +21,10 @@
  */
 
  /**
-  *     Alpha:  Completed Functional/playable/useable Program w/most of the final features included
-  *     Beta:   Completed Program w/ALL of the features included, bug-fixes found in alpha version
-  *     Release Candidate: Final version of game, all bugs found in beta, fixed. released to select segment of the public
+  *     Alpha:  Completed Functional/playable/useable Program w/most of the final features included -- released for internal testing
+  *     Beta:   Completed Program w/ALL of the features included, bug-fixes found in alpha version -- released for external testing
+  *     Release Candidate: Final version of game, all bugs found in beta, fixed. released to select segment of the public 
+  *     Final Version:  Shipped Version, released to the entire public
   *     Version: 0.0.0 (a.b.c) -- where a --> major update, redesign, cumulative group of new features
   *                                     b --> addition of features, cumulative group of bug fixes
   *                                     c --> bug fixes
@@ -65,17 +66,51 @@ var gameBoard = {
         this.canvas.id = "game_board";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
-        // this.frameNo =0;
-        // this.interval = setInterval(updateGameArea, 20);
+        document.getElementById("game_board").style="position: absolute; left: 10px; top: 110px; z-index:0;";
     },
+        // this.frameNo =0;
+    refresh :   function () {
+                    setInterval(function () {
+                        this.clearBoard();
+                        gDisplay();
+                    }, 500); 
+                },
+    
     // if 'setInterval is used, there should be stop function
-    // stop : function () {clearInterval(this.interval);}
+    // stop : function () {clearInterval(this.refresh);}
     clearBoard : function () {
-    // wipes the entire gameBoard clean
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
+                // wipes the entire gameBoard clean
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                }
 };
 
+var msgLayer = {
+    //  Object: gameBoard --> TODO: turn into a "class"
+        canvas : document.createElement("canvas"), 
+        init : function () {
+        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+            this.canvas.width = WIDTH;
+            this.canvas.height = HEIGHT;
+            this.canvas.id = "msg_layer";
+            this.ctx = this.canvas.getContext("2d");
+            document.getElementById("game_container").appendChild(this.canvas);
+            document.getElementById("msg_layer").style="position: absolute; left: 10px; top: 110px; z-index: 1";
+        },
+            // this.frameNo =0;
+        refresh :   function () {
+                        setInterval(function () {
+                            this.clearBoard();
+                            gDisplay();
+                        }, 500); 
+                    },
+        
+        // if 'setInterval is used, there should be stop function
+        // stop : function () {clearInterval(this.refresh);}
+        clear : function () {
+                    // wipes the entire gameBoard clean
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    }
+    };
 /**
  * TEST: if game board is created on positioned correctly in the DOM
  * @param null
@@ -274,38 +309,53 @@ function testgetCoords() {
 
 }
 
-
-/**
- *      captures clicks, and stores the position in the userInput object
- */
-function mouseEventHandler() {
+// listens for mouse clicks, captures and returns its location as a position array --> [x.y]
+function onClick() {
     document.getElementById('game_board').addEventListener('click', function (e) {
         var x = e.clientX;      // click location
         var y = e.clientY;
-        var posArr = [x,y];     // position array
-        // console.log(posArr);
-        inputMgr.setUserInput(posArr).then(function (resolve) {
-            inputMgr.updateSelection();
-            console.log(resolve);  
-        }).catch(function(reject) {
-            console.log(reject);
-        }); 
     });
+    var posArr = [x,y];
+    document.getElementById('game_board').removeEventListener('click', function (e) {
+        var x = e.clientX;      // click location
+        var y = e.clientY;
+    });       
+    return posArr;
 }
 
-function touchEventHandler(){
+/**
+ *      captures the mouse input, and stores it as UserInput in the userInput object
+ */
+function mouseEventHandler(positionArray) {   
+    inputMgr.setUserInput(positionArray).then(function (resolve) {
+        inputMgr.updateSelection();
+        console.log(resolve);  
+    }).catch(function(reject) {
+        console.log(reject);
+    }); 
+}
+
+// listens for touch events, captures and returns its location as a position array --> [x.y]
+function onTouch() {
     document.getElementById('game_board').addEventListener('touch', function (e) {
-        var x = e.clientX;
+    var x = e.clientX;      // click location
+    var y = e.clientY;
+    });
+    var posArr = [x,y];
+    document.getElementById('game_board').removeEventListener('touch', function (e) {
+        var x = e.clientX;      // click location
         var y = e.clientY;
-        var posArr = [x,y];     // position array
-        // console.log(posArr);
-        inputMgr.setUserInput(posArr).then(function (resolve) {
-            inputMgr.updateSelection();
-            console.log(resolve);  
-        }).catch(function(reject) {
-            console.log(reject);
-        }); 
-    });    
+    });
+    return posArr;
+}
+
+function touchEventHandler(positionArray) {
+    inputMgr.setUserInput(positionArray).then(function (resolve) {
+        inputMgr.updateSelection();
+        console.log(resolve);  
+    }).catch(function(reject) {
+        console.log(reject);
+    });
 }
 
 /**
@@ -324,6 +374,7 @@ var inputMgr = {
                                 if (this.clickPosition ==null) {
                                     reject('Error: Could not register position');    
                                 } else {
+                                    this.updateSelection();
                                     resolve('Position Saved!');
                                 }
                             });
@@ -340,6 +391,9 @@ var inputMgr = {
                         },
     updateSelection:    function () {                       //  updates the user selected card every 200ms (5x per sec)
                             setInterval(this.getCardSelection, 200);
+                        },
+    stopSelectionUpdate: function () {
+                            clearInterval(this.getCardSelection, 200);
                         },
     getCardSelection:   function () {
                         // parses the coords saved onClick into a card choice [0 .. 11] ie max of 12 possible choices
@@ -376,7 +430,10 @@ var inputMgr = {
                             n='Please click on a card!';
                         }
                         this.cardSelection=n;
-                        console.log(n);
+                        if (n != null) {
+                            console.log(n);
+                            this.stopSelectionUpdate();
+                        }
     },
 };
 
@@ -406,7 +463,7 @@ function confirmCardSelection(card) {
 
 function displayUserHand(player) {
     return new Promise(function(resolve) {
-        var c = gameBoard.canvas;
+         var c = gameBoard.canvas;
          var x = gameBoard.ctx;
          var xCenter = c.width/2;
          var yCenter = c.height/2;
@@ -465,9 +522,9 @@ var scoreboard = {
         this.teamA = 0;
         this.teamB = 0;
     },
-    update : function (teamApoints, teamBpoints) {
-        this.teamA = this.teamA + teamApoints;
-        this.teamB = this.teamB + teamBpoints;
+    update : function (newTeamApoints, newTeamBpoints) {
+        this.teamA = this.teamA + newTeamApoints;
+        this.teamB = this.teamB + newTeamBpoints;
     },
     display : function () {
         displayScoreboard(this.teamA, this.teamB);
@@ -480,24 +537,30 @@ var scoreboard = {
     }
 };
 
-function message() {
-    var c=gameBoard.ctx;
+function message(msgText) {
+    var m = msgLayer.canvas;
+    msgLayer.init();
+    var c=msgLayer.ctx;
     c.beginPath();
     c.lineWidth = 2;
     c.strokeStyle = "white";
     c.rect(170,100, 400, 200);
     c.stroke();
-    c.globalAlpha=0.4;
-    c.fillStyle="#252525";  // black
+    //c.globalAlpha=0.4;
+    c.fillStyle="rgba(0,0,0, 0.4)";  // black, transparent
     c.fillRect(170,100, 400,200);
     // c.globalAlpha=0.1;
-    c.font = "50px Arial";
-    c.fillStyle = "#ffffff";    // white
-    c.fillText("HANG JACK!!!", 200, 200);
+    c.font = "20px Arial";
+    c.fillStyle = "rgba(254,254,254,1.0)";    // white
+    c.fillText(msgText, 200, 200);
     
     // c.scale(0.5, 0.5);
     // c.rotate(100*Math.PI/180);
     // rgba 0.8
+}
+ 
+function clearMessage() {
+    msgLayer.clear();
 }
 
 function cleanBoard() {
@@ -586,12 +649,16 @@ function unitTestForScoreboardObj() {
  * @param {*} human.hand  the human player's hand (array of cards)
  * @returns card or null
  */  
-function humanPlayTurn(humanHand) {
+function humanPlayTurn() {
     return new Promise(function(resolve,reject) {
         var pos = 'bottom';         // Player 1 always play bottom of center 
+        message('Your turn to play, Please select a card.');
+        setTimeout(clearMessage, 3000);
         inputMgr.getUserInput().then(function(result) {
-            var cardChoice = humanHand[result];
+            var cardChoice = human.hand[result];
             playCard(pos, cardChoice);
+            human.hand.splice(result, 1);
+            //displayUserHand(human.hand);        // show new hand after play
             resolve(cardChoice);
         }).catch(function(error) {
             console.log(error);
@@ -625,27 +692,37 @@ function unitTestForHumanPlayTurn() {
  * @param {*} called Card 
  * @param {*} computerHand Players.Hand 
  */
-function computerPlayTurn(computerHand) {
-//play same suit
-console.log({computerHand});
-//console.log({calledCard});
-var chosenCard, calledCard;
-var i;
-var n;
-/* for (i = 0; i < computerHand.length; i++) {
-    if (computerHand[i].suit === calledCard.suit) {
-        chosenCard = computerHand[i];
-        // delete computerHand[i];
-        playCard('top',chosenCard);
-        return chosenCard;
+function computerPlayTurn(opponentPlay) {  // run the 'thinking animation'
+var i = Math.floor(Math.random() * computer.hand.length);
+if (opponentPlay == null) {
+    //  play highest random card (thats not trump or ten)
+    playCard('top', computer.hand[i]);
+    //remove computer.hand[i];
+    return computer.hand[i];
+} else {
+    // Play higher card in same suit, (if 10, q, k, or a play trump if yu have to)
+    for (card in computer.hand) {
+        if (card.suit === oppponentPlay.suit) {
+            if (card.rank > opponentPlay.rank) {
+                computer.hand.splice(computer.hand.indexOf(card), 1);
+                playCard('top', card);
+                return card;
+            }
+        }
     }
-} // play any card
-*/
-n = Math.floor(Math.random() * 6);
-chosenCard = computerHand[n];
-// delete computerHand[n];
-playCard('top',chosenCard);
-return chosenCard;
+    // play any low card
+    for (card in computer.hand) {
+        if (card.rank < 10) {
+            playCard('top', card);
+            computer.hand.splice(computer.hand.indexOf(card), 1);
+            return card;
+        }
+    }
+    // play any card
+    playCard('top', computer.hand[i]);
+    computer.hand.splice(i,1);
+    return computer.hand[i];
+}
 }
 
 function determineWinner(called, played) {
@@ -667,6 +744,47 @@ function determineWinner(called, played) {
         }
         resolve(console.log(msgs));
     });
+}
+
+//  Points associated with KickCard
+function kickPoints(card) {
+    switch (card.face) {
+        case a:
+            return 1;
+        case 6:
+            return 2;             
+        case j:
+            return 3;
+        default:
+            return 0;
+    }
+}
+
+function countForGame(player) {
+    var points=0;
+    while (player.lift.length > 0) {
+        var card = player.lift.pop;
+        switch (card.face) {
+            case a:
+                points +=4;
+                break;
+            case k:
+                points += 3;
+                break;   
+            case q:
+                points += 2;
+                break;
+            case j:
+                points += 1;
+                break;
+            case t:
+                points += 10;
+                break;
+            default:
+                points += 0;
+        }
+    }
+    return points;
 }
 
  /**
@@ -780,80 +898,58 @@ async function mainGameLoop() {
 /*  mainGameLoop:        
      Deal subroutine: shuffle, cut, distribute
      gameLoop:
-            playedRoundLoop: 
-                players play cards: 
-                determineWinner()
-            countForGame()
-//          assessPoints(): high, low, jack, game, hangJack
+        Deal
+        playedRoundLoop: 
+            players play cards: 
+            determineWinner()
+        countForGame()
+//      assessPoints(): high, low, jack, game, hangJack
 */
 
     // read game settings from .JSON FILE
     // var player1Hand = getHand(theDeck, 0);
-    var computer = new Player();
-    var human = new Player();
+
+    // game points
+    const HIGH = 1;
+    const LOW = 1;
+    const GAME = 1;
+    const JACK = 1;
+    const HANGJACK = 3;
+
+
+    var computer = new Player();        // --> Team A
+    var human = new Player();           // --> Team B
     computer.name='Computer';
     human.name='Roger';
+    var dealer;
 
+    // gameRoundLoop:           --> Loop until human.points || computer.points >= 14
+        if (dealer == human) {
+            dealer = computer;
+        } else { 
+            dealer = human;
+        }
         deck.shuffle();
         deck.deal(human, computer);
-        // displayHand(human);
         displayUserHand(human).then(mouseEventHandler()); // then setUserInput
         displayTrump(deck.trump);    // TODO: KICKCARD points => 'j' = 3, '6' = 2, 'a' = 1.
-        // dealer.points = kickcardPoints
+        // dealer.points = kickPoints(deck.trump);
+        //UPDATE scoreboard --> 
+        scoreboard.clear();
+        scoreboard.update(computer.points, human.points);
+        scoreboard.display();
         var winner = human;  // eventually write a subroutine for "first jack deal"
-        //gameRoundLoop:
-       // while (human.hand.length > 0) {
+
+        //playedRoundLoop:      --> Loop until player.hand.length == 0
+        // while (human.hand.length > 0) {
             var playedCard;     // add playedBy attribute
             var calledCard;     // add playedBy attribute
-            // winner plays first 
-            //if (winner === human) {
-           // while (!calledCard) {
-                //setTimeout({}, 100);
-            //}
-              //  calledCard = humanPlayTurn(human.hand); // make program wait for input
-                
-               // playedCard = computerPlayTurn(calledCard, computer.hand);
-           // } else {
-               /*
-                do {
-                    if (winner == human) {
-                        humanPlayTurn(human.hand).then(function (resolvedCard){
-                            calledCard = resolvedCard;
-                            return computerPlayTurn(computer.hand);
-                        }).then(function (returnedCard) {
-                            playedCard = returnedCard; 
-                            return determineWinner(calledCard, playedCard);
-                        }).then(function (resolvedPlayer) {
-                            winner = resolvedPlayer; 
-                            winner.lift.push(calledCard, playedCard);
-                            msgBoard = winner + " won!";
-                            message(msgBoard);
-                            setTimeout(function () {
-                                clearBoard;
-                            }, 3000);
-                        });
-                    } else {
-                        computerPlayTurn(computer.hand).then(function (resolvedCard){
-                            calledCard = resolvedCard;
-                            return humanPlayTurn(human.hand);
-                        }).then(function (returnedCard) {
-                            playedCard = returnedCard; 
-                            return determineWinner(calledCard, playedCard);
-                        }).then(function (resolvedPlayer) {
-                            winner = resolvedPlayer; 
-                            winner.lift.push(calledCard, playedCard);
-                            msgBoard = winner + " won!";
-                            message(msgBoard);
-                            setTimeout(function () {
-                                clearBoard;
-                            }, 3000);
-                        });
-                    }
-                } while (human.hand.length > 0);
-               */
+ 
+            // if winner = computer, then computer plays first
+            if (winner == computer) {
             calledCard = computerPlayTurn(computer.hand);
             setTimeout(function () {
-                winner = humanPlayTurn(human.hand).then(function(resolve){
+                humanPlayTurn(human.hand).then(function(resolve) {
                     return determineWinner(calledCard, resolve);
                 }).then(function(resolve) {
                     console.log(resolve.name, + ' Wins!');
@@ -861,21 +957,50 @@ async function mainGameLoop() {
                     console.log('END OF GAME!!!');
                 });
             }, 5000);
-            //     
-                
-            //}
-            // winner = await determineWinner(calledCard, playedCard); // winner: Player object
+            } else {
+            // if winner = human, then human plays first
+            calledCard = humanPlayTurn(human.hand);
+            setTimeout(function () {
+                computerPlayTurn(computer.hand).then(function(resolve){
+                    return determineWinner(calledCard, resolve);
+                }).then(function(resolve) {
+                    console.log(resolve.name, + ' Wins!');
+                    winner.lift.push(calledCard, playedCard);
+                    console.log('END OF ROUND!!!');
+                });
+            }, 5000);
+            }
+
+            //  Count for game
+            var hGamePoints = countForGame(human);
+            var cGamePoints = countForGame(computer);
+            // logic to determine assignment of game points
+            if (hGamePoints == cGamePoints) {
+                dealer.points += GAME;
+            } else if (hGamePoints > cGamePoints) {
+                human.points += GAME;
+            } else {
+                computer.points += GAME;
+            }
             
+            // Distribute points
+
+            // UPDATE SCOREBOARD
+            scoreboard.clear();
+            scoreboard.update(computer.points, human.points);
+            scoreboard.display();
+}
+            // while (human.hand.length && computer.hand.length > 0)
+
+                
+            //}            
 
             // TODO: 
         // }
         // DISTRIBUTE POINTS: hi, low, jack, game, hangjack
-        // human.lift > computer.lift;
-    }
+//    }
         /*
-        function calcGame(Player.lift) {
-            return score;
-        }
+
 
         while (Cards in lift);
         // calcGame()
@@ -886,11 +1011,12 @@ async function mainGameLoop() {
 /*
 Libs:
 BackEnd:
-    Engine (server side)
+    Engine (server side): wGameEngine -> engine for the web; mGameEngine -> for mobile (PWA)
     AI Library
 FrontEnd:
     Display Library
     Testing Library
+    Sound Library
 */
 
   /* 

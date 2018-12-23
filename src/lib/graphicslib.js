@@ -40,12 +40,12 @@
  /**  globals   */
  /**  VARIABLES   */
  /**  Graphical Dimensions  */
-var WIDTH=700;  //FOR Mobile Phones use: 400px;   // for fullscreen gaming use: window.innerWidth;
-var HEIGHT=450;  //FOR Mobile Phones use: 600px;  // for fullscreen gaming use: window.innerHeight;
-var CARDW=71;     // WIDTH of Cards in px
-var CARDH=96;     // HEIGHT of Cards in px
+export var WIDTH=700;  //FOR Mobile Phones use: 400px;   // for fullscreen gaming use: window.innerWidth;
+export var HEIGHT=450;  //FOR Mobile Phones use: 600px;  // for fullscreen gaming use: window.innerHeight;
+export var CARDW=71;     // WIDTH of Cards in px
+export var CARDH=96;     // HEIGHT of Cards in px
 
-var gameBoard = {
+export var gameBoard = {
        //  Object: gameBoard
            canvas : document.createElement("canvas"), 
            init : function () {    // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
@@ -53,6 +53,8 @@ var gameBoard = {
                this.canvas.height = HEIGHT;
                this.canvas.id = "game_board";
                this.ctx = this.canvas.getContext("2d");
+               this.canvas.style="position: absolute; left: 0; top: 0; z-index: 1; border: solid 2px black";
+               this.canvas.style.backgroundColor="rgba(0,254,0, 0.2)";
                document.getElementById("game_container").appendChild(this.canvas);   // attach gameBoard to the DOM
                // this.frameNo =0;
                // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
@@ -70,7 +72,7 @@ var gameBoard = {
         },
        };
 
-function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
+export function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
     this.canvas = document.createElement("canvas"); 
     this.init = function () {    // initialize the canvas layer by applying context & inserting the canvas in the "game_container" <div> 
                     this.canvas.width = CWIDTH;
@@ -96,42 +98,6 @@ function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
 }
 // module.exports = new CANVAS_LAYER(w,h,i);
 
-function onImageLoad(src) {
-    console.log(src);
-}
-
-let loadFrames = function () {
-    return new Promise(function (resolve, reject) {
-    var frames = [];
-    var n=4;
-    for (var i=0; i<5;i++) {
-        frames[i] = new Image();
-        frames[i].onload = onImageLoad(frames[i].src);
-        frames[i].src = "img/ken-sprites/Ken_Sprite_0" + n + ".png"; // assets[i];
-        n++;
-    }
-    resolve(frames);
-    });
-};
-
-// Animation Board has its own transparent game board
-// var gb[3] = new canvas
-// ab = gb[3]
-function animate(framesArr, frameRate, x, y) {
-    // var x, y;
-    gameBoard.init();
-    var frames = framesArr;
-    var frameNo=0;                // an array of screen_shots
-    var fps = frameRate;                   // frame rate in frames per second
-    var period = (1/fps)*1000 ;     // converted to milliseconds(ms)
-    function frame() {
-        gameBoard.clearBoard();
-        gameBoard.ctx.drawImage(frames[frameNo], x,y);        // draw frame on game board;
-        frameNo = (frameNo + 1) % frames.length;            // loop back counter with out all the conditionals or loop statements
-    }
-    var animation = setInterval(frame, period);
-    clearInterval(animation);   // stops animation
-}  
 
 /*
             Atlas
@@ -139,7 +105,7 @@ function animate(framesArr, frameRate, x, y) {
             texture atlasing - grouping textures --> software tool: texture packer
             (sprite sheet is used only for animating objects)
 */
-function parseAtlas(atlasJSON) {
+export function parseAtlas(atlasJSON) {
     var parsed = JSON.parse(atlasJSON);
 
     for (var key in parsed.frames) {
@@ -157,19 +123,25 @@ function parseAtlas(atlasJSON) {
         rendering images from the texture atlas/sprite sheet on the canvas
 
 */
-function drawSprite(spritename, posX, posY) {
-    // code here
+export function drawSprite(spritename, posX, posY) {
+    // walks through all uploaded sprite sheets to locate a specific sprite
+    for (var sheetName in gSpriteSheets)  {
+        var sheet = gSpriteSheets[sheetName];
+        var sprite = sheet.getStats(spritename);
+        if (sprite == null) continue;
+
+        __drawSpriteInternal(sprite, sheet, posX, posY);
+
+        return;
+    }
 }
 
-function __drawSpriteInternal(spt, sheet, posX, posY) {
-    // code here
+export function __drawSpriteInternal(spt, sheet, posX, posY) {
+    // 
+
 }
 
 
-
-// score Board has its own transparent game board
-// var gb[2] = new canvas
-// sb = gb[2]
 
 /**
 * draws scoreboard on the gameboard
@@ -177,7 +149,7 @@ function __drawSpriteInternal(spt, sheet, posX, posY) {
 * @param {*} b Team B's current score - int
 * @returns void
 */
-function displayScoreboard(a, b) {
+export function displayScoreboard(a, b) {
    var c = gameBoard.canvas;
     document.getElementById('game_board').style="position: absolute; left: 0; top: 0; z-index: 0;";
    gameBoard.init();
@@ -227,7 +199,7 @@ function displayScoreboard(a, b) {
 // var gb[1] = new canvas
 // mb = gb[1]
 
-function message(text, msgLayer) {
+export function message(text, msgLayer) {
       // var msgLayer = new CANVAS_LAYER(WIDTH, HEIGHT, 0, "msg_layer");
        //msgLayer.init();
        document.getElementById("msg_board").style="position: absolute; left: 0; top: 0; z-index: 1;";
@@ -254,7 +226,7 @@ function message(text, msgLayer) {
        mgx.fillText(text, 200, 200);      
 }
 
-function tickertape(message) {
+export function tickertape(message) {
     var width=window.innerWidth;
     var height=50;
     var x=0;
@@ -280,44 +252,28 @@ function tickertape(message) {
         tbx.fillText(message, x, y);
     }, 20);
 }
-
-function test() {
-    var i=0;
-    var randomX = 0;
-    var randomY = 0;
-    // var gb=gameBoard.canvas;
+//-------------------------------------------------------------------------------------------------------
+// Animation Board has its own transparent game board
+// var gb[3] = new canvas
+// ab = gb[3]
+export function animate(framesArr, frameRate, x, y) {
+    // var x, y;
     gameBoard.init();
-   /* setInterval(function() {
-       //for (i=0;i<1000;i++) {
-        //displayScoreboard(randomX, randomY);
+    var frames = framesArr;
+    var frameNo=0;                // an array of screen_shots
+    var fps = frameRate;                   // frame rate in frames per second
+    var period = (1/fps)*1000 ;     // converted to milliseconds(ms)
+    function frame() {
         gameBoard.clearBoard();
-        i++;
-        displayScoreboard(randomX+i, randomY+i);
-       }, 100);
-    //}, 20); */
-    var mb = new CANVAS_LAYER(WIDTH, HEIGHT, "msg_board");
-    mb.init();
-    var textMsg = "Roger A. Clarke is a serious programmer.";
-   // message(textMsg, mb);
-    tickertape(textMsg);
-    var a = new CANVAS_LAYER(WIDTH, HEIGHT, "anime_board");
-    a.init();
-    var ab = a.canvas;
-    var abx = a.ctx;
-    ab.style="position: absolute; left: 0; top: 0; z-index: 1;";
-    ab.style.backgroundColor="rgba(0,0,254, 0.2)";
-    // var frames = loadFrames();
-    loadFrames().then(function (resolve) {
-        //animate(resolve, 3, WIDTH/2, HEIGHT/2);
-        var framez = resolve;
-        for (var i=0; i<5; i++) {
-            abx.drawImage(framez[i], 100, 200, 100, 110);
-            console.log(framez[i].src);
-        }
-    });
-
-}
-
+        gameBoard.ctx.drawImage(frames[frameNo], x,y);        // draw frame on game board;
+        frameNo = (frameNo + 1) % frames.length;            // loop back counter with out all the conditionals or loop statements
+        x=x+3;
+        y =450 -(x*x) +4*x-4;
+    }
+    var animation = setInterval(frame, period);
+   // clearInterval(animation);   // stops animation
+}  
+//---------------------------------------------------------------------------------------------------------
 
 //     Draw image of card onto the gameBoard according the positioning parameters
 
@@ -325,127 +281,3 @@ function test() {
 // module.exports = new MESSAGE
 // module.exports = new SCORE_BOARD
 // module.exports = new ANIMATION
-
-/*****************************************************************************************************************************************
- * 
- *          AUDIO SECTION
- * 
- *****************************************************************************************************************************************/
-
- SoundManager = Class.extend({
-     clips: {},
-     enabled: true,
-     _context: null,
-     _mainNode: null,
-//--------------------------------------------------------
-    init: function()
-    {
-        try {
-            this._context = new webkitAudioContext();
-        }
-        catch(e) {
-            alert(e + ": Browser does not support Web Audio API!");
-        }
-
-        this._mainNode =this._context.createGainNode(0);
-        this._mainNode.connect(this._context.destination);
-    },
-    loadAsync: function(path, callbackFcn)
-    {
-        if (this.clips[path])
-        {
-            callbackFcn(this.clips[path].s);
-            return this.clips[path].s;
-        }
-        var clip = {s:new Sound(), b:null, l:false};
-        this.clips[path] = clip;
-        clips.s.path = path;
-
-        var request = new XMLHttpRequest();
-        request.open('GET', path, true);
-        request.responseType = "arraybuffer";
-        request.onload = function() {
-            gSM._context.decodeAudioData(request.response,
-                function(buffer)
-                {
-                    clip.b = buffer;
-                    clip.l = true;
-                    callbackFcn(clip.s);
-                },
-                function(data)
-                {
-                    console.log("failed");
-                    Logger.log("failed");
-                });
-        };
-        request.send();
-        return clip.s;
-
-    },
-    //----------------------------------------------
-    playSound: function(path, settings)
-    {
-        if (!gSM.enabled)
-            return false;
-
-        var looping=false;
-        var volume=0.2;
-        if (settings)
-        {
-            if (settings.looping)
-                looping=settings.looping;
-            if (settings.volume)
-                volume = settings.volume;
-        }
-
-        var sd = this.clips[path];
-        if (sd == null)
-            return false;
-        if (sd.l == false) return false;
-        // creates a sound source
-        var currentClip = gSM._context.createBufferSource();
-
-        // tell the source which sound to play
-        currentClip.buffer=sd.b;
-        currentClip.gain.value= volume;
-        currentClip.connect(gSM._mainNode);
-        currentClip.loop=looping;
-
-        // play the source now
-        currentClip.note.On(0);
-        return true;
-    },
-//-------------------------------------------------------------
-    togglemute: function()
-    {
-        if (this._mainNode.gain.value>0)
-            this._mainNode.gain.value=0;
-        else
-            this._mainNode.gain.value=1;
-    },
-//-------------------------------------------------------------
-    stopAll: function ()
-    {
-        this._mainNode.disconnect();
-        this._mainNode = this._context.createGainNode(0);
-        this._mainNode.connect(this._context.destination);
-    }    
- });
-
- var gSM = new SoundManager();
-
- Sound = Class.extend({
-     init: function() {
-
-     },
-//------------------------------------------------------
-    play: function(loop) {
-        gSM.playSound(this.path, {looping:loop, volume:1});
-    },
- });
-    function playSoundInstance(soundpath) {
-        var sound = gSM.loadAsync(soundpath, function(sObj) {sObj.play(false);});
-        
-    }     
- 
-
