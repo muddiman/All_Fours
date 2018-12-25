@@ -9,7 +9,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.4.3
+ *  @version   0.5.3
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
@@ -36,6 +36,10 @@
   *    Size - depending on the device on which it's being played 
   *    Only one "instance of the gameBoard object" is used for the entire duration of game play because of the nature of the platform (HTML Canvas)
   */
+
+  //-----------------------------------------------------------------------------------------------------
+
+  //                    GFX ENGINE
 
  /**  globals   */
  /**  VARIABLES   */
@@ -72,7 +76,7 @@ export var gameBoard = {
         },
        };
 
-export function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
+export function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID, Z) {
     this.canvas = document.createElement("canvas"); 
     this.init = function () {    // initialize the canvas layer by applying context & inserting the canvas in the "game_container" <div> 
                     this.canvas.width = CWIDTH;
@@ -81,12 +85,23 @@ export function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID) {
                     this.ctx = this.canvas.getContext("2d");
                     document.getElementById("game_container").appendChild(this.canvas);   // attach gameBoard to the DOM
                     this.canvas.style.backgroundColor = "rgba(0, 0, 0," + OPACITY + ")";     // in rgba format
+                    document.getElementById(ID).appendChild(this.canvas);
+                    document.getElementById(ID).style="position: absolute; left: 10px; top: 110px; z-index:"+Z+"0;";
+                    this.canvas.style.backgroundColor="rgba(0,0,0, "+ OPACITY +")";                    
                     this.frameNo =0;
                     // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
                     // background-color set in 'style.css'
                 };
+    this.refresh =  function (callbackfcn) {
+                            this.interval = setInterval(function () {
+                                this.clearBoard();
+                                callbackfcn();
+                        }, 500); 
+                    };               
     // if 'setInterval' is used, there should be stop function
-    // stop = function () {clearInterval(this.interval);}
+    this.stop   =   function () {
+                        clearInterval(this.interval);
+                    };
     this.clearBoard = function () {
                     // wipes the entire gameBoard clean
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
