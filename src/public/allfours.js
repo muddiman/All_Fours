@@ -1,4 +1,4 @@
-//import { displayScoreboard } from "./lib/graphicslib";
+// import { gameBoard } from "./lib/graphicslib";
 
 // import { displayScoreboard } from "./lib/graphicslib";
 
@@ -75,6 +75,8 @@ const PLAYER2_NAME="You";
                                     /*          THE OBJECTS             */
 
 /* game board object */
+// import gameBoard from '/lib/graphicslib.js';
+
 var gameBoard = {
 //  Object: gameBoard --> TODO: turn into a "class"
     canvas : document.createElement("canvas"), 
@@ -98,6 +100,7 @@ var gameBoard = {
                     clearInterval(this.refresh);    
                 }
 };
+
 
 /* Message layer object */
 var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"

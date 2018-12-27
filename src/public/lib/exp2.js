@@ -4,7 +4,23 @@
 
 
 
+/*
 
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+    var scripts = JSON.parse(this.responseText);
+    //document.getElementById("demo").innerHTML = myObj.name;
+  }
+};
+xmlhttp.open("GET", "scripts.JSON", true);
+xmlhttp.send();
+
+*/
+
+
+
+// var scripts = JSON.parse();
 /*  Script Objects  */
 const mainScript = {
     filepath: "../allfours.js",
@@ -101,7 +117,7 @@ let loadAllScripts = function (scriptObjectsArr) {
 
         scriptObjectsArr.forEach(element => {
             loadScript(element)
-            .then(checkScript(passedObj))  
+            .then(checkScript())  
             .then(function (fromResolve) {
                 successCounter++;
                 message(fromResolve);
@@ -123,7 +139,7 @@ let loadAllScripts = function (scriptObjectsArr) {
 };
     
 
-var gCachedAssets = {};
+var gCachedAssets = [];
 
 /*  function calls to load everything   */
 function loadGame() {

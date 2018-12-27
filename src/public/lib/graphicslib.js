@@ -50,31 +50,28 @@ export var CARDW=71;     // WIDTH of Cards in px
 export var CARDH=96;     // HEIGHT of Cards in px
 
 export var gameBoard = {
-       //  Object: gameBoard
-           canvas : document.createElement("canvas"), 
-           init : function () {    // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
-               this.canvas.width = WIDTH;
-               this.canvas.height = HEIGHT;
-               this.canvas.id = "game_board";
-               this.ctx = this.canvas.getContext("2d");
-               this.canvas.style="position: absolute; left: 0; top: 0; z-index: 1; border: solid 2px black";
-               this.canvas.style.backgroundColor="rgba(0,254,0, 0.2)";
-               document.getElementById("game_container").appendChild(this.canvas);   // attach gameBoard to the DOM
-               // this.frameNo =0;
-               // this.interval = setInterval(updateGameBoard, 20);      // 50fps: for animation
-               // background-color set in 'style.css'
-           },
-           // if 'setInterval is used, there should be stop function
-           // stop : function () {clearInterval(this.interval);}
-           clearBoard : function () {
-           // wipes the entire gameBoard clean
-               this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-           },
-           clearSection : function (x, y, width, height) {
-           // wipes a section of gameBoard clean
-           this.ctx.clearRect(this.x, this.y, this.width, this.height);
-        },
-       };
+    //  Object: gameBoard --> TODO: turn into a "class"
+    canvas : document.createElement("canvas"), 
+    init : function () {
+    // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+        this.canvas.width = WIDTH;
+        this.canvas.height = HEIGHT;
+        this.canvas.id = "game_board";
+        this.ctx = this.canvas.getContext("2d");
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById("game_board").style="position: absolute; left: 10px; top: 110px; z-index:0;";
+        this.refresh = setInterval(_drawGameBoard, PERIOD);   
+    },
+    clear   : function () {
+                    // wipes the entire gameBoard clean
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                },
+        // this.frameNo =0;
+    // if 'setInterval is used, there should be stop function
+    stop    :    function () {
+                    clearInterval(this.refresh);    
+                }
+};
 
 export function CANVAS_LAYER(CWIDTH, CHEIGHT, OPACITY, ID, Z) {
     this.canvas = document.createElement("canvas"); 
