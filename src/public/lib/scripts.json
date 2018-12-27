@@ -1,0 +1,27 @@
+
+{ "scripts": [ 
+    "mainScript": {
+    "filepath": "../allfours.js",
+    "id": "all_fours_game", 
+    "errorMsg": "Something happened. Main Game Script did not load!",
+    "successMsg": "Main program loaded sucessfully"
+    },
+    "inputScript": {
+    "filepath": "UserInput.js",
+    "id": "user_input",
+    "errorMsg": "Something happened. User input Script did not load!",
+    "successMsg": "User input script loaded sucessfully"
+    },
+    "gfxEngine": {
+    "filepath": "graphicslib.js",
+    "id": "graphics_library",
+    "errorMsg": "Something happened. Graphics Engine did not load!",
+    "successMsg": "Graphics Engine loaded sucessfully"
+    },
+    "DisplayInterface": {
+    "filepath": "display-int.js",
+    "id": "display_interface",
+    "errorMsg": "Something happened. Could not load Interface!",
+    "successMsg": "Display interface loaded sucessfully"
+    }
+]}
