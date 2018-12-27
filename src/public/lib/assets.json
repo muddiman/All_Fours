@@ -1,0 +1,17 @@
+"cardImageAssets" : {        // a deck of cards
+    "loadImages":         "function () {
+                            DECK.deck.init();
+                        }",
+    "checkImages":        "function ()  {
+                            this.loadImages();
+                            if (DECK.deck.cards.length === 52)   {
+                                this.allImagesLoaded = true;
+                            } else {
+                                this.allImagesLoaded = false;
+                            }
+                            return this.allImagesLoaded;
+                        }",
+    "allImagesLoaded":    "false",                    
+    "errorMsg":           "Sorry, could not load all card images.",
+    "successMsg":         "All card images successfully loaded.",                    
+}

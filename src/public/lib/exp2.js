@@ -53,23 +53,23 @@ const scripts = [
 
 
     /*  for each script  */
-    let loadScript = function (s) {
-        return new Promise(function (resolve, reject) {
+    let loadScript =  (s) => {
+        return new Promise(function (resolve) {
             if (gCachedAssets[s.id] == null) {
                 let script_tag = document.createElement('script');
                 let head_tag = document.head;
                 script_tag.src=s.filepath;
                 script_tag.id = s.id;
                 script_tag.setAttribute("type", "text/javascript");
-                head_tag.addEventListener('load', function (e){
+                head_tag.addEventListener('load', function (){
                     console.log(script_tag);
+                    gCachedAssets[s.id] = script_tag;              
                 }, false);
                 head_tag.appendChild(script_tag);
-                gCachedAssets[s.id] = script_tag;              
                 resolve(s); 
             } else {
-                console.log(s.id + " did not load."); //
-                reject(s.errorMsg);
+                console.log(s.id + " already loaded."); // use cached assets
+                // gCachedAssets[s.id];
             }                     
         });    
     };
@@ -78,7 +78,7 @@ const scripts = [
     let checkScript = function (script) {
         return new Promise(function (resolve, reject) {
                 if (document.getElementById(script.id)) {
-                    console.log('Success: ' + script.id + ' was loaded.');
+                    console.log(script.id + ' loaded.');
                     successCounter++;
                     resolve(true);
                 } else {
@@ -112,8 +112,8 @@ let loadAllScripts = function (scriptObjectsArr) {
             });
         });
 
-        var msg = "All "+ successCounter +" scripts loaded.";
-        var error = "Could not load all scripts. " + errorCounter + " scripts did not load.";
+        //var msg = "All "+ successCounter +" scripts loaded.";
+        //var error = "Could not load all scripts. " + errorCounter + " scripts did not load.";
         if (errorCounter > 0) {
             reject(errorCounter);
         } else {
@@ -133,7 +133,7 @@ function loadGame() {
         setTimeout(function () {alert('GAME LOADED!');}, 2000);
         console.timeEnd("loadTime");
     }).catch(function (rejected) {
-        console.log("Could not load all scripts." + rejected + " scripts did not load.");
+        console.log(rejected);
         alert('Game did not load!');
     });
     //var ticker = require('./graphicslib').tickertape();
