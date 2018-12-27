@@ -32,7 +32,7 @@ const DisplayInterface = {
 };
 
 /*  Array of script objects */
-var scripts = [
+const scripts = [
     mainScript, 
     inputScript, 
     gfxEngine, 
@@ -56,31 +56,28 @@ var scripts = [
     let loadScript = function (s) {
         return new Promise(function (resolve, reject) {
             if (gCachedAssets[s.id] == null) {
-            var script_tag = document.createElement('script');
-            var head_tag = document.head;
-            script_tag.src=s.filepath;
-            script_tag.id = s.id;
-            script_tag.setAttribute("type", "text/javascript");
-            head_tag.addEventListener('load', function (e){
-                console.log(script_tag);
-            }, false);
-            head_tag.appendChild(script_tag);
-            gCachedAssets[s.id] = script_tag;              
-            resolve(s); 
-        } else {
-            console.log(s.id + " did not load."); //
-            reject(s.errorMsg);
-        }                     
-        });   // 
+                let script_tag = document.createElement('script');
+                let head_tag = document.head;
+                script_tag.src=s.filepath;
+                script_tag.id = s.id;
+                script_tag.setAttribute("type", "text/javascript");
+                head_tag.addEventListener('load', function (e){
+                    console.log(script_tag);
+                }, false);
+                head_tag.appendChild(script_tag);
+                gCachedAssets[s.id] = script_tag;              
+                resolve(s); 
+            } else {
+                console.log(s.id + " did not load."); //
+                reject(s.errorMsg);
+            }                     
+        });    
     };
     
     /* script check */
     let checkScript = function (script) {
         return new Promise(function (resolve, reject) {
-            //var scriptArr = document.scripts;
-            //scriptArr.forEach(element => {
                 if (document.getElementById(script.id)) {
-                //if (element.src == script.src) {
                     console.log('Success: ' + script.id + ' was loaded.');
                     successCounter++;
                     resolve(true);
@@ -92,7 +89,8 @@ var scripts = [
             //});
              
         });
-    };
+    }
+    
     
 
 /*  load all scripts sequentially    */
@@ -103,7 +101,7 @@ let loadAllScripts = function (scriptObjectsArr) {
 
         scriptObjectsArr.forEach(element => {
             loadScript(element)
-            .then(checkScript(passedObj)  
+            .then(checkScript(passedObj))  
             .then(function (fromResolve) {
                 successCounter++;
                 message(fromResolve);
@@ -123,6 +121,7 @@ let loadAllScripts = function (scriptObjectsArr) {
         }
     });
 };
+    
 
 var gCachedAssets = {};
 
@@ -137,6 +136,6 @@ function loadGame() {
         console.log("Could not load all scripts." + rejected + " scripts did not load.");
         alert('Game did not load!');
     });
-    var ticker = require('./graphicslib').tickertape();
-    tickertape('me');
+    //var ticker = require('./graphicslib').tickertape();
+    //tickertape('me');
 }
