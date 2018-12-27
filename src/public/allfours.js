@@ -817,6 +817,10 @@ return new Promise(function (resolve, reject) {
         computer.hand.splice(computer.hand[i], 1);
         resolve(computer.hand[i]);
     } else {
+        cardToBoard.computer = computer.hand[i];
+        computer.hand.splice(computer.hand[i], 1);
+        resolve(computer.hand[i]);
+        /*
         // Play higher card in same suit, (if 10, q, k, or a play trump if yu have to)
         for (var card in computer.hand) {
             if (card.suit === oppponentCard.suit) {
@@ -830,24 +834,27 @@ return new Promise(function (resolve, reject) {
         }
         // play any low card including trump
         for (var individualCard in computer.hand) {
-            if (individualCard.rank < 10) {
+            if (individualCard.rank < 10 && individualCard.suit != deck.trump.suit) {
                 // playCard('top', individualCard);
                 cardToBoard.computer = card;
                 computer.hand.splice(computer.hand.indexOf(individualCard), 1);
                 resolve(individualCard);
+            } else {
+                // play low trump
             }
         }
         // play any card
         //playCard('top', computer.hand[i]);
         //computer.hand.splice(i,1);
         //resolve(computer.hand[i]);
-    }
+    }   */
     reject("Error: Computer could not select a card");
-    });
+    }
+});
 }
 
 function determineWinner(called, played) {
-// determines who played the higher rank in called suit or trump
+// determines the higher rank card
 // parameters: called and played card objects
 // return: player (who won)
 // pause
@@ -1094,7 +1101,7 @@ async function mainGameLoop() {
     const HANG_JACK = 3;
 
 
-    var dealer = computer;              // assign dealer --> 1st Jack deal
+    var dealer = human;              // assign dealer --> 1st Jack deal
    // _renderScreens();                   // display all graphics before the game loops
 
     // gameRoundLoop:           --> Loop until human.points || computer.points >= 14
@@ -1113,30 +1120,31 @@ async function mainGameLoop() {
         //score.clear();
         //score.update(computer.points, human.points);
         //displayScore(computer, human);
-        var winner = computer;  // since human dealt fisrt eventually write a subroutine for "first jack deal"
+        var winner = human;  // since human dealt fisrt eventually write a subroutine for "first jack deal"
         var playedCard;     // add playedBy attribute
         var calledCard;     // add playedBy attribute
         //Round Play Loop:      --> Loop until player.hand.length == 0
-        //while (human.hand.length > 0) {
+        for (var i=human.hand.length; i>1; i--) {
       
             if (winner == computer) {               // if winner = computer, then computer plays first and vice-versa
                 calledCard = computerPlayTurn(computer, null);
                     humanPlayTurn(human)
-                    .then(card => {
+                    .then((card) => {
                         playedCard = card;
                         return determineWinner(calledCard, playedCard);
                     })
-                    .then(function(higherCard) {
+                    .then((higherCard) => {
                         if (higherCard == calledCard) {
                             winner = computer;
                         } else {
                             winner = human;
                         }
-                        console.log(winner.name, + ' Wins!');      // add msg box
-                        msgboard.text = winner.name, + " Won!!!";
+                        let winnerName = winner.name;
+                        console.log(winnerName, + ' Wins!');      // add msg box
+                        msgboard.text = winnerName + " Won!!!";
                         msgboard.visible = true;
                         winner.lift.push(calledCard, playedCard);
-                        setTimeout(function () {
+                        let delayTwoSec = setTimeout(function () {
                             cardToBoard.init();
                         }, 2000);
                         console.log('END OF ROUND!!!');
@@ -1146,19 +1154,20 @@ async function mainGameLoop() {
                 msgboard.text = "Your turn. Please select a card.";
                 msgboard.visible = true;
                     humanPlayTurn(human)
-                    .then(function(resolvedCard) {
+                    .then((resolvedCard) => {
                         calledCard = resolvedCard;
                         playedCard = computerPlayTurn(computer, calledCard);
                         return determineWinner(calledCard, playedCard);
                     })
-                    .then(function(winningCard) {
+                    .then((winningCard) => {
                         if (winningCard == playedCard) {
                             winner = computer;
                         } else {
                             winner = human;
                         }
-                        console.log(winner.name, + ' Wins!');      
-                        msgboard.text = winner.name, + " Won!!!";
+                        let winnerName = winner.name;
+                        console.log(winnerName, + ' Wins!');      
+                        msgboard.text = winnerName + " Won!!!";
                         msgboard.visible = true;
                         winner.lift.push(calledCard, playedCard);
                         setTimeout(function () {
@@ -1168,7 +1177,7 @@ async function mainGameLoop() {
                     })
                     .catch(err => console.log(err));                  
                 }
-           // }    
+            }    
         
 
             //  Count for game
