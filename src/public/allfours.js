@@ -400,7 +400,9 @@ function Card(rank, face, suit) {
                         };
     this.image = new Image();
 
-    this.image.onload = console.log(this.getCardName() +' loaded');      // image creation callback function (to be changed into a useful function)
+    this.image.onload = () => {
+                            console.log(this.getCardName() +' loaded'); 
+                        };     // image creation callback function (to be changed into a useful function)
                         
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
@@ -775,17 +777,13 @@ function displayScore(playerA, playerB) {
  */  
 function humanPlayTurn(player) {
     return new Promise(function(resolve, reject) {
-        var pos = 'bottom';         // Player 1 always play bottom of center
         msgboard.text = "Your turn, Please play a card.";
         msgboard.visible = true;
         onClick()
         .then(onResolved => {
             return mouseEventHandler(onResolved);
         })
-        //.then(onFulfilled => {
-        //    console.log(onFulfilled);
-        //    return inputMgr.getUserInput();            
-        //})
+
         .then(userInput => {
             var cardChoice = player.hand[userInput];
             var cardName = cardChoice.getCardName();
@@ -1132,7 +1130,7 @@ async function mainGameLoop() {
                     .then((card) => {
                         playedCard = card;
                         return determineWinner(calledCard, playedCard);
-                    })
+                    }) 
                     .then((higherCard) => {
                         if (higherCard == calledCard) {
                             winner = computer;
