@@ -399,12 +399,26 @@ function Card(rank, face, suit) {
                             return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
                         };
     this.image = new Image();
+                            /*  if (gCardCache[this.getCardName]) {
+                                this.image = gCardCache[getCardName];
+                            } else {
+                                this.image = new Image;
+                                this.image.onload = console.log(this.getCardName() +' loaded');
+                                this.image.id = this.getCardName();
+                                this.image.src = "img/" + this.getCardName() + ".png";
+                            }
+                            
+                            */
 
     this.image.onload = console.log(this.getCardName() +' loaded');      // image creation callback function (to be changed into a useful function)
                         
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
 }
+/*
+            var gCardCache = {};        // object that cache card images
+            gCardCache[card.getCardName] = card.image;
+*/
 
 /*
 //      Team Object Constructor
@@ -1069,14 +1083,28 @@ function _clearAllScreens() {
         screen.clear();
     }
 }
-
+/*
+function firstJackDeal(player1, player2) {
+    let player = player1;
+    let i=0;
+    while (deck[i].face != 'j' && i < deck.length) {
+        if (player == player1) {        // toggle player1 & player2
+            player = player2;
+        } else {
+            player = player2; 
+        }
+        i++;
+    }
+    return player;
+}
+*/
 /** 
 *   repeat game rounds until  a player gets 14 points or quit() ==> ESC key (do - while loop)
 *   @param: null
 *   @return: void
 */
 async function mainGameLoop() {
-    var gObjectArr = loadGameAssets();              // passes an array of all game object 
+    var gObjectsArr = loadGameAssets();              // passes an array of all game object 
     //_initializeScreens();
     // _loadObjects from .JSON files
     // _loadGameSettings from .JSON files   
@@ -1101,12 +1129,15 @@ async function mainGameLoop() {
     const HANG_JACK = 3;
 
 
-    var dealer = human;              // assign dealer --> 1st Jack deal
+    var dealer; // = firstJackDeal(human, computer);              // assign dealer --> 1st Jack deal
    // _renderScreens();                   // display all graphics before the game loops
+   // deck.shuffle();
+    //dealer = firstJackDeal(human, computer);
 
     // gameRoundLoop:           --> Loop until human.points || computer.points >= 14
     // firstJackDeal(); 
-        if (dealer == human) {
+        let flipACoin = Math.floor(Math.random() * 2); // simulate firtsJackDeal
+        if (flipACoin == 0) {
             dealer = computer;
         } else { 
             dealer = human;
@@ -1119,8 +1150,14 @@ async function mainGameLoop() {
         //UPDATE score --> 
         //score.clear();
         //score.update(computer.points, human.points);
-        //displayScore(computer, human);
-        var winner = human;  // since human dealt fisrt eventually write a subroutine for "first jack deal"
+        //displayScore(computer, human);\
+        var winner;
+        if (dealer == computer) {
+            winner = human;
+        } else { 
+            winner = computer;
+        }
+          // since human dealt fisrt eventually write a subroutine for "first jack deal"
         var playedCard;     // add playedBy attribute
         var calledCard;     // add playedBy attribute
         //Round Play Loop:      --> Loop until player.hand.length == 0
