@@ -101,6 +101,28 @@ var gameBoard = {
                 }
 };
 
+/* Card layer object */
+var cardLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
+    canvas : document.createElement("canvas"), 
+    init    :   function () {
+            // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+                this.canvas.width = WIDTH;
+                this.canvas.height = HEIGHT;
+                this.canvas.id = "card_layer";
+                this.ctx = this.canvas.getContext("2d");
+                document.getElementById("game_container").appendChild(this.canvas);
+                document.getElementById("card_layer").style="position: absolute; left: 10px; top: 110px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
+                // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
+                this.refresh = setInterval(_drawCardScreen, PERIOD);   
+            },
+    clear   :   function () {           // wipes the entire gameBoard clean
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                },
+    stop    :   function () {           // if 'setInterval is used, there should be stop function
+                    clearInterval(this.refresh);
+                },
+                            // this.frameNo =0;
+};
 
 /* Message layer object */
 var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
@@ -112,7 +134,7 @@ var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
                 this.canvas.id = "msg_layer";
                 this.ctx = this.canvas.getContext("2d");
                 document.getElementById("game_container").appendChild(this.canvas);
-                document.getElementById("msg_layer").style="position: absolute; left: 10px; top: 110px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
+                document.getElementById("msg_layer").style="position: absolute; left: 10px; top: 110px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
                 // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
                 this.refresh = setInterval(_drawMsgScreen, PERIOD);   
             },
@@ -130,6 +152,10 @@ var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
 // var scoreLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT, "score_layer", 1);
 // var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT, "cards_layer", 2);
 // var msgLayer     = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT, "msg_layer", 3);
+
+/*  Image Cache  */
+// card images
+var gCardCache = {};
 
  /* Deck of cards objects   */
  var deck = {
@@ -398,9 +424,9 @@ function Card(rank, face, suit) {
     this.getCardName = function () {
                             return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
                         };
-    this.image = new Image();
-                            /*  if (gCardCache[this.getCardName]) {
-                                this.image = gCardCache[getCardName];
+    this.image =            () => {     
+                            if (gCardCache[this.getCardName]) {
+                                this.image = gCardCache[this.getCardName];
                             } else {
                                 this.image = new Image;
                                 this.image.onload = console.log(this.getCardName() +' loaded');
@@ -408,11 +434,12 @@ function Card(rank, face, suit) {
                                 this.image.src = "img/" + this.getCardName() + ".png";
                             }
                             
-                            */
+                            
 
     this.image.onload = () => {
-                            console.log(this.getCardName() +' loaded'); 
-                        };     // image creation callback function (to be changed into a useful function)
+                            console.log(this.getCardName() +' loaded');
+                            gCardCache[this.getCardName] = this.image;
+                        };
                         
     this.image.id = this.getCardName();
     this.image.src = "img/" + this.getCardName() + ".png";
@@ -463,8 +490,8 @@ function Card(rank, face, suit) {
  * @returns: void
 */
 function playCard(playPosition, card) {
-    var c = gameBoard.canvas;
-    var x = gameBoard.ctx; 
+    var c = cardLayer.canvas;
+    var x = cardLayer.ctx; 
     var xCenter = c.width/2;
     var yCenter = c.height/2;
     switch (playPosition) {
@@ -678,8 +705,8 @@ function confirmCardSelection(card) {
  */
 function displayPlayerHand(player) {
     return new Promise(function(resolve) {
-         var c = gameBoard.canvas;
-         var x = gameBoard.ctx;
+         var c = cardLayer.canvas;
+         var x = cardLayer.ctx;
          var xCenter = c.width/2;
          var yCenter = c.height/2;
          for (i = 0; i < player.hand.length; i++) {
@@ -790,23 +817,18 @@ function displayScore(playerA, playerB) {
  * @returns card or null
  */  
 function humanPlayTurn(player) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         msgboard.text = "Your turn, Please play a card.";
         msgboard.visible = true;
         onClick()
-        .then(onResolved => {
-            return mouseEventHandler(onResolved);
-        })
-
-        .then(userInput => {
+        .then(mouseEventHandler(onResolved))
+        .then((userInput) => {
             var cardChoice = player.hand[userInput];
             var cardName = cardChoice.getCardName();
             console.log(cardName);
             removeInputListener();
-            // playCard(pos, cardChoice);
             cardToBoard.user = cardChoice;
             player.hand.splice(userInput, 1);
-            displayPlayerHand(player);        // show new hand after play, remove this when cardsLayer becomes active 
             resolve(cardChoice);
         })
         .catch(err => console.log(err));
@@ -971,7 +993,7 @@ function _initializeScreens() {
 
 function loadScreenCache() {
     var screens = [];
-    screens[0] = gameBoard;
+    screens[0] = gameBoard; // and scoreLayer & cardLayer
     // screens[1] = scoreLayer;
     // screens[2] = cardsLayer;
     screens[3] = msgLayer;
@@ -993,22 +1015,29 @@ function displayComputerCard() {
     playCard('top', cardToBoard.computer);
 }
 
-function updateGameScreen() {
-    displayScore(computer, human);
-    if (deck.trump) {
-        displayTrump(deck.trump);
-    }
-    if (human.hand) {
-        displayPlayerHand(human);
-    }
+function updateCardScreen() {
     if (cardToBoard.user) {
         displayUserCard();
     }
     if (cardToBoard.computer) {
         displayComputerCard();
     }
+    if (human.hand) {
+        displayPlayerHand(human);
+    }
 }
 
+function updateGameScreen() {
+    displayScore(computer, human);
+    if (deck.trump) {
+        displayTrump(deck.trump);
+    }
+}
+
+function _drawCardScreen() {
+    cardLayer.clear();
+    updateCardScreen();
+}
 
 function _drawMsgScreen() {
     msgLayer.clear();
