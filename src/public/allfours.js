@@ -64,18 +64,21 @@ const CARDH=96;     // card height
 
 /* Clear/Opaque */
 const TRANSPARENT=0;
-const OPAQUE=1.0;
-const REFRESH_RATE=2;                   // in FPS (frames per second)
-const PERIOD=(1/REFRESH_RATE)*1000;     // in milliseconds
-
+const OPAQUE=1.0;   
+const LOW_REFRESH_RATE=2;                       // IN FPS (frames per second)
+const HIGH_REFRESH_RATE=10;                     // in FPS (frames per second)
+const PERIOD=(1/LOW_REFRESH_RATE)*1000;         // in milliseconds
+const PERIODH=(1/HIGH_REFRESH_RATE)*1000;
 const PLAYER1_NAME="Computer";
 const PLAYER2_NAME="You";
+const LEFTOFFSET=10;
+const TOPOFFSET=110;
 
 //-------------------------------------------------------------------------------------------------------------------------
                                     /*          THE OBJECTS             */
 
 /* game board object */
-// import gameBoard from '/lib/graphicslib.js';
+// import gameBoard from '/lib/graphicslib.js';         INCL. score board, trump...
 
 var gameBoard = {
 //  Object: gameBoard --> TODO: turn into a "class"
@@ -87,7 +90,7 @@ var gameBoard = {
         this.canvas.id = "game_board";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("game_board").style="position: absolute; left: 10px; top: 110px; z-index:0;";
+        document.getElementById("game_board").style="position: absolute; left: " + LEFTOFFSET +"px; top: "+ TOPOFFSET +"px; z-index:0;";
         this.refresh = setInterval(_drawGameBoard, PERIOD);   
     },
     clear   : function () {
@@ -102,7 +105,7 @@ var gameBoard = {
 };
 
 /* Card layer object */
-var cardLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
+var cardLayer = {        //  Object: cardLayer --> TODO: turn into a "class"
     canvas : document.createElement("canvas"), 
     init    :   function () {
             // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
@@ -113,7 +116,7 @@ var cardLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
                 document.getElementById("game_container").appendChild(this.canvas);
                 document.getElementById("card_layer").style="position: absolute; left: 10px; top: 110px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
                 // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-                this.refresh = setInterval(_drawCardScreen, PERIOD);   
+                this.refresh = setInterval(_drawCardScreen, PERIODH);   
             },
     clear   :   function () {           // wipes the entire gameBoard clean
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -125,7 +128,7 @@ var cardLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
 };
 
 /* Message layer object */
-var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
+var msgLayer = {        //  Object: msgLayer --> TODO: turn into a "class"
     canvas : document.createElement("canvas"), 
     init    :   function () {
             // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
@@ -136,7 +139,7 @@ var msgLayer = {        //  Object: gameBoard --> TODO: turn into a "class"
                 document.getElementById("game_container").appendChild(this.canvas);
                 document.getElementById("msg_layer").style="position: absolute; left: 10px; top: 110px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
                 // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-                this.refresh = setInterval(_drawMsgScreen, PERIOD);   
+                this.refresh = setInterval(_drawMsgScreen, PERIODH);   
             },
     clear   :   function () {           // wipes the entire gameBoard clean
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -533,14 +536,14 @@ function onClick() {
                                 
 function onClick() {
     return new Promise(function(resolve, reject) {
-            document.getElementById('game_board').addEventListener('click', function(e) {   // change to cardLayer 
-                var x = e.clientX;
-                var y = e.clientY;
-                var posArr = [x,y];
-                resolve(posArr);
-            });    
-            //console.log(err);
-            //reject(err);
+        document.getElementById('game_board').addEventListener('click', function(e) {   // change to cardLayer 
+            var canvasX = e.clientX - LEFTOFFSET;
+            var canvasY = e.clientY - RIGHTOFFSET;
+            var posArr = [canvasX, canvasY];
+            resolve(posArr);
+        });    
+        //console.log(err);
+        //reject(err);
     });
 }
 
@@ -559,27 +562,27 @@ function mouseEventHandler(positionArray) {
     var n=null;
     var x=positionArray[0];
     console.log(x);
-    var y=positionArray[1];
+    var y=positionArray[1];                                                                    
     console.log(y);
-    var p=x-160;
-    if (y > 450) {
+    var p=x-150;                                                                        
+    if (y > 340 && y < (340+CARDH)) {
         switch (true) {
-            case (p < 36):
+            case (p < CARDW/2):
                 n=0;
                 break;
-            case (p < 72):
+            case (p < CARDW):
                 n=1;
                 break;
-            case (p < 108):
+            case (p < 3*CARDW/2):
                 n=2;
                 break;
-            case p < 144:
+            case p < 2*CARDW:
                 n=3;
                 break;
-            case p < 180:
+            case p < 5*CARDW/2:
                 n=4;
                 break;
-            case (p < 252):
+            case (p < 3*CARDW):
                 n=5;
                 break;
             default:
@@ -666,25 +669,50 @@ function touchEventHandler(positionArray) {
 /*  keyboard input  */
 function onKeystroke(keyboardEvent) {
     // case-switch a keystroke to corresponding card number in hand
+    
 }
 function keystrokeEventHandler(key) {
     // inputMgr.updateSelection(key).then(function(resolve))
 }
 
-
+function inputExperiment() {
+    human.hand[0].image.addEventListener('click', selectCard);
+}
 //----------------------------------------------------------------------------------------------------------
-                                    /*  game play   */
+                            /*  game play functions   */
+
+            // rank_highest_trump --> player += HIGH
+function whoPlayedHigh(human, computer) {
+    let highestHumanTrumpCard = null;
+    let highestComputerTrumpCard = null;
+    for (var eachCard in human.lift) {
+        if (eachCard.suit === deck.trump.suit && highestHumanTrumpCard.rank < eachCard.rank){
+            highestTrumpCard = eachCard;
+        }
+    }
+    for (var eachAndEveryCard in computer.lift) {
+        if (eachAndEveryCard.suit === deck.trump.suit && highestComputerTrumpCard < eachAndEveryCard.rank) {
+            highestComputerTrumpCard = eachAndEveryCard;
+        }
+    }
+    if (highestComputerTrumpCard > highestHumanTrumpCard) {
+        return computer;
+    } else {
+        return human;
+    }
+}
+//whoPlayedHigh.points += HIGH;
 
 function confirmCardSelection(card) {
     // Enlarges Card and place front & center of the Hand
-    var z=gameBoard.ctx;
+    var z=cardLayer.ctx;
     z.drawImage(card.image, gameBoard.width/2 - 71, gameBoard.height-2*96, 2*71, 2*96);
     z.scale(2,2);
-    gameBoard.canvas.addEventListener("click", function (event) {
+    cardLayer.canvas.addEventListener("click", function (event) {
         var x=event.clientX;
         var y=event.clientY;
-        if (250 < y < 496) {
-            if (280 < x < 420) {
+        if (y > 250  && y < 496) {
+            if (x > 280 && x < 420) {
                 playCard('bot', card);
                 return card;
             } else {
@@ -699,6 +727,16 @@ function confirmCardSelection(card) {
 
 //-------------------------------------------------------------------------------------------------------------------------------------
                                             /*  Display Functions   */
+
+function selectCard(player) {
+    var cardImgs = player.hand[1].image;
+    var c=cardLayer.canvas;
+    var x=cardLayer.ctx;
+    //let cardImgs = gCardCache['jh'];
+    x.drawImage(cardImgs, 350, 300, 71, 96);    //, 142, 192);
+    // cardLayer.ctx.scale(2,2);
+} 
+
 /**
  * 
  * @param {*} player object
@@ -741,7 +779,7 @@ function acquireImage() {
 
 function message() {
     document.getElementById("msg_layer").style.visibility="visible";
-    var m = msgLayer.canvas;
+    var m=msgLayer.canvas;
     var c=msgLayer.ctx;
     c.beginPath();
     c.lineWidth = 2;
@@ -749,25 +787,22 @@ function message() {
     c.rect(170,100, 400, 200);
     c.stroke();
     //c.globalAlpha=0.4;
-    c.fillStyle="rgba(0,0,0, 0.4)";  // black, transparent
+    c.fillStyle="rgba(0,0,0, 0)";  // black, transparent
     c.fillRect(170,100, 400,200);
     // c.globalAlpha=0.1;
     c.font = "20px Arial";
     c.fillStyle = "rgba(254,254,254,1.0)";    // white
     var msgText = msgboard.text;
-    c.fillText(msgText, 200, 200);
-    document.getElementById("msg_layer").addEventListener("click", function () {
-        msgboard.visible = false;
-        document.getElementById("msg_layer").style.visibility="hidden";
-    });
-    setTimeout(function () {
-        msgboard.visible = false;
-        document.getElementById("msg_layer").style.visibility="hidden";
-    }, 4000);
+    c.fillText(msgboard.text, 200, 200);
+    document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
+    let pause = setTimeout(clearMsgBoard, 4000);
+    clearTimeout(pause);    //  garbage collection
 }
  
-function clearMessage() {
+function clearMsgBoard() {      // garbage collection
+    msgboard.visible = false;
     msgLayer.clear();
+    document.getElementById("msg_layer").style.visibility="hidden";
 }
 
 function cleanBoard() {
@@ -1024,6 +1059,7 @@ function updateCardScreen() {
     }
     if (human.hand) {
         displayPlayerHand(human);
+        selectCard(human);
     }
 }
 
@@ -1264,7 +1300,7 @@ async function mainGameLoop() {
             }
 
             // rank_highest_trump --> player += HIGH
-            function whoPlayedHigh() {
+            function whoPlayedHigh(human, computer) {
                 let highestHumanTrumpCard = null;
                 let highestComputerTrumpCard = null;
                 for (var eachCard in human.lift) {
