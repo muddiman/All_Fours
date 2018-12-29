@@ -73,6 +73,7 @@ const PLAYER1_NAME="Computer";
 const PLAYER2_NAME="You";
 const LEFTOFFSET=10;
 const TOPOFFSET=110;
+const CONVERT_TO_RADIANS= Math.PI/180;
 
 //-------------------------------------------------------------------------------------------------------------------------
                                     /*          THE OBJECTS             */
@@ -536,12 +537,12 @@ function onClick() {
                                 
 function onClick() {
     return new Promise(function(resolve, reject) {
-        document.getElementById('game_board').addEventListener('click', function(e) {   // change to cardLayer 
+        /* document.getElementById('game_board').addEventListener('click', function(e) {   // change to cardLayer 
             var canvasX = e.clientX - LEFTOFFSET;
             var canvasY = e.clientY - RIGHTOFFSET;
             var posArr = [canvasX, canvasY];
             resolve(posArr);
-        });    
+        });  */  
         //console.log(err);
         //reject(err);
     });
@@ -550,6 +551,14 @@ function onClick() {
 function removeInputListener() {
     return new Promise(function(resolve) {
         document.getElementById('game_board').removeEventListener('click', onClick(event));    // change to cardsLayer 
+    });
+}
+
+function mouseExperiment() {
+    return new Promise(function (resolve, reject) {
+        human.hand[0].image.addEventListener('click', () => {
+            console.log('1st card clicked');
+        });
     });
 }
 
@@ -727,6 +736,20 @@ function confirmCardSelection(card) {
 
 //-------------------------------------------------------------------------------------------------------------------------------------
                                             /*  Display Functions   */
+
+function rotateImage(img, x, y, angle) {
+    cardLayer.ctx.save();
+
+    cardLayer.ctx.translate(x,y);
+    cardLayer.ctx.rotate(angle * this.CONVERT_TO_RADIANS);
+
+    cardLayer.ctx.drawImage(img,
+        -(img.width/2),
+        -(img.height/2));
+
+    cardLayer.ctx.restore();
+}
+
 
 function selectCard(player) {
     var cardImgs = player.hand[1].image;
@@ -998,7 +1021,7 @@ function _initializePlayers() {
     human.name=PLAYER2_NAME;
     var playerArr = [computer, human];
     return playerArr;                // an array of ALL game players
-}
+}   //TextDecoder
 
 /**
  *  to make sure all the games assets are fully loaded before the game runs
@@ -1009,7 +1032,7 @@ function loadGameAssets() {         // initialize all game objects
     var gameObjectsArr = _initializePlayers();
     //  load objects
     msgboard.init();
-    deck.init();               // load all images into cache array
+    deck.init();               // load all                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 images into cache array
     cardToBoard.init();        // game play cards cache for display
     //  graphical objects
     _initializeScreens();       
@@ -1185,19 +1208,7 @@ async function mainGameLoop() {
     // read game settings from .JSON FILE
     // In-game globals
     /*  point awards    */
-    const HIGH = 1;
-    const LOW = 1;
-    const GAME = 1;
-    const JACK = 1;
-    const HANG_JACK = 3;
-
-
-    var dealer; // = firstJackDeal(human, computer);              // assign dealer --> 1st Jack deal
-   // _renderScreens();                   // display all graphics before the game loops
-   // deck.shuffle();
-    //dealer = firstJackDeal(human, computer);
-
-    // gameRoundLoop:           --> Loop until human.points || computer.points >= 14
+    //do until human.points || computer.points >= 14
     // firstJackDeal(); 
         let flipACoin = Math.floor(Math.random() * 2); // simulate firtsJackDeal
         if (flipACoin == 0) {
@@ -1212,7 +1223,7 @@ async function mainGameLoop() {
         dealer.points += kickPoints(deck.trump);
         //UPDATE score --> 
         //score.clear();
-        //score.update(computer.points, human.points);
+        //score.update(computer.points, hu                                                                                                ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,man.points);
         //displayScore(computer, human);\
         var winner;
         if (dealer == computer) {
