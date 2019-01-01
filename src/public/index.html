@@ -69,7 +69,10 @@
 
     <script>
         window.onload = function () {
-            //loadGameAssets();
+            loadGameAssets();
+            setTimeout(() => {
+                mainGameLoop();
+            }, 3000);
            
         }
     </script>     
