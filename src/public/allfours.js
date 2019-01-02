@@ -266,10 +266,10 @@ var menuLayer = {        //  Object: menuLayer --> TODO: turn into a "class"
 };
 
 /* Display Layer Objects */
-// var gameBoard    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "game_board", 0, drawScreenFcn);
-// var scoreLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "cards_layer", 1, drawScreenFcn);
-// var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "msgs_layer", 2, drawScreenFcn);
-// var menuLayer    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "menu_layer", 3, drawScreenFcn);
+// var gameBoard    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "game_board",   0, drawScreenFcn);
+// var scoreLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "cards_layer",  1, drawScreenFcn);
+// var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "msgs_layer",   2, drawScreenFcn);
+// var menuLayer    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "menu_layer",   3, drawScreenFcn);
 
 
 /*  Image Cache  */
@@ -403,13 +403,15 @@ var inputMgr = {
     cardSelection:      null,
     keys:               {},
     bindings:           {},
+    keyState:           {},
     bind:               function (key, action) {
                             this.bindings[key] = action;
                         },
     init:               function () {
                             this.clickPosition=null;
-                            this.cardSelection=0;
+                            this.cardSelection=null;
                             //this.updateSelection();
+                            this.refresh=setInterval(keyInputUpdate, PERIOD_H);
                         },
     setClickPosition:   (positionalArr) => {
                             this.clickPosition = positionalArr;
@@ -501,35 +503,6 @@ var inputMgr = {
 
 
  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
- 
-/**  
- * place a card around the center of the gameBoard
- * @param card object
- * @param playPosition --Position relative to the center of the gameboard
- * @returns: void
-*/
-function playCard(playPosition, card) {
-    var c = cardLayer.canvas;
-    var x = cardLayer.ctx; 
-    var xCenter = c.width/2;
-    var yCenter = c.height/2;
-    switch (playPosition) {
-        case "left":
-            x.drawImage(card.image, xCenter-60, yCenter-30);
-            break;
-        case "top":
-            x.drawImage(card.image, xCenter-40, yCenter-50);
-            break;
-        case "right":
-            x.drawImage(card.image, xCenter-20, yCenter-30);
-            break;
-        case "bottom": 
-            x.drawImage(card.image, xCenter-40, yCenter-10);
-            break;
-        default:
-            x.drawImage(card.image, xCenter-60, yCenter-30);
-    }
-}
 
 /*
 // listens for mouse clicks, captures and returns its location as a position array --> [x.y]
@@ -732,10 +705,11 @@ function onKeystroke(keyboardEvent) {
    // }
 }
 
-function gameControlsInit() {
+function gControllerListeners() {
     document.getElementById('card_layer').addEventListener('mouseover', onMouseOver);       // start various listeners
     document.getElementById('card_layer').addEventListener('click', onClick);
-    document.getElementById('card_layer').addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown);           // keyboard
+    window.addEventListener("keyup", onKeyUp);
 }
 function onMouseOver(event) {
     let posx = event.clientX;           // x,y position of the mouse pointer on canvas when event occurs
@@ -743,42 +717,46 @@ function onMouseOver(event) {
     console.log("(", posx, ", ", posy, ")");
 }
 
-// var keyState[256];
+// var keyState = [];
 
 function onKeyDown(event) {
-    let keyID = event.keyID;
-    console.log("ID: ", keyID);     // ASCII id of key thats was pressed
-
-    keyState[event.keyID] = true;
+    let key = event.key;
+    console.log("ID: ", key);     // ASCII id of key thats was pressed
+    inputMgr.keyState[event.key] = true;
 }
 
 function onKeyUp(event) {
-    keyState[event.keyID] = false;
+    inputMgr.keyState[event.key] = false;
 }
 
-function update() {
-    // ASCII keycode for the key  '<--' (left arrow), 'w': 87, 
-    const KEY_W=87;
-    const KEY_ESC=100;
-    const KEY_0=0;
-    const KEY_1=1;
-    const KEY_2=2;
-    const KEY_3=3;
-    const KEY_4=4;
-    const KEY_5=5;
+function keyInputUpdate() {         //  gets latest keystate & carry out its corresponding action
+    // ASCII keycode for the key  '<--' (left arrow): 37, 'w': 87, 
+    const KEY_W='q';
+    const KEY_ESC='Escape';
+    const KEY_1='1';
+    const KEY_2='2';
+    const KEY_3='3';
+    const KEY_4='4';
+    const KEY_5='5';
+    const KEY_6='6';
+    const KEY_LA='ArrowLeft';
+    const KEY_RA='ArrowRight';
+    const KEY_ENT='Enter';
+    const KEY_SPB=' ';
 
-    if (keyState[KEY_W]) {
-        // NULL;
-    }
-    if (keyState[KEY_ESC]) {            // toggle menu screen
+
+    if (inputMgr.keyState[KEY_ESC]) {            // toggle menu screen
         if (document.getElementById('menu_layer').style.visibility =='visible') {
             document.getElementById('menu_layer').style.visibility='hidden';
         } else {
             document.getElementById('menu_layer').style.visibility='visible';
         }
     } 
-    if (keyState[KEY_0]) {
-        // Play hand[0] card 
+    if (inputMgr.keyState[KEY_1]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[0];                   // play
+        }
     }
 }
 
@@ -819,6 +797,8 @@ function inputExperiment() {
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                      /*  game play functions   */
+
+                                                      
 
         // rank_highest_trump --> player += HIGH
 function whoPlayedHigh(human, computer) {
@@ -886,6 +866,37 @@ function confirmCardSelection(card) {
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                          /*  Display Functions   */
+
+ 
+/**  
+ * place a card around the center of the gameBoard
+ * @param card object
+ * @param playPosition --Position relative to the center of the gameboard
+ * @returns: void
+*/
+function playCard(playPosition, card) {
+    var c = cardLayer.canvas;
+    var x = cardLayer.ctx; 
+    var xCenter = c.width/2;
+    var yCenter = c.height/2;
+    switch (playPosition) {
+        case "left":
+            x.drawImage(card.image, xCenter-60, yCenter-30);
+            break;
+        case "top":
+            x.drawImage(card.image, xCenter-40, yCenter-50);
+            break;
+        case "right":
+            x.drawImage(card.image, xCenter-20, yCenter-30);
+            break;
+        case "bottom": 
+            x.drawImage(card.image, xCenter-40, yCenter-10);
+            break;
+        default:
+            x.drawImage(card.image, xCenter-60, yCenter-30);
+    }
+}
+
 
 function rotateImage(img, x, y, angle) {
     cardLayer.ctx.save();
@@ -968,7 +979,7 @@ function displayPlayerHand(player) {
          for (i = 0; i < player.hand.length; i++) {
              x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
          }
-        // document.getElementById('cardLayer').addEventListener('mouseover', mouseOver(e));
+         // document.getElementById('cardLayer').addEventListener('mouseover', mouseOver(e));
          //     document.getElementById('cardLayer').removeEventListener('mouseover', enlargeCard());
          // mouseOver();
     });
@@ -1024,6 +1035,16 @@ function clearMsgBoard() {      // garbage collection
     msgboard.init();
     document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);   
     document.getElementById("msg_layer").style.visibility="hidden";
+}
+
+function gameMenu() {
+    // pass;
+    menuLayer.init();
+}
+
+function removeGameMenu() {
+
+    document.getElementById('menu_layer').style.visibility="hidden";
 }
 
 function cleanBoard() {
@@ -1254,15 +1275,15 @@ function _initializePlayers() {
 function loadGameAssets() {         
     // init, draw, stop, clear, remove
     menuLayer.init();
-    // dram welcome message
-    setTimeout(() => {
+    // print welcome message
+    setTimeout(() => {          // remove when all game assets are loaded and game is ready to be played
         menuLayer.stop();
-        menuLayer.clear();
+        menuLayer.clear(); 
         // document.getElementById('menu_layer').style.visibility = 'hidden';
         document.getElementById("menu_layer").style.visibility="hidden";
-
     }, 4000);
     // initialize all game objects
+    inputMgr.init();        // load/initialize user input
     //  from classes & constructor functions
     var gameObjectsArr = _initializePlayers();
     //  load objects
@@ -1324,7 +1345,7 @@ function updateCardScreen() {
 
 
 function updateMenuScreen() {
-    //  pass;       game pauses and menu comes up when 'ESC' key is pressed.
+    //  pass;       game pauses and menu comes up  when 'ESC' key is pressed.
     var m=menuLayer.canvas;
     var c=menuLayer.ctx;
     c.font = "100px Arial";
@@ -1429,10 +1450,17 @@ const HANG_JACK=3;
 function mainGameLoop() {
     // var gObjectsArr = loadGameAssets();              // passes an array of all game object 
     // if (document.getElementById('card_layer')) {console.log('Card Screen exists.');} else {console.log('No card srceen found!');}
-    document.getElementById('card_layer').addEventListener('keydown', (event) => {
+    /*  document.getElementById('card_layer').addEventListener('keydown', (event) => {
         let x = event.keyID;
         console.log("Key ID: ", x);
-    });           // onKeyDown(event)
+    });           // onKeyDown(event)       
+    */
+    // document.getElementById('card_layer').addEventListener('click', mouseEventHandler(event));// => {
+    // document.getElementById('card_layer').addEventListener('click', mouseEventHandler(event));// => {
+    gControllerListeners();
+
+    // initializeInputControllers();
+
    // document.getElementById('card_layer').addEventListener('click', onClick(event));// => {
        /* let x = event.clientX; 
         let y = event.clientY;
@@ -1496,7 +1524,6 @@ function mainGameLoop() {
                 calledCard = computerPlayTurn(computer, null);
                 msgboard.text = "It's your turn. Please play a card.";
                 msgboard.visible = true;
-                document.getElementById('card_layer').addEventListener('click', mouseEventHandler(event));// => {
                     setTimeout(() => {
                     humanPlayTurn(human)
                     .then((card) => {
@@ -1526,7 +1553,6 @@ function mainGameLoop() {
                 } else {                   // if winner = human, then human plays first
                 msgboard.text = "You play first. Please select a card.";
                 msgboard.visible = true;
-                document.getElementById('card_layer').addEventListener('click', mouseEventHandler(event));// => {
                     setTimeout(() => {
                     humanPlayTurn(human)
                     .then((resolvedCard) => {
