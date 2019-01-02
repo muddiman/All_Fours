@@ -413,6 +413,9 @@ var inputMgr = {
                             //this.updateSelection();
                             this.refresh=setInterval(keyInputUpdate, PERIOD_H);
                         },
+    stop:               function () {
+                            clearInterval(this.refresh);
+                        },
     setClickPosition:   (positionalArr) => {
                             this.clickPosition = positionalArr;
                         },
@@ -711,13 +714,35 @@ function gControllerListeners() {
     window.addEventListener('keydown', onKeyDown);           // keyboard
     window.addEventListener("keyup", onKeyUp);
 }
+
 function onMouseOver(event) {
     let posx = event.clientX;           // x,y position of the mouse pointer on canvas when event occurs
     let posy = event.clientY;
     console.log("(", posx, ", ", posy, ")");
 }
 
-// var keyState = [];
+function mouseOverSelect() {
+    // pass;
+    // select
+}
+
+function clickConfirmation () {
+    // Pass;
+}
+
+function keySelect() {
+    // Pass;
+    if(inputMgr.keyState[KEY_RA]) {
+        cardToBoard.select = hand[i];
+    }
+    if (inputMgr.keyState[KEY_LA]) {
+        cardToBoard.select = hand[-i];
+    }
+}
+
+function enterConfirm() {
+
+}
 
 function onKeyDown(event) {
     let key = event.key;
@@ -727,11 +752,11 @@ function onKeyDown(event) {
 
 function onKeyUp(event) {
     inputMgr.keyState[event.key] = false;
-}
+} 
 
 function keyInputUpdate() {         //  gets latest keystate & carry out its corresponding action
     // ASCII keycode for the key  '<--' (left arrow): 37, 'w': 87, 
-    const KEY_W='q';
+    const KEY_Q='q';
     const KEY_ESC='Escape';
     const KEY_1='1';
     const KEY_2='2';
@@ -788,7 +813,7 @@ function keyInputUpdate() {         //  gets latest keystate & carry out its cor
             cardToBoard.user = hand[5];                   // play
         }
     }
-    
+
 }
 
                                                                 /*  Input Manager   */
@@ -1130,15 +1155,7 @@ function displayScore(playerA, playerB) {
 function humanPlayTurn(player) {
     return new Promise(function(resolve) {
         //msgboard.text = "Your turn, Please play a card.";
-        //msgboard.visible = true;
-       // document.getElementById('card_layer').addEventListener('keypress', console.log(event.keyCode || event.which));           // onKeystroke(event)
-       // document.getElementById('card_layer').addEventListener('click',  (event) => {
-               /* onClick(event)
-                .then((resolvedArr) => {
-                    return mouseEventHandler(resolvedArr);
-                    //document.getElementById('card_layer').addEventListener('click',  (event)=> {});
-                    })    // returns a card number
-                .then((cardNumber) => { */
+
                     // get card number
                     let cardNumber = inputMgr.getCardSelection;
                    /* while (!cardNumber) {
