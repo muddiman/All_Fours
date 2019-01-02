@@ -758,6 +758,37 @@ function keyInputUpdate() {         //  gets latest keystate & carry out its cor
             cardToBoard.user = hand[0];                   // play
         }
     }
+    if (inputMgr.keyState[KEY_2]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[1];                   // play
+        }
+    }
+    if (inputMgr.keyState[KEY_3]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[2];                   // play
+        }
+    }
+    if (inputMgr.keyState[KEY_4]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[3];                   // play
+        }
+    }
+    if (inputMgr.keyState[KEY_5]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[4];                   // play
+        }
+    }
+    if (inputMgr.keyState[KEY_6]) {
+        if (cardToBoard.user === null) {
+            let hand = human.hand;
+            cardToBoard.user = hand[5];                   // play
+        }
+    }
+    
 }
 
                                                                 /*  Input Manager   */
