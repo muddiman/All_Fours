@@ -18,10 +18,7 @@ h1 {
     margin-bottom: 0;
     font-size: 50px;
 }
-.container {
-    margin: 0;
-    padding: 0;
-}
+
 nav {
     padding-top: 0;
     margin-top: 0;
@@ -34,9 +31,18 @@ nav {
    padding-left: 10px;
    padding-top: 5px;
    padding-bottom: 5px;
-}#game-container {
+}
+.container {
+    margin: 0;
+    padding: 0;
+}
+#game-container {
     margin-right: 30%; 
     width: 70%;
+}
+.screen {
+    /* border: 5px solid black; */
+        /* margin-left: 15px; */
 }
 #game_board {
     border: 5px solid black; 

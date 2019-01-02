@@ -245,17 +245,17 @@ var msgLayer = {        //  Object: msgLayer --> TODO: turn into a "class"
 
 /* Menu layer object */
 var menuLayer = {        //  Object: menuLayer --> TODO: turn into a "class"
-    canvas : document.createElement("canvas"), 
+    canvas  :   document.createElement("canvas"), 
     init    :   function () {
-            // initialize menu layer by applying context & inserting the canvas in the "game_container" <div> 
-                this.canvas.width = WIDTH;
-                this.canvas.height = HEIGHT;
-                this.canvas.id = "menu_layer";
-                this.ctx = this.canvas.getContext("2d");
-                document.getElementById("game_container").appendChild(this.canvas);
-                document.getElementById("menu_layer").style="position: absolute; left: "+ LEFTOFFSET +"px; top: "+ TOPOFFSET +"px; z-index: 3; background-color: rgba(0, 0, 0," + OPAQUE + ");";
-                this.refresh = setInterval(_drawMenuScreen, PERIOD_H);   
-            },
+                    // initialize menu layer by applying context & inserting the canvas in the "game_container" <div> 
+                    this.canvas.width = WIDTH;
+                    this.canvas.height = HEIGHT;
+                    this.canvas.id = "menu_layer";
+                    this.ctx = this.canvas.getContext("2d");
+                    document.getElementById("game_container").appendChild(this.canvas);
+                    document.getElementById("menu_layer").style="position: absolute; left: "+ LEFTOFFSET +"px; top: "+ TOPOFFSET +"px; z-index: 3; background-color: rgba(0, 0, 0," + OPAQUE + "); border: 5px solid black;";
+                    this.refresh = setInterval(_drawMenuScreen, PERIOD_H);   
+                },
     clear   :   function () {           // wipes the entire menu screen clean
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 },
@@ -574,6 +574,7 @@ function removeInputListener() {
     });
 }
 
+/*
 function mouseExperiment(cardNumber) {
     return new Promise(function (resolve, reject) {
         let chosenCard = human.hand[cardNumber];
@@ -582,6 +583,7 @@ function mouseExperiment(cardNumber) {
         });
     });
 }
+*/
 
 /**
  * 
@@ -729,6 +731,84 @@ function onKeystroke(keyboardEvent) {
         i = i % yourHand.length + 1;
    // }
 }
+
+function gameControlsInit() {
+    document.getElementById('card_layer').addEventListener('mouseover', onMouseOver);       // start various listeners
+    document.getElementById('card_layer').addEventListener('click', onClick);
+    document.getElementById('card_layer').addEventListener('keydown', onKeyDown);
+}
+function onMouseOver(event) {
+    let posx = event.clientX;           // x,y position of the mouse pointer on canvas when event occurs
+    let posy = event.clientY;
+    console.log("(", posx, ", ", posy, ")");
+}
+
+// var keyState[256];
+
+function onKeyDown(event) {
+    let keyID = event.keyID;
+    console.log("ID: ", keyID);     // ASCII id of key thats was pressed
+
+    keyState[event.keyID] = true;
+}
+
+function onKeyUp(event) {
+    keyState[event.keyID] = false;
+}
+
+function update() {
+    // ASCII keycode for the key  '<--' (left arrow), 'w': 87, 
+    const KEY_W=87;
+    const KEY_ESC=100;
+    const KEY_0=0;
+    const KEY_1=1;
+    const KEY_2=2;
+    const KEY_3=3;
+    const KEY_4=4;
+    const KEY_5=5;
+
+    if (keyState[KEY_W]) {
+        // NULL;
+    }
+    if (keyState[KEY_ESC]) {            // toggle menu screen
+        if (document.getElementById('menu_layer').style.visibility =='visible') {
+            document.getElementById('menu_layer').style.visibility='hidden';
+        } else {
+            document.getElementById('menu_layer').style.visibility='visible';
+        }
+    } 
+    if (keyState[KEY_0]) {
+        // Play hand[0] card 
+    }
+}
+
+                                                                /*  Input Manager   */
+/*
+inputmanager = Class.extend(
+    {
+        keys    :   {},
+        bindings:   {},
+    
+    bind: function (key, action)
+    {
+        this.bindings[key] = action;
+    }
+
+    onKeyDownEvent: function (keyCode, event)
+    {
+        var code = keyCode;
+        var action = this.bindings[code];
+
+        if (action) {                                // if 'true' means the action is 'occurring'
+            this.actions[action] = true;
+        }
+    },
+    });
+
+
+keys:{},
+bind: function (key, action)
+*/
 
 function keystrokeEventHandler(key) {
     // inputMgr.updateSelection(key).then(function(resolve))
