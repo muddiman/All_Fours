@@ -490,7 +490,7 @@ var inputMgr = {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*  INPUT SECTION   */
+                                                                            /*  INPUT SECTION   */
 
 function removeInputListener() {
     return new Promise(function (resolve) {
@@ -670,11 +670,35 @@ function clickEventHandler() {
     }
 }
 
+function pauseEventListener(event, callbackFcn) {
+    if (event === "click") {
+        document.getElementById("card_layer").removeEventListener(event, callbackFcn);
+        setTimeout((event, callbackFcn) => {
+            document.getElementById("card_layer").addEventListener(event, callbackFcn);
+        }, 1500);
+    } else if (event == "keydown") {
+        window.removeEventListener(event, callbackFcn); // keyboard
+        setTimeout((event, callbackFcn) => {
+            window.addEventListener(event, callbackFcn); // keyboard
+        }, 1500);
+    }
+    if (event == "keyup") {
+        window.removeEventListener(event, callbackFcn); // keyboard
+        setTimeout((event, callbackFcn) => {
+            window.addEventListener(event, callbackFcn); // keyboard
+        }, 1500);
+    }
+}
+
+
 
 function onKeyDown(event) {
     let key = event.key;
-    console.log("ID: ", key); // ASCII id of key thats was pressed
-    inputMgr.keyState[event.key] = true;
+    if (key) {
+        console.log("ID: ", key); // ASCII id of key thats was pressed
+        //pauseEventListener("keydown", onKeyDown);
+    }
+    inputMgr.keyState[key] = true;
 }
 
 function onKeyUp(event) {
@@ -751,6 +775,7 @@ function keyboardEventHandler() { //  gets latest keystate & carry out its corre
     }
     if (inputMgr.keyState[KEY_6]) {
         if (cardToBoard.user === null) {
+            inputMgr.keyState[KEY_6] = false;
             let hand = human.hand;
             // cardToBoard.user = hand[5]; // 
             play(5);
@@ -793,7 +818,7 @@ function keystrokeEventHandler(key) {
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*  game play functions   */
+                                                                    /*  game play functions   */
 
 /**
  * 
@@ -942,47 +967,36 @@ function countForGame(player) {
 }
 
 function play(handIndex) {
-    let userHand = human.hand; //  play card
-    let firstCard = null;
-    let secondCard = null;
-    let winningCard = null;
-    //  determine if user playing first or second.. then play
-    if (cardToBoard.computer) { // computer played first
-        firstCard = cardToBoard.computer;
-        secondCard = userHand[handIndex];
-        cardToBoard.user = secondCard; // show my played card
-        winningCard = determineWinner(firstCard, secondCard);
-        if (winningCard == firstCard) {
+    if (cardToBoard.computer) {                         // computer played first
+        cardToBoard.user = human.hand[handIndex];       // show my played card
+        if (determineWinner(cardToBoard.computer, human.hand[handIndex]) == cardToBoard.computer) {
             winner = computer;
         } else {
             winner = human;
         }
-    } else {                    // human played first
-        cardToBoard.human = userHand[handIndex];        //  firstCard = userHand[handIndex];
-        // cardToBoard.human = firstCard;
-        // secondCard = computerPlay(computer, firstCard);
+    } else {                                            // human played first
+        cardToBoard.human = human.hand[handIndex];      //  firstCard = userHand[handIndex];
         cardToBoard.computer = computerPlay(computer, cardToBoard.human);   // secondCard;
-        // winningCard = determineWinner(firstCard, secondCard);
         if (determineWinner(cardToBoard.human, cardToBoard.computer) === cardToBoard.human) {
             winner = human;
         } else {
             winner = computer;
         }
     };
-    //   
     human.hand.splice(handIndex, 1);
-    // let winner.name = winner.name;
-    console.log(winner.name, +' Wins!');
-    msgboard.text = winner.name + " Won!!!";
+    let whoWon = winner.name;
+    console.log(whoWon, +" Wins!");
+    msgboard.text = whoWon + " Won!!!";
     msgboard.visible = true;
-    winner.lift.push(firstCard, secondCard);
+    winner.lift.push(cardToBoard.computer, cardToBoard.human);
+    /* 
     setTimeout(() => {
         cardToBoard.init();
         if (winner == computer) {
             cardToBoard.computer = computerPlay(computer, null);
         }
     }, 1500);
-
+    */
     
     /*   setTimeout(function () {
            msgboard.init();
