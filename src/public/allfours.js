@@ -67,7 +67,7 @@ const CARD_H = 96; // card height
 const TRANSPARENT = 0;
 const OPAQUE = 1.0;
 const LOW_REFRESH_RATE = 2; // IN FPS (frames per second)
-const HIGH_REFRESH_RATE = 10; // in FPS (frames per second)
+const HIGH_REFRESH_RATE = 30; // in FPS (frames per second)
 const PERIOD_L = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
 const PERIOD_H = (1 / HIGH_REFRESH_RATE) * 1000;
 const PLAYER1_NAME = "Computer";
@@ -383,7 +383,8 @@ var inputMgr = {
     clickPosition: [],
     cardSelection: null,
     keys: {},
-    bindings: {},
+    bindings: {'Escape': 'showMenuScreen', '1': 'playCard_1', '2': 'playCard_2', '3': 'playCard_3', '4': 'playCard_4', '5': 'playCard_5', '6': 'playCard_6', },
+    actions: {'showMenuScreen': false, 'playCard_1': false, 'playCard_2' : false, 'playCard_3' : false, 'playCard_4': false, 'playCard_5': false, 'playCard_6': false, },
     clickState: [],
     keyState: {},
     bind: function (key, action) {
@@ -392,8 +393,7 @@ var inputMgr = {
     init: function () {
         this.clickPosition = [];
         this.cardSelection = null;
-        //this.updateSelection();
-        this.refresh = setInterval(updateInputMgr, PERIOD_L);
+        this.refresh = setInterval(inputUpdate, 1000);           //      PERIOD_L
     },
     stop: function () {
         clearInterval(this.refresh);
@@ -696,13 +696,19 @@ function onKeyDown(event) {
     let key = event.key;
     if (key) {
         console.log("ID: ", key); // ASCII id of key thats was pressed
-        //pauseEventListener("keydown", onKeyDown);
+        // pauseEventListener("keydown", onKeyDown);
     }
-    inputMgr.keyState[key] = true;
+    let action = inputMgr.bindings[key];
+    if (inputMgr.actions[action] === false) {
+        inputMgr.actions[action] = true;
+    }
 }
 
 function onKeyUp(event) {
-    inputMgr.keyState[event.key] = false;
+    let key = event.key;
+    let action = inputMgr.bindings[key];
+    inputMgr.actions[action] = false;
+    // window.addEventListener('keydown', onKeyDown);
 }
 
 function keyboardEventHandler() { //  gets latest keystate & carry out its corresponding action
@@ -719,9 +725,11 @@ function keyboardEventHandler() { //  gets latest keystate & carry out its corre
     const KEY_RA = 'ArrowRight';
     const KEY_ENT = 'Enter';
     const KEY_SPB = ' ';
+}
 
+function inputUpdate() {
     //  probe all game keys
-    if (inputMgr.keyState[KEY_ESC]) { // toggle menu screen
+    if (inputMgr.actions['showMenuScreen']) {           // toggle menu screen
         if (document.getElementById('menu_layer').style.visibility == 'visible') {
             document.getElementById('menu_layer').style.visibility = 'hidden';
         } else {
@@ -737,63 +745,65 @@ function keyboardEventHandler() { //  gets latest keystate & carry out its corre
                 play(integer--);
             }
         }
+    
+    if (inputMgr.action[SELECT_LEFT]) {
+     selectCard(minusLeft);
+    }    
+    if (inputMgr.action[SELECT_RIGHT]) {
+     selectCard(plusRight);
+    }
     */
-    if (inputMgr.keyState[KEY_1]) {
+
+    if (inputMgr.actions['playCard_1']) {                 // queries the key's state, and calls the corresponding function
         if (cardToBoard.user === null) {
             let hand = human.hand;
-            // cardToBoard.user = hand[0];
-            play(0);                  // play
+            cardToBoard.user = hand[0];
+            //play(0);                  // play
         }
     }
-    if (inputMgr.keyState[KEY_2]) {
+    if (inputMgr.actions['playCard_2']) {
         if (cardToBoard.user === null) {
             let hand = human.hand;
-            // cardToBoard.user = hand[1];
-            play(1);
+            cardToBoard.user = hand[1];
+            //play(1);
         }
     }
-    if (inputMgr.keyState[KEY_3]) {
+    if (inputMgr.actions['playCard_3']) {
         if (cardToBoard.user === null) {
             let hand = human.hand;
             cardToBoard.user = hand[2]; // 
-            play(2);
+           // play(2);
         }
     }
-    if (inputMgr.keyState[KEY_4]) {
+    if (inputMgr.actions['playCard_4']) {
         if (cardToBoard.user === null) {
-            let hand = human.hand;
-            // cardToBoard.user = hand[3]; // 
             play(3);
         }
     }
-    if (inputMgr.keyState[KEY_5]) {
+    if (inputMgr.actions['playCard_5']) {
         if (cardToBoard.user === null) {
-            let hand = human.hand;
-            // cardToBoard.user = hand[4]; // 
             play(4);
         }
     }
-    if (inputMgr.keyState[KEY_6]) {
-        if (cardToBoard.user === null) {
-            inputMgr.keyState[KEY_6] = false;
-            let hand = human.hand;
-            // cardToBoard.user = hand[5]; // 
+    if (inputMgr.actions['playCard_6']) {
+        if (cardToBoard.user === null) { 
             play(5);
         }
     }
 
 }
 
-/*  Input Manager   */
+/*  Input Manager keyboard extension   */
 /*
 inputmanager = Class.extend(
     {
-        keys    :   {},
-        bindings:   {},
+        keys    :   {},                     // keys = {'KEY_LA' : false}                    keyCode --> state
+        bindings:   {},                     // eg. bindings = {'KEY_LA' : 'SELECT_LEFT'}    keyCode --> action
+        actions :   {},                     // eg. actions = {'SELECT_LEFT: false}          action --> state
     
-    bind: function (key, action)
+    bind: function (key, action)            // Eg. key = KEY_LA; action = 'SELECT_LEFT';
     {
-        this.bindings[key] = action;
+        this.bindings[key] = action[SELECT_LEFT];
     }
 
     onKeyDownEvent: function (keyCode, event)
@@ -820,6 +830,56 @@ function keystrokeEventHandler(key) {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                                     /*  game play functions   */
 
+
+    function playGameRound() {
+        if (computer.hand.length==0 && human.hand.length == 0) {
+            deck.init();
+            deck.shuffle();
+            deck.deal(human, computer);
+            dealer.points += kickPoints(deck.trump);
+        }
+        while (computer.hand.length > 0 && human.hand.length > 0) {
+            playRound(playFirst);
+        }
+        allocatePoints();
+    }
+
+    function allocatePoints() {
+        if (countForGame(computer) > countForGame(human)) {
+            computer.points += GAME;
+        } else {
+            human.points += GAME;
+        }
+    }
+
+    function playRound(playFirst) {
+        if (playFirst === computer) {
+            cardToBoard.computer = computer.hand[computerAI];
+            computer.hand.splice(computerAI, 1);
+            cardToBoard.user = userPlay();
+        } else {
+            cardToBoard.user = userPlay();
+            cardToBoard.computer = computer.hand[computerAI];
+            computer.hand.splice(computerAI, 1);
+        }
+    }
+
+    async function userPlay() {
+        let playedCard = null;
+        while (playedCard === null) {
+            let i=0;
+            for (action in inputMgr.actions) {
+                if (inputMgr.actions[action]) {
+                    playedCard = human.hand[i];
+                    human.hand.splice(i,1);
+                    return playedCard;
+                };
+                i++;
+            }
+        }
+    }
+                                                                
+                                                                    
 /**
  * 
  * @param {*} human.hand  the human player's hand (array of cards)
@@ -841,17 +901,21 @@ function humanPlay() {
         }
     });
 }
-
+function computerAI() {
+    // play a random card
+    let i = Math.floor(Math.random() * computer.hand.length);
+    return i;
+}
 /**
  * 
  * @param {*} called Card 
  * @param {*} computerHand Players.Hand 
  */
-function computerPlay(computer, opponentCard) { // run the 'thinking animation'
+function computerPlay() { // run the 'thinking animation'
     return new Promise(function (resolve, reject) {
         var position = "top";
         var i = Math.floor(Math.random() * computer.hand.length);
-        if (opponentCard == null) { //  then computer plays first, choose a random card.
+        if (cardToBoard.user == null) { //  then computer plays first, choose a random card.
             //  play highest random card (thats not trump or ten)
             // playCard(position, computer.hand[i]);
             cardToBoard.computer = computer.hand[i];
@@ -966,29 +1030,56 @@ function countForGame(player) {
     return points;
 }
 
-function play(handIndex) {
-    if (cardToBoard.computer) {                         // computer played first
-        cardToBoard.user = human.hand[handIndex];       // show my played card
-        if (determineWinner(cardToBoard.computer, human.hand[handIndex]) == cardToBoard.computer) {
-            winner = computer;
-        } else {
-            winner = human;
-        }
-    } else {                                            // human played first
-        cardToBoard.human = human.hand[handIndex];      //  firstCard = userHand[handIndex];
-        cardToBoard.computer = computerPlay(computer, cardToBoard.human);   // secondCard;
-        if (determineWinner(cardToBoard.human, cardToBoard.computer) === cardToBoard.human) {
-            winner = human;
-        } else {
-            winner = computer;
-        }
-    };
-    human.hand.splice(handIndex, 1);
+function endRoundPlay(handIndex) {
+    //human.hand.splice(handIndex, 1);
     let whoWon = winner.name;
     console.log(whoWon, +" Wins!");
     msgboard.text = whoWon + " Won!!!";
     msgboard.visible = true;
     winner.lift.push(cardToBoard.computer, cardToBoard.human);
+    cardToBoard.init();
+}
+
+function play(handIndex) {
+    if (cardToBoard.computer) {                         // computer played first
+        playSingleCard(human, handIndex);
+        // cardToBoard.user = human.hand[handIndex];       // show my played card
+        // computerPlay();
+        if (determineWinner(cardToBoard.computer, human.hand[handIndex]) == cardToBoard.computer) {
+            winner = computer;
+        } else {
+            winner = human;
+        }
+        setTimeout(() => {
+            endRoundPlay(handIndex);
+            if (winner == computer) {
+                cardToBoard.computer = computerPlay();
+            }            
+        }, 2000);    
+    } else {                                            // human played first
+        playSingleCard(human, handIndex);
+        // cardToBoard.human = human.hand[handIndex];      //  firstCard = userHand[handIndex];
+        cardToBoard.computer = computerPlay();   // secondCard;
+        if (determineWinner(cardToBoard.human, cardToBoard.computer) === cardToBoard.human) {
+            winner = human;
+        } else {
+            winner = computer;
+        }
+        setTimeout(() => {
+            endRoundPlay(handIndex);
+            if (winner == computer) {
+                cardToBoard.computer = computerPlay();
+            }            
+        }, 2000);
+    };
+    console.log('END OF ROUND!!!');
+}
+
+function playSingleCard(player, i) {
+    cardToBoard.player = player.hand[i];
+    player.hand.splice(i, 1);
+}
+
     /* 
     setTimeout(() => {
         cardToBoard.init();
@@ -1010,11 +1101,11 @@ function play(handIndex) {
            }, 1500);
        }, 2500);
      */
-    console.log('END OF ROUND!!!');
+
     //  End of game round subroutines
     //if (userHand.length == 0) {
     //    distributePoints();
-    }
+    
     //  deal (toggle dealer)
     // if (human.points >= 14) {
     //   let declaredWinner = "Congrations ", + human.name +"You beat us at All Fours";
@@ -1626,6 +1717,20 @@ function mainGameLoop() {
     } else {
         playFirst = computer;
     }
+
+                                                                              /*  Actual Game Engine  */
+
+
+    // players play one card each
+    // who plays first
+
+
+
+
+    while (human.points <= 14 && computer.points <= 14) {
+        playGameRound();
+    }
+
     /*
     var playedCard; // add playedBy attribute
     var calledCard; // add playedBy attribute
@@ -1670,6 +1775,7 @@ function mainGameLoop() {
                 playedCard = computerPlay(computer, calledCard);
                 let winningCard = determineWinner(calledCard, playedCard);
                 if (winningCard == playedCard) {
+      
                     winner = computer;
                 } else {
                     winner = human;
