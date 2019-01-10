@@ -68,8 +68,8 @@ const TRANSPARENT = 0;
 const OPAQUE = 1.0;
 const LOW_REFRESH_RATE = 2; // IN FPS (frames per second)
 const HIGH_REFRESH_RATE = 30; // in FPS (frames per second)
-const PERIOD_L = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
-const PERIOD_H = (1 / HIGH_REFRESH_RATE) * 1000;
+const FPS_2 = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
+const FPS_30 = (1 / HIGH_REFRESH_RATE) * 1000;
 const PLAYER1_NAME = "Computer";
 const PLAYER2_NAME = "Roger";
 const LEFTOFFSET = 15;
@@ -173,7 +173,7 @@ var gameBoard = {
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; border: 5px solid black;";
-        this.refresh = setInterval(_drawGameBoard, PERIOD_L);
+        this.refresh = setInterval(_drawGameBoard, FPS_2);
     },
     clear: function () {
         // wipes the entire gameBoard clean
@@ -198,7 +198,7 @@ var cardLayer = { //  Object: cardLayer --> TODO: turn into a "class"
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
         // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-        this.refresh = setInterval(_drawCardScreen, PERIOD_H);
+        this.refresh = setInterval(_drawCardScreen, FPS_30);
     },
     clear: function () { // wipes the entire card screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -221,7 +221,7 @@ var msgLayer = { //  Object: msgLayer --> TODO: turn into a "class"
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("msg_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
         // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-        this.refresh = setInterval(_drawMsgScreen, PERIOD_H);
+        this.refresh = setInterval(_drawMsgScreen, FPS_2);
     },
     clear: function () { // wipes the entire gameBoard clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -243,7 +243,7 @@ var menuLayer = { //  Object: menuLayer --> TODO: turn into a "class"
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("menu_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: 3; background-color: rgba(0, 0, 0," + OPAQUE + "); border: 5px solid black;";
-        this.refresh = setInterval(_drawMenuScreen, PERIOD_H);
+        this.refresh = setInterval(_drawMenuScreen, FPS_2);
     },
     clear: function () { // wipes the entire menu screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -393,7 +393,7 @@ var inputMgr = {
     init: function () {
         this.clickPosition = [];
         this.cardSelection = null;
-        this.refresh = setInterval(inputUpdate, 1000);           //      PERIOD_L
+        this.refresh = setInterval(inputUpdate, 250);           //      FPS_2
     },
     stop: function () {
         clearInterval(this.refresh);
@@ -592,9 +592,10 @@ function onKeystroke(keyboardEvent) {
 
 function gControllerListeners() {
     // document.getElementById('card_layer').addEventListener('mouseover', onMouseOver); // start various listeners
-    document.getElementById('card_layer').addEventListener('click', onClick);
+    document.getElementById("card_layer").addEventListener("click", onClick, true);   //  
     window.addEventListener('keydown', onKeyDown); // keyboard
     window.addEventListener("keyup", onKeyUp);
+    console.log("All listeners loaded");
 }
 
 function onMouseOver(event) {
@@ -657,13 +658,25 @@ function clickEventHandler() {
             if (locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2) {
                 // play(i);
                // cardToBoard.user = myHand[i - 1];
-                play(i - 1);
+                // play(i - 1);
+                let key = i.toString(); 
+                console.log(key);
+                let action = inputMgr.bindings[key];
+                if (inputMgr.actions[action] === false) {
+                    inputMgr.actions[action] = true;
+                }
                 break;
             }
             if (i == myHand.length && locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2 + CARD_W / 2) {
                 //  play(i);
                 //cardToBoard.user = myHand[i - 1];
-                play(i - 1);
+                // play(i - 1);
+                let key = i.toString(); 
+                console.log(key);
+                let action = inputMgr.bindings[key];
+                if (inputMgr.actions[action] === false) {
+                    inputMgr.actions[action] = true;
+                }
                 break;
             }
         }
@@ -726,8 +739,7 @@ function keyboardEventHandler() { //  gets latest keystate & carry out its corre
     const KEY_ENT = 'Enter';
     const KEY_SPB = ' ';
 }
-
-function inputUpdate() {
+function toggleMenuScreen() {
     //  probe all game keys
     if (inputMgr.actions['showMenuScreen']) {           // toggle menu screen
         if (document.getElementById('menu_layer').style.visibility == 'visible') {
@@ -736,6 +748,13 @@ function inputUpdate() {
             document.getElementById('menu_layer').style.visibility = 'visible';
         }
     }
+}
+
+
+
+function inputUpdate() {
+    toggleMenuScreen();
+    clickEventHandler();
     /*
         let hand = human.hand;
         for (let i=1; i<hand.length; i++) {
@@ -754,7 +773,7 @@ function inputUpdate() {
     }
     */
 
-    if (inputMgr.actions['playCard_1']) {                 // queries the key's state, and calls the corresponding function
+    if (inputMgr.actions['playCard_1'] === true) {                 // queries the key's state, and calls the corresponding function
         if (cardToBoard.user === null) {
             let hand = human.hand;
             cardToBoard.user = hand[0];
@@ -831,6 +850,11 @@ function keystrokeEventHandler(key) {
                                                                     /*  game play functions   */
 
 
+function gWaitState() {             // institutes a wait state until user input is received
+    // pass;
+}
+                                                                    
+
     function playGameRound() {
         if (computer.hand.length==0 && human.hand.length == 0) {
             deck.init();
@@ -864,9 +888,9 @@ function keystrokeEventHandler(key) {
         }
     }
 
-    async function userPlay() {
+    function userPlay() {
         let playedCard = null;
-        while (playedCard === null) {
+        //while (playedCard === null) {
             let i=0;
             for (action in inputMgr.actions) {
                 if (inputMgr.actions[action]) {
@@ -876,7 +900,7 @@ function keystrokeEventHandler(key) {
                 };
                 i++;
             }
-        }
+        //}
     }
                                                                 
                                                                     
@@ -1426,7 +1450,6 @@ function gameMenu() {
 }
 
 function removeGameMenu() {
-
     document.getElementById('menu_layer').style.visibility = "hidden";
 }
 
@@ -1496,15 +1519,13 @@ function _initializePlayers() {
  *  to make sure all the games assets are fully loaded before the game runs
  *  this will be handled by game-loader.js in the final version
  */
-function loadGameAssets() {
+ function loadGameAssets() {
     // init, draw, stop, clear, remove
-    menuLayer.init();
-    // print welcome message
-    setTimeout(() => {          // remove menu screen when all game assets are loaded and game is ready to be played
+    menuLayer.init();                      // print welcome message
+    setTimeout(() => {                  // remove menu screen when all game assets are loaded and game is ready to be played
         menuLayer.stop();
         menuLayer.clear();
-        // document.getElementById('menu_layer').style.visibility = 'hidden';
-        document.getElementById("menu_layer").style.visibility = "hidden";
+        removeGameMenu();
     }, 4000);
     // initialize all game objects
     inputMgr.init(); // load/initialize user input
@@ -1512,9 +1533,9 @@ function loadGameAssets() {
     let gObjectsArr = _initializePlayers();
     //  load objects
     msgboard.init();
-    deck.init(); // load all  card images                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               images into cache array
-    cardToBoard.init(); // game play cards cache for display
-    //  other graphical objects
+    deck.init();                        // load all  card images into cache                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               images into cache array
+    cardToBoard.init();                 // game play cards cache for display
+    //  all other graphical objects
     _initializeScreens();
     //  sound components      
     return gObjectsArr;
@@ -1526,7 +1547,7 @@ function _initializeScreens() {
     let s1 = Promise.resolve(cardLayer.init()); // screens[1] = cardsLayer;
     let s2 = Promise.resolve(msgLayer.init());  // screens[2] = msgLayer;
     let s3 = Promise.resolve(menuLayer.init()); // screens[3] = menuLayer;
-    //  Promise.all(s0, s1, s2, s3).then((screens) => resolve(screens);
+    // Promise.all(s0, s1, s2, s3).then(() => resolve(console.log("all screens initialized")));
     //  return screens;
     //  for (screen in screens) {
     //    screen.init();
@@ -1543,12 +1564,11 @@ function loadScreenCache() {
 }
 
 function updateGameScreen() {
-
     displayScore(computer, human);
     if (deck.trump) {
         displayTrump(deck.trump);
-        displayLabels();
     }
+    displayLabels();
 }
 
 function updateCardScreen() {
@@ -1602,12 +1622,6 @@ function _drawMenuScreen() {
     menuLayer.clear();
     updateMenuScreen();
 }
-
-/*
-function gWaitState() {
-    // pass;
-}
-*/
 
 function _renderAllScreens() {
     for (var screen in screens) {
@@ -1663,8 +1677,8 @@ const HANG_JACK = 3;
  *   @return: void
  */
 function mainGameLoop() {
-    // var gObjectsArr = loadGameAssets();              // passes an array of all game object 
-    // if (document.getElementById('card_layer')) {console.log('Card Screen exists.');} else {console.log('No card srceen found!');}
+    var gObjectsArr = loadGameAssets();              // passes an array of all game object 
+    // if (document.getElementById('card_layer')) {console.log('Card Screen exists.');} else {console.log('No card screen found!');}
     /*  document.getElementById('card_layer').addEventListener('keydown', (event) => {
         let x = event.keyID;
         console.log("Key ID: ", x);
@@ -1700,7 +1714,7 @@ function mainGameLoop() {
 
     /*  Deal subroutines    */
     // firstJackDeal();         // along wth animation
-    let flipACoin = Math.floor(Math.random() * 2); // simulate firtsJackDeal
+    let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
     if (flipACoin == 0) {
         dealer = computer;
     } else {
@@ -1710,6 +1724,7 @@ function mainGameLoop() {
     deck.deal(human, computer);
     //displayPlayerHand(human); //.then(mouseEventHandler()); // then setUserInput
     dealer.points += kickPoints(deck.trump);
+    console.log("Dealer Points: ", + dealer.points);
 
     var winner;
     if (dealer == computer) {
@@ -1718,6 +1733,7 @@ function mainGameLoop() {
         playFirst = computer;
     }
 
+    
                                                                               /*  Actual Game Engine  */
 
 
@@ -1725,11 +1741,9 @@ function mainGameLoop() {
     // who plays first
 
 
-
-
-    while (human.points <= 14 && computer.points <= 14) {
+    //while (human.points <= 14 && computer.points <= 14) {
         playGameRound();
-    }
+     // }
 
     /*
     var playedCard; // add playedBy attribute
