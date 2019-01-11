@@ -263,7 +263,7 @@ var menuLayer = { //  Object: menuLayer --> TODO: turn into a "class"
 
 /*  Image Cache  */
 // card images
-var gCardCache = {};
+// var gCardCache = {};
 
 /* Deck of cards objects   */
 var deck = {
@@ -592,7 +592,9 @@ function onKeystroke(keyboardEvent) {
 
 function gControllerListeners() {
     // document.getElementById('card_layer').addEventListener('mouseover', onMouseOver); // start various listeners
-    document.getElementById("card_layer").addEventListener("click", onClick, true);   //  
+   // document.getElementById("card_layer").addEventListener("click", onClick, true);   // 
+    document.getElementById("card_layer").addEventListener("onmousedown", onMouseDown, true);   //  
+    document.getElementById("card_layer").addEventListener("onmouseup", onMouseUp, true);   //   
     window.addEventListener('keydown', onKeyDown); // keyboard
     window.addEventListener("keyup", onKeyUp);
     console.log("All listeners loaded");
@@ -627,13 +629,6 @@ function enterConfirm() {
 
 }
 
-function updateInputMgr() {
-    clickEventHandler();
-    keyboardEventHandler();
-    // mouseOverEventHandler();
-    // arrowKeysEventHandler();
-}
-
 function onClick() {
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
@@ -643,6 +638,23 @@ function onClick() {
     }
     inputMgr.clickPosition[1] = locX;
     inputMgr.clickPosition[2] = locY;
+}
+
+function onMouseDown(event) {
+    let locX = event.clientX - LEFTOFFSET;
+    let locY = event.clientY - TOPOFFSET;
+    console.log("Click location: (", locX, ", ", locY, ")");
+    inputMgr.clickPosition[1] = locX;
+    inputMgr.clickPosition[2] = locY;
+}
+
+function onMouseUp(event) {
+    for (action in inputMgr.actions){
+        if (inputMgr.actions[action] === true) {
+            inputMgr.actions[action] = false;
+        }
+    }
+    // window.addEventListener('keydown', onKeyDown);
 }
 
 function clickEventHandler() {
@@ -709,7 +721,6 @@ function onKeyDown(event) {
     let key = event.key;
     if (key) {
         console.log("ID: ", key); // ASCII id of key thats was pressed
-        // pauseEventListener("keydown", onKeyDown);
     }
     let action = inputMgr.bindings[key];
     if (inputMgr.actions[action] === false) {
@@ -721,7 +732,6 @@ function onKeyUp(event) {
     let key = event.key;
     let action = inputMgr.bindings[key];
     inputMgr.actions[action] = false;
-    // window.addEventListener('keydown', onKeyDown);
 }
 
 function keyboardEventHandler() { //  gets latest keystate & carry out its corresponding action
@@ -849,23 +859,50 @@ function keystrokeEventHandler(key) {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                                     /*  game play functions   */
 
-
-function gWaitState() {             // institutes a wait state until user input is received
-    // pass;
+function gWaitState(secs) {             // institutes a wait state until user input is received
+    setTimeout((secs) => {
+        console.log("Pause entire game for ", + secs + " seconds.");
+    }, secs * 1000);
 }
                                                                     
 
-    function playGameRound() {
+function playGameRound() {
+        let dealer = null;
+        let playFirst = null;
+        // let winner = null;
+        /*  deal, play rounds, distribute points --> repeat    */
+        // Deal Cards
+        //assign dealer -->      TODO: animation
+        if (!dealer) {  // then firstJackDeal();
+            let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
+            if (flipACoin == 0) {
+                dealer = computer;
+            } else {
+                dealer = human;
+            }
+        } else if (dealer == human) {
+            dealer = computer;
+            playFirst = human;
+        } else {
+            dealer = human;
+            playFirst = computer;
+        }
+        // deal
         if (computer.hand.length==0 && human.hand.length == 0) {
             deck.init();
             deck.shuffle();
             deck.deal(human, computer);
             dealer.points += kickPoints(deck.trump);
+            console.log("Dealer, "+ dealer.name + " gets "+ kickPoints(deck.trump) + " points.");
         }
-        while (computer.hand.length > 0 && human.hand.length > 0) {
-            playRound(playFirst);
+        // Play Rounds
+        // while (computer.hand.length > 0 && human.hand.length > 0) {
+            playFirst = playRound(playFirst);
+        // }
+        // Distribute points at the end of a game round
+        if (computer.hand.length==0 && human.hand.length == 0) {
+            allocatePoints();
         }
-        allocatePoints();
     }
 
     function allocatePoints() {
@@ -876,31 +913,97 @@ function gWaitState() {             // institutes a wait state until user input 
         }
     }
 
-    function playRound(playFirst) {
-        if (playFirst === computer) {
-            cardToBoard.computer = computer.hand[computerAI];
-            computer.hand.splice(computerAI, 1);
-            cardToBoard.user = userPlay();
+ async function playRound(playFirst) {
+        let winner = null;
+        if (playFirst == computer) {
+            Promise.resolve(() => {
+                cardToBoard.init();
+                msgboard.text = "Computer plays first."
+                msgboard.visible = true;              
+            })
+            .then(gWaitState(4))
+            .then(async () => {
+                msgboard.init();
+                cardToBoard.computer = computer.hand[computerAI];
+                computer.hand.splice(computerAI, 1);
+                cardToBoard.user = await userPlay();
+            })
+            .then(gWaitState(2))
+            .then(() => {
+                if (determineWinner(cardToBoard.computer, cardToBoard.human) == cardToBoard.computer) {
+                    winner = computer;
+                } else {
+                    winner = human;
+                };
+                msgboard.text = winner.name + " won that round."
+                msgboard.visible = true;            
+            })
+            .then(gWaitState(2))
+            .then(() => {
+                cardToBoard.init();
+            })
         } else {
-            cardToBoard.user = userPlay();
-            cardToBoard.computer = computer.hand[computerAI];
-            computer.hand.splice(computerAI, 1);
+            Promise.resolve(() => {
+                cardToBoard.init();
+                msgboard.text = "You play first."
+                msgboard.visible = true;
+            })
+            .then(gWaitState(4))
+            .then(async () => {
+                cardToBoard.user = await userPlay();
+            })
+            .then(() => {
+                cardToBoard.computer = computer.hand[computerAI];
+                computer.hand.splice(computerAI, 1);
+                if (determineWinner(cardToBoard.computer, cardToBoard.human) == cardToBoard.computer) {
+                    winner = computer;
+                } else {
+                    winner = human;
+                };
+            })
+            .then(gWaitState(1))
+            .then(() => {
+                msgboard.text = winner.name + " won that round."
+                msgboard.visible = true            
+            })
+            .then(gWaitState(2))
+            .then(() => {
+                cardToBoard.init();
+            })
         }
+        return winner;
+        /* 
+            GAME RHYTHM:
+        publish who plays first
+        wait
+        play
+        wait
+        play 
+        wait
+        determineWinner
+        publish winner
+        wait
+        init
+        */
     }
 
     function userPlay() {
         let playedCard = null;
-        //while (playedCard === null) {
-            let i=0;
+        let i=0;
+        let probe = setInterval(() => {
             for (action in inputMgr.actions) {
+                console.log(i);
+                console.log(action);
+                console.log(inputMgr.actions[action]);
                 if (inputMgr.actions[action]) {
                     playedCard = human.hand[i];
                     human.hand.splice(i,1);
+                    clearInterval(probe);
                     return playedCard;
                 };
                 i++;
             }
-        //}
+        }, 100);
     }
                                                                 
                                                                     
@@ -925,11 +1028,13 @@ function humanPlay() {
         }
     });
 }
+
 function computerAI() {
     // play a random card
     let i = Math.floor(Math.random() * computer.hand.length);
     return i;
 }
+
 /**
  * 
  * @param {*} called Card 
@@ -982,7 +1087,7 @@ function computerPlay() { // run the 'thinking animation'
     });
 }
 
-function determineWinner(called, played) {
+function  determineWinner(called, played) {
     // determines the higher rank card
     // parameters: called and played card objects
     // return: player (who won)
@@ -1431,7 +1536,7 @@ function message() {
     // c.globalAlpha=0.1;
     c.font = "20px Arial";
     c.fillStyle = "rgba(254,254,254,1.0)"; // white
-    var msgText = msgboard.text;
+    // let msgText = msgboard.text;
     c.fillText(msgboard.text, 200, 200);
     document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
     let pause = setTimeout(clearMsgBoard, 3000);
@@ -1595,11 +1700,14 @@ function updateMenuScreen() {           //  game pauses and menu comes up  when 
     var c = menuLayer.ctx;
     c.font = "70px Arial";
     c.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
-    let welcomeMsg = "Let's play some";
-    c.fillText(welcomeMsg, 95, 200);
+    let welcomeMsg = "Let's play";
+    c.fillText(welcomeMsg, 200, 125);
     c.font="100px Arial";
     let gamelogo = "ALL FOURS!";
-    c.fillText(gamelogo, 75, 350);
+    c.fillText(gamelogo, 75, 250);
+    c.font="50px Arial";
+    let loading = "LOADING . . .";
+    c.fillText(loading, 200, 415);
 }
 
 function _drawCardScreen() {
@@ -1677,7 +1785,7 @@ const HANG_JACK = 3;
  *   @return: void
  */
 function mainGameLoop() {
-    var gObjectsArr = loadGameAssets();              // passes an array of all game object 
+    // var gObjectsArr = loadGameAssets();              // passes an array of all game object 
     // if (document.getElementById('card_layer')) {console.log('Card Screen exists.');} else {console.log('No card screen found!');}
     /*  document.getElementById('card_layer').addEventListener('keydown', (event) => {
         let x = event.keyID;
@@ -1712,20 +1820,15 @@ function mainGameLoop() {
     // In-game globals
     //do until human.points || computer.points >= 14
 
-    /*  Deal subroutines    */
-    // firstJackDeal();         // along wth animation
-    let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
-    if (flipACoin == 0) {
-        dealer = computer;
-    } else {
-        dealer = human;
-    }
+    /*  Dealing subroutines    */
+/*
     deck.shuffle();
     deck.deal(human, computer);
-    //displayPlayerHand(human); //.then(mouseEventHandler()); // then setUserInput
     dealer.points += kickPoints(deck.trump);
     console.log("Dealer Points: ", + dealer.points);
 
+    
+        // who plays first
     var winner;
     if (dealer == computer) {
         playFirst = human;
@@ -1733,12 +1836,9 @@ function mainGameLoop() {
         playFirst = computer;
     }
 
-    
+ */   
                                                                               /*  Actual Game Engine  */
 
-
-    // players play one card each
-    // who plays first
 
 
     //while (human.points <= 14 && computer.points <= 14) {
