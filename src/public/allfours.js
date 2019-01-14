@@ -58,10 +58,10 @@
 
 /* the globals */
 /* necessary game dimensions */
-const WIDTH = 700; //use window.innerWidth;  for fullscreen gaming
-const HEIGHT = 450; //use window.innerHeight; for fullscreen gaming
-const CARD_W = 72; // card width
-const CARD_H = 96; // card height
+const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
+const HEIGHT  = 450; //use window.innerHeight; for fullscreen gaming
+const CARD_W  =  72; // card width
+const CARD_H  =  96; // card height
 
 /* Clear/Opaque */
 const TRANSPARENT = 0;
@@ -187,32 +187,33 @@ var gameBoard = {
     }
 };
 
+// var cardLayer   = new gCanvasLayer("card_layer", WIDTH, HEIGHT, TRANSPARENT, _drawCardScreen, FPS_30, 1, 255, 255, 255);
 /* Card layer object */
-var cardLayer = { //  Object: cardLayer --> TODO: turn into a "class"
+
+var cardLayer = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
-        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
         this.canvas.width = WIDTH;
         this.canvas.height = HEIGHT;
         this.canvas.id = "card_layer";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
-        // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
         this.refresh = setInterval(_drawCardScreen, FPS_30);
     },
-    clear: function () { // wipes the entire card screen clean
+    clear: function () {                                                        // wipes the entire card screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
-    stop: function () { // if 'setInterval is used, there should be stop function
+    stop: function () {                                                         // if 'setInterval is used, there should be stop function
         clearInterval(this.refresh);
     },
     // this.frameNo =0;
 };
 
+
 /* Message layer object */
-var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
-/*
+//var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
+
 var msgLayer = { //  Object: msgLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
@@ -1788,7 +1789,7 @@ function loadGameAssets() {
 function _initializeScreens() {
     let s0 = Promise.resolve(gameBoard.init()); // screens[0] = gameBoard;
     let s1 = Promise.resolve(cardLayer.init()); // screens[1] = cardsLayer;
-    let s2 = Promise.resolve(msgLayer.init()); // screens[2] = msgLayer;
+    let s2 = Promise.resolve(msgLayer.init());  // screens[2] = msgLayer;
     let s3 = Promise.resolve(menuLayer.init()); // screens[3] = menuLayer;
     // Promise.all(s0, s1, s2, s3).then(() => resolve(console.log("all screens initialized")));
     //  return screens;
@@ -1799,11 +1800,11 @@ function _initializeScreens() {
 
 function loadScreenCache() {
     let screens = [];
-    screens[0] = gameBoard; // and scoreLayer 
+    screens[0] = gameBoard;     // and scoreLayer 
     screens[1] = cardsLayer;
     screens[2] = msgLayer;
     screens[3] = menuLayer;
-    return screens; // screens array
+    return screens;             // screens array
 }
 
 function updateGameScreen() {
