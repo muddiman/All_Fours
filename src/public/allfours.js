@@ -79,28 +79,28 @@ const CONVERT_TO_RADIANS = Math.PI / 180;
 //------------------------------------------------------------------------------------------------------------------
 /*  THE CLASSES/OBJECT CONSTRUCTORS  */
 
-/*
-//  
-    function Layer(ID, WIDTH, HEIGHT, OPACITY, drawScreenFcn, period) {
-        canvas = document.createElement("canvas");
-        this.init = function () {         
-            this.canvas.id = ID;
-            this.canvas.width = WIDTH;
-            this.canvas.height = HEIGHT;
-            this.ctx = this.canvas.getContext('2d');
-            Document.getElementById("game_container").appendChild(this.canvas);
-            document.getElementById(ID).style="position: absolute; left: " + LEFTOFFSET +"px; top: "+ TOPOFFSET +"px; z-index: 1; background-color: rgba(255, 255, 255," + OPACITY + ");";
-            console.log("New " + this.canvas.id + " canvas initialized.");
-            this.refresh = setInterval(drawScreenFcn(), period);  
-        };
-        this.clear = function () {  
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        };
-        this.stop = function () {
-            clearInterval(this.refresh);
-        }
-    }
-*/
+
+
+function gCanvasLayer(ID, _WIDTH, _HEIGHT, OPACITY, drawScreenFcn, period, Z, red, green, blue) {
+    this.canvas = document.createElement("canvas");
+    this.init = function () {
+        this.canvas.width = _WIDTH;
+        this.canvas.height = _HEIGHT;
+        this.canvas.id = ID;
+        this.ctx = this.canvas.getContext('2d');
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById(ID).style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: " + Z + "; background-color: rgba(" + red + ", " + green + ", " + blue + ", " + OPACITY + ");";
+        console.log("New " + this.canvas.id + " canvas initialized.");
+        // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
+        this.refresh = setInterval(drawScreenFcn(), period);
+    };
+    this.clear = function () {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    };
+    this.stop = function () {
+        clearInterval(this.refresh);
+    };
+}
 
 // var gAssetCache = [];    OR as an object:    var gAssetCache = {};
 
@@ -111,25 +111,24 @@ function Card(rank, face, suit) {
     this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
     this.getCardName = function () {
-        return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
+        return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
     };
     //this.image =            new Image();
     this.init = () => {
-        if (gCardCache[this.getCardName]) {
-            this.image = gCardCache[this.getCardName];
+        if (gCardImageCache[this.getCardName]) {
+            this.image = gCardImageCache[this.getCardName];
             console.log('Using cached version of image.');
         } else {
             this.image = new Image();
             this.image.id = this.getCardName();
             this.image.src = "img/" + this.getCardName() + ".png";
             this.image.onload = () => {
-                gCardCache[this.getCardName] = this.image;
-                console.log(this.getCardName() + ' loaded into cache.');
+                let card = this.getCardName();
+                gCardImageCache[card] = this.image;
+                console.log(this.getCardName() + ' image loaded into cache object.');
             };
         }
     };
-
-
 }
 
 /**
@@ -157,7 +156,9 @@ function Player() { // Add a "Team" constructor when coding the 4-player version
 //-------------------------------------------------------------------------------------------------------------------------
 /*          THE OBJECTS             */
 
-var gCardCache = {}; // object that cache card images
+//  obtain objects from .JSON files or external class files
+
+var gCardImageCache = {}; // object that cache card images
 
 /* game board object */
 // import gameBoard from '/lib/graphicslib.js';         INCL. score board, trump...
@@ -210,17 +211,17 @@ var cardLayer = { //  Object: cardLayer --> TODO: turn into a "class"
 };
 
 /* Message layer object */
+var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
+/*
 var msgLayer = { //  Object: msgLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
-        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
         this.canvas.width = WIDTH;
         this.canvas.height = HEIGHT;
         this.canvas.id = "msg_layer";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("msg_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
-        // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
         this.refresh = setInterval(_drawMsgScreen, FPS_2);
     },
     clear: function () { // wipes the entire gameBoard clean
@@ -233,6 +234,8 @@ var msgLayer = { //  Object: msgLayer --> TODO: turn into a "class"
 };
 
 /* Menu layer object */
+// var menuLayer    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "menu_layer",   3, drawScreenFcn);
+/*
 var menuLayer = { //  Object: menuLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
@@ -253,17 +256,24 @@ var menuLayer = { //  Object: menuLayer --> TODO: turn into a "class"
     },
     // this.frameNo =0;
 };
+*/
 
-/* Display Layer Objects */
+/* Canvas Layer Objects */
 // var gameBoard    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "game_board",   0, drawScreenFcn);
-// var scoreLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "cards_layer",  1, drawScreenFcn);
-// var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "msgs_layer",   2, drawScreenFcn);
+// var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "cards_layer",  1, drawScreenFcn);
+// var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
+var menuLayer = new gCanvasLayer("menu_layer",  WIDTH, HEIGHT, OPAQUE,      _drawMenuScreen, FPS_30, 3,    0,  0,   0);
+
+/* Image Layer Objects */
+// var gameBoard    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "game_board",   0, drawScreenFcn);
+// var cardsLayer   = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "cards_layer",  1, drawScreenFcn);
+// var msgLayer     = new CANVAS_LAYER(WIDTH, HEIGHT, TRANSPARENT,  "msgs_layer",   2, drawScreenFcn);
 // var menuLayer    = new CANVAS_LAYER(WIDTH, HEIGHT, OPAQUE,       "menu_layer",   3, drawScreenFcn);
 
 
 /*  Image Cache  */
 // card images
-// var gCardCache = {};
+// var gCardImageCache = {};
 
 /* Deck of cards objects   */
 var deck = {
@@ -282,7 +292,7 @@ var deck = {
             var rank = 1;
             for (x = 0; x < faces.length; x++) {
                 this.cards[n] = new Card(rank, faces[x], suits[y]);
-                this.cards[n].init();
+                this.cards[n].init(); //  get card images from image files or image cache object
                 n++;
                 rank++;
             }
@@ -383,8 +393,37 @@ var inputMgr = {
     clickPosition: [],
     cardSelection: null,
     keys: {},
-    bindings: {'Escape': 'showMenuScreen', '1': 'playCard_1', '2': 'playCard_2', '3': 'playCard_3', '4': 'playCard_4', '5': 'playCard_5', '6': 'playCard_6', },
-    actions: {'showMenuScreen': false, 'playCard_1': false, 'playCard_2' : false, 'playCard_3' : false, 'playCard_4': false, 'playCard_5': false, 'playCard_6': false, },
+    bindings: {
+        'Escape': 'showMenuScreen',
+        '1': 'playCard_1',
+        '2': 'playCard_2',
+        '3': 'playCard_3',
+        '4': 'playCard_4',
+        '5': 'playCard_5',
+        '6': 'playCard_6',
+        '7': 'playCard_7',
+        '8': 'playCard_8',
+        '9': 'playCard_9',
+        'ArrowRight': 'selectNext',
+        'ArrowLeft': 'selectPrevious',
+        'Enter': 'confirmSelection',
+        ' ': 'confirmSelection',
+    },
+    actions: {
+        'showMenuScreen': false,
+        'playCard_1': false,
+        'playCard_2': false,
+        'playCard_3': false,
+        'playCard_4': false,
+        'playCard_5': false,
+        'playCard_6': false,
+        'playCard_7': false,
+        'playCard_8': false,
+        'playCard_9': false,
+        'selectNext': false,
+        'selectPrevious': false,
+        'confirmSelection': false,
+    },
     clickState: [],
     keyState: {},
     bind: function (key, action) {
@@ -393,11 +432,12 @@ var inputMgr = {
     init: function () {
         this.clickPosition = [];
         this.cardSelection = null;
-        this.refresh = setInterval(inputUpdate, 250);           //      FPS_2
+        this.refresh = setInterval(inputUpdate, FPS_30); //      FPS_2
     },
     stop: function () {
         clearInterval(this.refresh);
     },
+    /*
     setClickPosition: (positionalArr) => {
         this.clickPosition = positionalArr;
     },
@@ -483,6 +523,7 @@ var inputMgr = {
         }
     },
     //      confirm card function needed
+*/
 };
 
 
@@ -490,7 +531,7 @@ var inputMgr = {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                                            /*  INPUT SECTION   */
+/*  INPUT SECTION   */
 
 function removeInputListener() {
     return new Promise(function (resolve) {
@@ -592,9 +633,9 @@ function onKeystroke(keyboardEvent) {
 
 function gControllerListeners() {
     // document.getElementById('card_layer').addEventListener('mouseover', onMouseOver); // start various listeners
-   // document.getElementById("card_layer").addEventListener("click", onClick, true);   // 
-    document.getElementById("card_layer").addEventListener("onmousedown", onMouseDown, true);   //  
-    document.getElementById("card_layer").addEventListener("onmouseup", onMouseUp, true);   //   
+    // document.getElementById("card_layer").addEventListener("click", onClick, true);   // 
+    document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true); //  
+    document.getElementById("card_layer").addEventListener("mouseup", onMouseUp, true); //   
     window.addEventListener('keydown', onKeyDown); // keyboard
     window.addEventListener("keyup", onKeyUp);
     console.log("All listeners loaded");
@@ -615,7 +656,7 @@ function clickConfirmation() {
     // Pass;
 }
 
-function keySelect() {
+function arrowKeySelect() {
     // Pass;
     if (inputMgr.keyState[KEY_RA]) {
         cardToBoard.select = hand[i];
@@ -629,17 +670,6 @@ function enterConfirm() {
 
 }
 
-function onClick() {
-    let locX = event.clientX - LEFTOFFSET;
-    let locY = event.clientY - TOPOFFSET;
-    console.log("Click location: (", locX, ", ", locY, ")");
-    if (locX && locY) {
-        // document.getElementById("card_layer").removeEventListener('click', onclick);
-    }
-    inputMgr.clickPosition[1] = locX;
-    inputMgr.clickPosition[2] = locY;
-}
-
 function onMouseDown(event) {
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
@@ -649,8 +679,8 @@ function onMouseDown(event) {
 }
 
 function onMouseUp(event) {
-    for (action in inputMgr.actions){
-        if (inputMgr.actions[action] === true) {
+    for (action in inputMgr.actions) {
+        if (inputMgr.actions[action] == true) {
             inputMgr.actions[action] = false;
         }
     }
@@ -669,10 +699,10 @@ function clickEventHandler() {
         for (let i = 1; i <= myHand.length; i++) {
             if (locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2) {
                 // play(i);
-               // cardToBoard.user = myHand[i - 1];
+                // cardToBoard.user = myHand[i - 1];
                 // play(i - 1);
-                let key = i.toString(); 
-                console.log(key);
+                let key = i.toString();
+                // console.log(key);
                 let action = inputMgr.bindings[key];
                 if (inputMgr.actions[action] === false) {
                     inputMgr.actions[action] = true;
@@ -683,8 +713,8 @@ function clickEventHandler() {
                 //  play(i);
                 //cardToBoard.user = myHand[i - 1];
                 // play(i - 1);
-                let key = i.toString(); 
-                console.log(key);
+                let key = i.toString();
+                // console.log(key);
                 let action = inputMgr.bindings[key];
                 if (inputMgr.actions[action] === false) {
                     inputMgr.actions[action] = true;
@@ -694,28 +724,6 @@ function clickEventHandler() {
         }
     }
 }
-
-function pauseEventListener(event, callbackFcn) {
-    if (event === "click") {
-        document.getElementById("card_layer").removeEventListener(event, callbackFcn);
-        setTimeout((event, callbackFcn) => {
-            document.getElementById("card_layer").addEventListener(event, callbackFcn);
-        }, 1500);
-    } else if (event == "keydown") {
-        window.removeEventListener(event, callbackFcn); // keyboard
-        setTimeout((event, callbackFcn) => {
-            window.addEventListener(event, callbackFcn); // keyboard
-        }, 1500);
-    }
-    if (event == "keyup") {
-        window.removeEventListener(event, callbackFcn); // keyboard
-        setTimeout((event, callbackFcn) => {
-            window.addEventListener(event, callbackFcn); // keyboard
-        }, 1500);
-    }
-}
-
-
 
 function onKeyDown(event) {
     let key = event.key;
@@ -734,24 +742,9 @@ function onKeyUp(event) {
     inputMgr.actions[action] = false;
 }
 
-function keyboardEventHandler() { //  gets latest keystate & carry out its corresponding action
-    /*  Game Keys   */
-    const KEY_Q = 'q';
-    const KEY_ESC = 'Escape';
-    const KEY_1 = '1';
-    const KEY_2 = '2';
-    const KEY_3 = '3';
-    const KEY_4 = '4';
-    const KEY_5 = '5';
-    const KEY_6 = '6';
-    const KEY_LA = 'ArrowLeft';
-    const KEY_RA = 'ArrowRight';
-    const KEY_ENT = 'Enter';
-    const KEY_SPB = ' ';
-}
 function toggleMenuScreen() {
     //  probe all game keys
-    if (inputMgr.actions['showMenuScreen']) {           // toggle menu screen
+    if (inputMgr.actions['showMenuScreen']) { // toggle menu screen
         if (document.getElementById('menu_layer').style.visibility == 'visible') {
             document.getElementById('menu_layer').style.visibility = 'hidden';
         } else {
@@ -760,67 +753,82 @@ function toggleMenuScreen() {
     }
 }
 
-
-
 function inputUpdate() {
-    toggleMenuScreen();
+    toggleMenuScreen(); // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     clickEventHandler();
-    /*
-        let hand = human.hand;
-        for (let i=1; i<hand.length; i++) {
-            let integer = i;
-            let choiceString = toString(integer);
-            if ( inputMgr.keyState[choiceString] === true) {
-                play(integer--);
-            }
-        }
-    
-    if (inputMgr.action[SELECT_LEFT]) {
-     selectCard(minusLeft);
-    }    
-    if (inputMgr.action[SELECT_RIGHT]) {
-     selectCard(plusRight);
-    }
-    */
 
-    if (inputMgr.actions['playCard_1'] === true) {                 // queries the key's state, and calls the corresponding function
+    if (inputMgr.actions['playCard_1'] === true) { // queries the key's state, and calls the corresponding function
         if (cardToBoard.user === null) {
-            let hand = human.hand;
-            cardToBoard.user = hand[0];
-            //play(0);                  // play
+            // let hand = human.hand;
+            cardToBoard.user = human.hand[0];
+            human.hand.splice(0, 1);
         }
     }
     if (inputMgr.actions['playCard_2']) {
         if (cardToBoard.user === null) {
-            let hand = human.hand;
-            cardToBoard.user = hand[1];
-            //play(1);
+            // let hand = human.hand;
+            cardToBoard.user = human.hand[1];
+            human.hand.splice(1, 1);
         }
     }
     if (inputMgr.actions['playCard_3']) {
         if (cardToBoard.user === null) {
-            let hand = human.hand;
-            cardToBoard.user = hand[2]; // 
-           // play(2);
+            //let hand = human.hand;
+            cardToBoard.user = human.hand[2]; // 
+            human.hand.splice(2, 1);
         }
     }
     if (inputMgr.actions['playCard_4']) {
         if (cardToBoard.user === null) {
-            play(3);
+            cardToBoard.user = human.hand[3]; // 
+            human.hand.splice(3, 1);
         }
     }
     if (inputMgr.actions['playCard_5']) {
         if (cardToBoard.user === null) {
-            play(4);
+            // play(4);
+            cardToBoard.user = human.hand[4]; //
+            human.hand.splice(4, 1);
+
         }
     }
     if (inputMgr.actions['playCard_6']) {
-        if (cardToBoard.user === null) { 
-            play(5);
+        if (cardToBoard.user === null) {
+            cardToBoard.user = human.hand[5]; // 
+            human.hand.splice(5, 1);
+        }
+    }
+    if (inputMgr.actions['selectNext']) {
+        if (cardToBoard.user === null) {
+            // play(5);
+        }
+    }
+    if (inputMgr.actions['selectPrevious']) {
+        if (cardToBoard.user === null) {
+            // play(5);
         }
     }
 
+
 }
+/*
+    let hand = human.hand;
+    for (let i=1; i<hand.length; i++) {
+        let integer = i;
+        let choiceString = toString(integer);
+        if ( inputMgr.keyState[choiceString] === true) {
+            play(integer--);
+        }
+    }
+    
+if (inputMgr.action[SELECT_LEFT]) {
+ selectCard(minusLeft);
+}    
+if (inputMgr.action[SELECT_RIGHT]) {
+ selectCard(plusRight);
+}
+*/
+
 
 /*  Input Manager keyboard extension   */
 /*
@@ -849,77 +857,196 @@ inputmanager = Class.extend(
 
 keys:{},
 bind: function (key, action)
-*/
 
-function keystrokeEventHandler(key) {
-    // inputMgr.updateSelection(key).then(function(resolve))
+
+function onClick() {
+    let locX = event.clientX - LEFTOFFSET;
+    let locY = event.clientY - TOPOFFSET;
+    console.log("Click location: (", locX, ", ", locY, ")");
+    if (locX && locY) {
+        // document.getElementById("card_layer").removeEventListener('click', onclick);
+    }
+    inputMgr.clickPosition[1] = locX;
+    inputMgr.clickPosition[2] = locY;
 }
+
+function pauseEventListener(event, callbackFcn) {
+    if (event === "click") {
+        document.getElementById("card_layer").removeEventListener(event, callbackFcn);
+        setTimeout((event, callbackFcn) => {
+            document.getElementById("card_layer").addEventListener(event, callbackFcn);
+        }, 1500);
+    } else if (event == "keydown") {
+        window.removeEventListener(event, callbackFcn); // keyboard
+        setTimeout((event, callbackFcn) => {
+            window.addEventListener(event, callbackFcn); // keyboard
+        }, 1500);
+    }
+    if (event == "keyup") {
+        window.removeEventListener(event, callbackFcn); // keyboard
+        setTimeout((event, callbackFcn) => {
+            window.addEventListener(event, callbackFcn); // keyboard
+        }, 1500);
+    }
+}
+
+
+function keyboardEventHandler() { //  gets latest keystate & carry out its corresponding action
+    //  Game Keys   
+    const KEY_Q = 'q';
+    const KEY_ESC = 'Escape';
+    const KEY_1 = '1';
+    const KEY_2 = '2';
+    const KEY_3 = '3';
+    const KEY_4 = '4';
+    const KEY_5 = '5';
+    const KEY_6 = '6';
+    const KEY_LA = 'ArrowLeft';     // make next card to the left 'active'
+    const KEY_RA = 'ArrowRight';    //  make next card to the right 'active'
+    const KEY_ENT = 'Enter';        // select 'active' card
+    const KEY_SPB = ' ';            // select 'active card
+}
+
+
+*/
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                                    /*  game play functions   */
+/*  game play functions   */
 
-function gWaitState(secs) {             // institutes a wait state until user input is received
-    setTimeout((secs) => {
+async function gWaitState(secs) { // institutes a wait state until user input is received
+    /* setTimeout((secs) => {
         console.log("Pause entire game for ", + secs + " seconds.");
-    }, secs * 1000);
+    }, secs * 1000); */
+    // wait 3 seconds
+    await new Promise((resolve, reject) => setTimeout(resolve, secs * 1000));
 }
-                                                                    
 
-function playGameRound() {
-        let dealer = null;
-        let playFirst = null;
-        // let winner = null;
-        /*  deal, play rounds, distribute points --> repeat    */
-        // Deal Cards
-        //assign dealer -->      TODO: animation
-        if (!dealer) {  // then firstJackDeal();
-            let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
-            if (flipACoin == 0) {
-                dealer = computer;
-            } else {
-                dealer = human;
-            }
-        } else if (dealer == human) {
+function listCardOnBoard() {
+    console.log(cardToBoard.user.getCardName());
+    console.log(cardToBoard.computer.getCardName());
+}
+
+async function gRound() {
+    if (!cardToBoard.human && !cardToBoard.computer) {
+        msgboard.text = "Please play, " + human.name + ".";
+        msgboard.visible = true;
+       await gWaitState(5);
+    }
+
+    if (cardToBoard.human && (!cardToBoard.computer)) {
+        cardToBoard.computer = await computerPlay(computerAI());
+        calledCard = cardToBoard.human;
+        playedCard = cardToBoard.computer;
+        await gWaitState(5);
+    }
+    if (!cardToBoard.human && cardToBoard.computer) {
+        calledCard = cardToBoard.computer;
+        msgboard.text = "Please play, " + human.name + ".";
+        msgboard.visible = true;
+        await gWaitState(5);
+    }
+    if (cardToBoard.human && cardToBoard.computer) {
+        // determine who Won
+        if (determineWinner(calledCard, playedCard) == cardToBoard.computer) {
+            msgboard.text = " " + computer.name + "won.";
+            msgboard.visible = true;
+            await gWaitState(3);
+            computer.lift += cardToBoard.computer;
+            computer.lift += cardToBoard.human;
+            cardToBoard.init();
+            await gWaitState(1)
+            msgboard.text = " " + computer.name + " plays first.";
+            msgboard.visible = true;
+            cardToBoard.computer = await computerPlay(computerAI());
+            await gWaitState(3);
+        } else {
+            msgboard.text = " " + human.name + "won.";
+            msgboard.visible = true;
+            await gWaitState(3);
+            human.lift += cardToBoard.computer;
+            human.lift += cardToBoard.human;
+            cardToBoard.init();
+            await gWaitState(1)
+            msgboard.text = " " + human.name + " plays first, please play a card now.";
+            msgboard.visible = true;
+            await gWaitState(3);
+        }
+        if (human.hand.length == 0 && computer.hand.length === 0) {
+            clearInterval(gPlay);
+        }
+        // announce winner
+        // check cards left in hand --> if zero stop listeners
+        // assign 'play first' status to winner
+        // cardToBoard.init();
+        // tell winner to play first
+        console.log("End of gRound");
+    }
+}
+
+async function playGameRound() {
+    let dealer = null;
+    let playFirst = null;
+    // let winner = null;
+    /*  deal, play rounds, distribute points --> repeat    */
+    // Deal Cards
+    //assign dealer -->      TODO: animation
+
+    if (!dealer) { // then firstJackDeal();
+        let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
+        if (flipACoin == 0) {
             dealer = computer;
-            playFirst = human;
         } else {
             dealer = human;
-            playFirst = computer;
         }
-        // deal
-        if (computer.hand.length==0 && human.hand.length == 0) {
-            deck.init();
-            deck.shuffle();
-            deck.deal(human, computer);
-            dealer.points += kickPoints(deck.trump);
-            console.log("Dealer, "+ dealer.name + " gets "+ kickPoints(deck.trump) + " points.");
-        }
-        // Play Rounds
-        // while (computer.hand.length > 0 && human.hand.length > 0) {
-            playFirst = playRound(playFirst);
-        // }
-        // Distribute points at the end of a game round
-        if (computer.hand.length==0 && human.hand.length == 0) {
-            allocatePoints();
-        }
+    } else if (dealer == human) {
+        dealer = computer;
+        playFirst = human;
+    } else {
+        dealer = human;
+        playFirst = computer;
     }
-
-    function allocatePoints() {
-        if (countForGame(computer) > countForGame(human)) {
-            computer.points += GAME;
-        } else {
-            human.points += GAME;
-        }
+    // deal
+    if (computer.hand.length == 0 && human.hand.length == 0) {
+        deck.init();
+        deck.shuffle();
+        deck.deal(human, computer);
+        dealer.points += kickPoints(deck.trump);
+        console.log(dealer.name + " gets " + kickPoints(deck.trump) + " points.");
     }
+    if (dealer == human) {
+        cardToBoard.computer = computerPlay(computerAI());   // if human deal, computer plays first else human plays first
+    }
+    gRound();
 
- async function playRound(playFirst) {
-        let winner = null;
-        if (playFirst == computer) {
-            Promise.resolve(() => {
+    //  let gPlay = setInterval(gRound());       // Play Rounds
+
+    /*
+    // while (computer.hand.length > 0 && human.hand.length > 0) {
+        playFirst = playRound(playFirst);
+    // }
+    // Distribute points at the end of a game round
+    if (computer.hand.length==0 && human.hand.length == 0) {
+        allocatePoints();
+    }
+    */
+}
+
+function allocatePoints() {
+    if (countForGame(computer) > countForGame(human)) {
+        computer.points += GAME;
+    } else {
+        human.points += GAME;
+    }
+}
+
+async function playRound(playFirst) {
+    let winner = null;
+    if (playFirst == computer) {
+        Promise.resolve(() => {
                 cardToBoard.init();
                 msgboard.text = "Computer plays first."
-                msgboard.visible = true;              
+                msgboard.visible = true;
             })
             .then(gWaitState(4))
             .then(async () => {
@@ -936,14 +1063,14 @@ function playGameRound() {
                     winner = human;
                 };
                 msgboard.text = winner.name + " won that round."
-                msgboard.visible = true;            
+                msgboard.visible = true;
             })
             .then(gWaitState(2))
             .then(() => {
                 cardToBoard.init();
             })
-        } else {
-            Promise.resolve(() => {
+    } else {
+        Promise.resolve(() => {
                 cardToBoard.init();
                 msgboard.text = "You play first."
                 msgboard.visible = true;
@@ -964,49 +1091,52 @@ function playGameRound() {
             .then(gWaitState(1))
             .then(() => {
                 msgboard.text = winner.name + " won that round."
-                msgboard.visible = true            
+                msgboard.visible = true
             })
             .then(gWaitState(2))
             .then(() => {
                 cardToBoard.init();
             })
-        }
-        return winner;
-        /* 
-            GAME RHYTHM:
-        publish who plays first
-        wait
-        play
-        wait
-        play 
-        wait
-        determineWinner
-        publish winner
-        wait
-        init
-        */
     }
+    return winner;
 
-    function userPlay() {
-        let playedCard = null;
-        let i=0;
-        let probe = setInterval(() => {
-            for (action in inputMgr.actions) {
-                console.log(i);
-                console.log(action);
-                console.log(inputMgr.actions[action]);
-                if (inputMgr.actions[action]) {
-                    playedCard = human.hand[i];
-                    human.hand.splice(i,1);
-                    clearInterval(probe);
-                    return playedCard;
-                };
-                i++;
-            }
-        }, 100);
-    }
-                                                                
-                                                                    
+
+    /* 
+        GAME RHYTHM:
+    publish who plays first
+    wait
+    play
+    wait
+    play 
+    wait
+    determineWinner
+    publish winner
+    wait
+    init
+    */
+}
+
+
+function userPlay() {
+    let playedCard = null;
+    let i = 0;
+    let probe = setInterval(() => {
+        for (action in inputMgr.actions) {
+            console.log(i);
+            console.log(action);
+            console.log(inputMgr.actions[action]);
+            if (inputMgr.actions[action]) {
+                playedCard = human.hand[i];
+                human.hand.splice(i, 1);
+                clearInterval(probe);
+                return playedCard;
+            };
+            i++;
+        }
+    }, 100);
+}
+
+
 /**
  * 
  * @param {*} human.hand  the human player's hand (array of cards)
@@ -1021,7 +1151,7 @@ function humanPlay() {
         let cardName = cardChoice.getCardName(); // not needed - delete after debugging
         console.log(cardName);
         human.hand.splice(i, 1);
-        if (cardChoice===null) {
+        if (cardChoice === null) {
             reject("Did not get user input");
         } else {
             resolve(cardChoice);
@@ -1031,7 +1161,9 @@ function humanPlay() {
 
 function computerAI() {
     // play a random card
-    let i = Math.floor(Math.random() * computer.hand.length);
+    let compHand = computer.hand;
+    let i = Math.floor(Math.random() * compHand.length);
+    console.log("Computer chooses " + i + "th card.");
     return i;
 }
 
@@ -1040,54 +1172,60 @@ function computerAI() {
  * @param {*} called Card 
  * @param {*} computerHand Players.Hand 
  */
-function computerPlay() { // run the 'thinking animation'
-    return new Promise(function (resolve, reject) {
-        var position = "top";
-        var i = Math.floor(Math.random() * computer.hand.length);
-        if (cardToBoard.user == null) { //  then computer plays first, choose a random card.
-            //  play highest random card (thats not trump or ten)
-            // playCard(position, computer.hand[i]);
-            cardToBoard.computer = computer.hand[i];
-            computer.hand.splice(computer.hand[i], 1);
-            resolve(computer.hand[i]);
-        } else { //  else choose a random card... more on computer AI later.
-            cardToBoard.computer = computer.hand[i];
-            computer.hand.splice(computer.hand[i], 1);
-            resolve(computer.hand[i]);
-            /*
-        // Play higher card in same suit, (if 10, q, k, or a play trump if yu have to)
-        for (var card in computer.hand) {
-            if (card.suit === oppponentCard.suit) {
-                if (card.rank > opponentCard.rank) {
-                    computer.hand.splice(computer.hand.indexOf(card), 1);
-                    // playCard('top', card);
-                    cardToBoard.computer = card;
-                    resolve(card);
+function computerPlay(i) {                          // run the 'thinking animation'
+    cardToBoard.computer = computer.hand[i];
+    let card = computer.hand[i];
+    let cardName = card.getCardName();
+    computer.hand.splice(i, 1);
+    console.log(cardName);
+    /*
+        return new Promise(function (resolve, reject) {
+            var position = "top";
+            var i = Math.floor(Math.random() * computer.hand.length);
+            if (cardToBoard.user == null) {                 //  then computer plays first, choose a random card.
+                //  play highest random card (thats not trump or ten)
+                // playCard(position, computer.hand[i]);
+                cardToBoard.computer = computer.hand[i];
+                computer.hand.splice(computer.hand[i], 1);
+                resolve(computer.hand[i]);
+            } else { //  else choose a random card... more on computer AI later.
+                cardToBoard.computer = computer.hand[i];
+                computer.hand.splice(computer.hand[i], 1);
+                resolve(computer.hand[i]);
+                
+            // Play higher card in same suit, (if 10, q, k, or a play trump if yu have to)
+            for (var card in computer.hand) {
+                if (card.suit === oppponentCard.suit) {
+                    if (card.rank > opponentCard.rank) {
+                        computer.hand.splice(computer.hand.indexOf(card), 1);
+                        // playCard('top', card);
+                        cardToBoard.computer = card;
+                        resolve(card);
+                    }
                 }
             }
-        }
-        // play any low card including trump
-        for (var individualCard in computer.hand) {
-            if (individualCard.rank < 10 && individualCard.suit != deck.trump.suit) {
-                // playCard('top', individualCard);
-                cardToBoard.computer = card;
-                computer.hand.splice(computer.hand.indexOf(individualCard), 1);
-                resolve(individualCard);
-            } else {
-                // play low trump
+            // play any low card including trump
+            for (var individualCard in computer.hand) {
+                if (individualCard.rank < 10 && individualCard.suit != deck.trump.suit) {
+                    // playCard('top', individualCard);
+                    cardToBoard.computer = card;
+                    computer.hand.splice(computer.hand.indexOf(individualCard), 1);
+                    resolve(individualCard);
+                } else {
+                    // play low trump
+                }
             }
-        }
-        // play any card
-        //playCard('top', computer.hand[i]);
-        //computer.hand.splice(i,1);
-        //resolve(computer.hand[i]);
-    }   */
-            reject("Error: Computer could not select a card");
-        }
-    });
+            // play any card
+            //playCard('top', computer.hand[i]);
+            //computer.hand.splice(i,1);
+            //resolve(computer.hand[i]);
+        }   */
+    // reject("Error: Computer could not select a card");
+    // }
+    //});
 }
 
-function  determineWinner(called, played) {
+function determineWinner(called, played) {
     // determines the higher rank card
     // parameters: called and played card objects
     // return: player (who won)
@@ -1170,7 +1308,7 @@ function endRoundPlay(handIndex) {
 }
 
 function play(handIndex) {
-    if (cardToBoard.computer) {                         // computer played first
+    if (cardToBoard.computer) { // computer played first
         playSingleCard(human, handIndex);
         // cardToBoard.user = human.hand[handIndex];       // show my played card
         // computerPlay();
@@ -1183,12 +1321,12 @@ function play(handIndex) {
             endRoundPlay(handIndex);
             if (winner == computer) {
                 cardToBoard.computer = computerPlay();
-            }            
-        }, 2000);    
-    } else {                                            // human played first
+            }
+        }, 2000);
+    } else { // human played first
         playSingleCard(human, handIndex);
         // cardToBoard.human = human.hand[handIndex];      //  firstCard = userHand[handIndex];
-        cardToBoard.computer = computerPlay();   // secondCard;
+        cardToBoard.computer = computerPlay(); // secondCard;
         if (determineWinner(cardToBoard.human, cardToBoard.computer) === cardToBoard.human) {
             winner = human;
         } else {
@@ -1198,7 +1336,7 @@ function play(handIndex) {
             endRoundPlay(handIndex);
             if (winner == computer) {
                 cardToBoard.computer = computerPlay();
-            }            
+            }
         }, 2000);
     };
     console.log('END OF ROUND!!!');
@@ -1209,39 +1347,39 @@ function playSingleCard(player, i) {
     player.hand.splice(i, 1);
 }
 
-    /* 
-    setTimeout(() => {
-        cardToBoard.init();
-        if (winner == computer) {
-            cardToBoard.computer = computerPlay(computer, null);
-        }
-    }, 1500);
-    */
-    
-    /*   setTimeout(function () {
-           msgboard.init();
-           setTimeout(() => {
-               cardToBoard.init();
-               setTimeout(() => {
-                   if (winner == computer) {
-                       cardToBoard.computer = computerPlay(computer, null);
-                   }
-               }, 1500);
-           }, 1500);
-       }, 2500);
-     */
+/* 
+setTimeout(() => {
+    cardToBoard.init();
+    if (winner == computer) {
+        cardToBoard.computer = computerPlay(computer, null);
+    }
+}, 1500);
+*/
 
-    //  End of game round subroutines
-    //if (userHand.length == 0) {
-    //    distributePoints();
-    
-    //  deal (toggle dealer)
-    // if (human.points >= 14) {
-    //   let declaredWinner = "Congrations ", + human.name +"You beat us at All Fours";
-    //    console.log(declaredWinner);
-    // msgBoard.text = declared Winner;
-    // msgBoard.visible = true;
-    //}
+/*   setTimeout(function () {
+       msgboard.init();
+       setTimeout(() => {
+           cardToBoard.init();
+           setTimeout(() => {
+               if (winner == computer) {
+                   cardToBoard.computer = computerPlay(computer, null);
+               }
+           }, 1500);
+       }, 1500);
+   }, 2500);
+ */
+
+//  End of game round subroutines
+//if (userHand.length == 0) {
+//    distributePoints();
+
+//  deal (toggle dealer)
+// if (human.points >= 14) {
+//   let declaredWinner = "Congrations ", + human.name +"You beat us at All Fours";
+//    console.log(declaredWinner);
+// msgBoard.text = declared Winner;
+// msgBoard.visible = true;
+//}
 
 /*
     function distributePoints() {
@@ -1420,7 +1558,7 @@ function selectCard(player) {
     let image = card.image;
     let c = cardLayer.canvas;
     let x = cardLayer.ctx;
-    // let cardImgs = gCardCache['jh'];
+    // let cardImgs = gCardImageCache['jh'];
     x.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
     // cardLayer.ctx.scale(2,2);
 }
@@ -1431,7 +1569,7 @@ function enlargeCard(cardNo) {
     let image = card.image;
     let c = cardLayer.canvas;
     let x = cardLayer.ctx;
-    // let cardImgs = gCardCache['jh'];
+    // let cardImgs = gCardImageCache['jh'];
     x.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
     // cardLayer.ctx.scale(2,2);
 }
@@ -1542,7 +1680,7 @@ function message() {
     let pause = setTimeout(clearMsgBoard, 3000);
     // clearTimeout(pause);    //  garbage collection
 }
-
+ 
 function clearMsgBoard() { // garbage collection
     msgboard.init();
     document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
@@ -1624,10 +1762,10 @@ function _initializePlayers() {
  *  to make sure all the games assets are fully loaded before the game runs
  *  this will be handled by game-loader.js in the final version
  */
- function loadGameAssets() {
+function loadGameAssets() {
     // init, draw, stop, clear, remove
-    menuLayer.init();                      // print welcome message
-    setTimeout(() => {                  // remove menu screen when all game assets are loaded and game is ready to be played
+    menuLayer.init(); // print welcome message
+    setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
         menuLayer.stop();
         menuLayer.clear();
         removeGameMenu();
@@ -1638,8 +1776,8 @@ function _initializePlayers() {
     let gObjectsArr = _initializePlayers();
     //  load objects
     msgboard.init();
-    deck.init();                        // load all  card images into cache                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               images into cache array
-    cardToBoard.init();                 // game play cards cache for display
+    deck.init(); // load all  card images into cache                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               images into cache array
+    cardToBoard.init(); // game play cards cache for display
     //  all other graphical objects
     _initializeScreens();
     //  sound components      
@@ -1650,7 +1788,7 @@ function _initializePlayers() {
 function _initializeScreens() {
     let s0 = Promise.resolve(gameBoard.init()); // screens[0] = gameBoard;
     let s1 = Promise.resolve(cardLayer.init()); // screens[1] = cardsLayer;
-    let s2 = Promise.resolve(msgLayer.init());  // screens[2] = msgLayer;
+    let s2 = Promise.resolve(msgLayer.init()); // screens[2] = msgLayer;
     let s3 = Promise.resolve(menuLayer.init()); // screens[3] = menuLayer;
     // Promise.all(s0, s1, s2, s3).then(() => resolve(console.log("all screens initialized")));
     //  return screens;
@@ -1663,7 +1801,7 @@ function loadScreenCache() {
     let screens = [];
     screens[0] = gameBoard; // and scoreLayer 
     screens[1] = cardsLayer;
-    screens[2] = msgLayer;                                                                                        
+    screens[2] = msgLayer;
     screens[3] = menuLayer;
     return screens; // screens array
 }
@@ -1696,16 +1834,16 @@ function updateMsgScreen() {
     }
 }
 
-function updateMenuScreen() {           //  game pauses and menu comes up  when 'ESC' key is pressed.
+function updateMenuScreen() { //  game pauses and menu comes up  when 'ESC' key is pressed.
     var c = menuLayer.ctx;
     c.font = "70px Arial";
     c.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
     let welcomeMsg = "Let's play";
     c.fillText(welcomeMsg, 200, 125);
-    c.font="100px Arial";
+    c.font = "100px Arial";
     let gamelogo = "ALL FOURS!";
     c.fillText(gamelogo, 75, 250);
-    c.font="50px Arial";
+    c.font = "50px Arial";
     let loading = "LOADING . . .";
     c.fillText(loading, 200, 415);
 }
@@ -1740,7 +1878,7 @@ function _renderAllScreens() {
     // _drawScoreScreen();      // displayscore();
     // _drawGameBoard();
 }
- 
+
 
 function _stopAllScreens() {
     for (var screen in screens) {
@@ -1804,7 +1942,7 @@ function mainGameLoop() {
     // load .JSON files: - objects & settings
     // loadScripts & modules
     // manipulate settings - save to .JSON files, cookies
-    
+
     /*  mainGameLoop:        
          Deal subroutine: shuffle, cut, distribute
          gameLoop:
@@ -1821,29 +1959,29 @@ function mainGameLoop() {
     //do until human.points || computer.points >= 14
 
     /*  Dealing subroutines    */
-/*
-    deck.shuffle();
-    deck.deal(human, computer);
-    dealer.points += kickPoints(deck.trump);
-    console.log("Dealer Points: ", + dealer.points);
+    /*
+        deck.shuffle();
+        deck.deal(human, computer);
+        dealer.points += kickPoints(deck.trump);
+        console.log("Dealer Points: ", + dealer.points);
 
-    
-        // who plays first
-    var winner;
-    if (dealer == computer) {
-        playFirst = human;
-    } else {
-        playFirst = computer;
-    }
+        
+            // who plays first
+        var winner;
+        if (dealer == computer) {
+            playFirst = human;
+        } else {
+            playFirst = computer;
+        }
 
- */   
-                                                                              /*  Actual Game Engine  */
+     */
+    /*  Actual Game Engine  */
 
 
 
     //while (human.points <= 14 && computer.points <= 14) {
-        playGameRound();
-     // }
+    playGameRound();
+    // }
 
     /*
     var playedCard; // add playedBy attribute

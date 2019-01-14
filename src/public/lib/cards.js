@@ -91,26 +91,31 @@
 module.exports = DECK
 
 
-function CARD(rank, face, suit) {
+function Card(rank, face, suit) {       // rank is an extension of normal card object property, specific for All Fours
     // Card object constructor (game components are usually created writing a constructor for each type of component)
-        this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
-        this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
-        this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
-        this.getCardName = function () {
-                                return this.face + this.suit; // used as cardId, image filename, etc    MAX_CHARACTERS=2
-                            };
-        this.image = new Image();
-        // this.image.listen = this.image.addEventListener('click', this.onMouseClick);
-        // this.image.stopListen = this.image.removeEventListener('click', this.onMouseClick);
-    
-        this.image.onload = console.log(this.getCardName() +' loaded');      // image creation callback function (to be changed into a useful function)
-    
-                                // this.image.addEventListener('click', this.onMouseClick);
-                                // this.image.addEventListener('load', () => {console.log(this.getCardName +' loaded');});
-                            
-        this.image.id = this.getCardName();
-        this.image.src = "img/" + this.getCardName() + ".png";
-        // write new card.functions as needed, ie update function & location function
+    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
+    this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
+    this.getCardName = function () {
+        return this.face + this.suit;   // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
+    };
+    //this.image =            new Image();
+    this.init = () => {
+        if (gCardImageCache[this.getCardName]) {                // if its already loaded in image cache, use cached version instead
+            this.image = gCardImageCache[this.getCardName];
+            console.log('Using cached version of image.');
+        } else {
+            this.image = new Image();
+            this.image.id = this.getCardName();
+            this.image.src = "img/" + this.getCardName() + ".png";
+            this.image.onload = () => {
+                let card = this.getCardName();
+                gCardImageCache[card] = this.image;
+                console.log(this.getCardName() + ' image loaded into cache object.');
+            };
+        }
+    };
 }
+    
 
 // module.exports = new CARD
