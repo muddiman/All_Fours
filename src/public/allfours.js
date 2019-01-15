@@ -928,12 +928,41 @@ function listCardOnBoard() {
     console.log(cardToBoard.computer.getCardName());
 }
 
+function waitOnUserPlay(callbackFcn) {
+    if (cardToBoard.user) {
+        callbackFcn();
+    }
+}
+async function userPlayFirst() {
+    clearInterval(awaitUser);
+    await gWaitState(2);
+    cardToBoard.computer = computerPlay(computerAI);
+    let winningCard = determineWinner(cardToBoard.user, cardToBoard.computer);
+    if (winningCard === cardToBoard.user) {
+        return human;
+    } else {
+        return computer;
+    }
+    return human;
+}
+async function userPlayLast() {       // scenario: user plays second
+    clearInterval(awaitUser);
+    await gWaitState(2);
+    let winningCard = determineWinner(cardToBoard.user, cardToBoard.computer);
+    if (winningCard === cardToBoard.user) {
+        return human;
+    } else {
+        return computer;
+    }
+}
+
 async function gRound() {
     if (!cardToBoard.human && !cardToBoard.computer) {
         msgboard.text = "Please play, " + human.name + ".";
         msgboard.visible = true;
        await gWaitState(5);
     }
+    // check if i play.. callback function
 
     if (cardToBoard.human && (!cardToBoard.computer)) {
         cardToBoard.computer = await computerPlay(computerAI());
@@ -1017,8 +1046,24 @@ async function playGameRound() {
     }
     if (dealer == human) {
         cardToBoard.computer = computerPlay(computerAI());   // if human deal, computer plays first else human plays first
+         // winner = waitOnUserPlay(userPlayLast);
+         let awaitUser = setInterval(waitOnUserPlay(userPlayLast), 200);
+    } else {
+         let awaitUser = setInterval(waitOnUserPlay(userPlayFirst), 200);
     }
-    gRound();
+    // announce winner
+    msgboard.text = " " + human.name + "won.";
+    msgboard.visible = true;
+    await gWaitState(3);
+    // winner.lift += cardToBoard.computer;
+    // winner.lift += cardToBoard.human;
+    cardToBoard.init();
+    await gWaitState(1)
+    msgboard.text = " " + human.name + " plays first, please play a card now. Disregard!";
+    msgboard.visible = true;
+    await gWaitState(3);
+
+    // gRound();
 
     //  let gPlay = setInterval(gRound());       // Play Rounds
 
