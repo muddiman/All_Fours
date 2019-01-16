@@ -63,18 +63,33 @@ const HEIGHT  = 450; //use window.innerHeight; for fullscreen gaming
 const CARD_W  =  72; // card width
 const CARD_H  =  96; // card height
 
+/* card FACES & SUITS arrays */
+const SUITS = ['c', 'd', 'h', 's'];
+const FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
+
 /* Clear/Opaque */
 const TRANSPARENT = 0;
 const OPAQUE = 1.0;
+
+/* Frame Rate */
 const LOW_REFRESH_RATE = 2; // IN FPS (frames per second)
 const HIGH_REFRESH_RATE = 30; // in FPS (frames per second)
 const FPS_2 = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
 const FPS_30 = (1 / HIGH_REFRESH_RATE) * 1000;
+
+/* Players */
 const PLAYER1_NAME = "Computer";
 const PLAYER2_NAME = "Roger";
+
+/* Canvas top-left corner coords (in px) */
 const LEFTOFFSET = 15;
 const TOPOFFSET = 110;
+
+/* Animation Constants */
 const CONVERT_TO_RADIANS = Math.PI / 180;
+
+
+
 
 //------------------------------------------------------------------------------------------------------------------
 /*  THE CLASSES/OBJECT CONSTRUCTORS  */
@@ -286,13 +301,13 @@ var deck = {
          *  @param: null
          *  @returns: deck
          */
-        var suits = ['c', 'd', 'h', 's'];
-        var faces = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
+        // var SUITS = ['c', 'd', 'h', 's'];
+        // var FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
         var n = 0;
-        for (y = 0; y < suits.length; y++) {
+        for (y = 0; y < SUITS.length; y++) {
             var rank = 1;
-            for (x = 0; x < faces.length; x++) {
-                this.cards[n] = new Card(rank, faces[x], suits[y]);
+            for (x = 0; x < FACES.length; x++) {
+                this.cards[n] = new Card(rank, FACES[x], SUITS[y]);
                 this.cards[n].init(); //  get card images from image files or image cache object
                 n++;
                 rank++;
@@ -375,14 +390,20 @@ var msgboard = {
     }
 };
 
-var cardToBoard = { // play object
+var cardToBoard = {         // gPlay display object
     user: null,
     computer: null,
     select: null,
-    init: function () {
+    init: () => {
         this.user = null;
         this.computer = null;
         this.select = null;
+    },
+    listenForUserCard: (callback) => {
+        this.listen = setInterval(callback, FPS_2);
+    },
+    stopListening: () => {
+            clearInterval(this.listen);
     }
 };
 
@@ -924,41 +945,51 @@ async function gWaitState(secs) { // institutes a wait state until user input is
 }
 
 function listCardOnBoard() {
-    console.log(cardToBoard.user.getCardName());
-    console.log(cardToBoard.computer.getCardName());
+    console.log(`Users: ${cardToBoard.user.getCardName()}`);
+    console.log(`Computers: ${cardToBoard.computer.getCardName()}`);
 }
 
-function waitOnUserPlay(callbackFcn) {
+function waitOnUserPlayFirst()  {
+    console.log("1.");
     if (cardToBoard.user) {
-        callbackFcn();
+        userPlayFirst();
+    }
+}
+function waitOnUserPlayLast()  {
+    console.log("2.");
+    if (cardToBoard.user) {
+        userPlayLast();
     }
 }
 async function userPlayFirst() {
-    clearInterval(awaitUser);
+    // clearInterval(awaitUser);
     await gWaitState(2);
-    cardToBoard.computer = computerPlay(computerAI);
+    computerPlay(computerAI());
     let winningCard = determineWinner(cardToBoard.user, cardToBoard.computer);
     if (winningCard === cardToBoard.user) {
+        console.log(`${human.name} wins!!!`)
         return human;
     } else {
+        console.log(`${computer.name} wins!!!`)
         return computer;
     }
-    return human;
 }
 async function userPlayLast() {       // scenario: user plays second
-    clearInterval(awaitUser);
+    // clearInterval(awaitUser);
     await gWaitState(2);
     let winningCard = determineWinner(cardToBoard.user, cardToBoard.computer);
     if (winningCard === cardToBoard.user) {
+        console.log(`${human.name} wins!!!`)
         return human;
     } else {
+        console.log(`${computer.name} wins!!!`)
         return computer;
     }
 }
 
 async function gRound() {
     if (!cardToBoard.human && !cardToBoard.computer) {
-        msgboard.text = "Please play, " + human.name + ".";
+        msgboard.text = `Please play a card, ${human.name}.`;
         msgboard.visible = true;
        await gWaitState(5);
     }
@@ -972,7 +1003,7 @@ async function gRound() {
     }
     if (!cardToBoard.human && cardToBoard.computer) {
         calledCard = cardToBoard.computer;
-        msgboard.text = "Please play, " + human.name + ".";
+        msgboard.text = `Please play a card, ${human.name}.`;
         msgboard.visible = true;
         await gWaitState(5);
     }
@@ -1014,57 +1045,85 @@ async function gRound() {
     }
 }
 
+function firstJackDeal() {
+    let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
+    if (flipACoin == 0) {
+        return computer;
+    } else {
+        return human;
+    }
+}
+
 async function playGameRound() {
     let dealer = null;
-    let playFirst = null;
-    // let winner = null;
+    let winner = null;
     /*  deal, play rounds, distribute points --> repeat    */
     // Deal Cards
     //assign dealer -->      TODO: animation
-
-    if (!dealer) { // then firstJackDeal();
-        let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal
-        if (flipACoin == 0) {
-            dealer = computer;
-        } else {
-            dealer = human;
-        }
+    if (!dealer) {              // then firstJackDeal();
+        dealer = firstJackDeal();
     } else if (dealer == human) {
         dealer = computer;
-        playFirst = human;
+        //playFirst = human;
     } else {
         dealer = human;
-        playFirst = computer;
+        //playFirst = computer;
     }
     // deal
     if (computer.hand.length == 0 && human.hand.length == 0) {
-        deck.init();
+        console.log(`${dealer.name} deals.`);
+        // deck.init();
         deck.shuffle();
         deck.deal(human, computer);
         dealer.points += kickPoints(deck.trump);
-        console.log(dealer.name + " gets " + kickPoints(deck.trump) + " points.");
+        console.log(`${dealer.name} gets ${kickPoints(deck.trump)} points.`);
+        if (dealer === human) {             // assign who plays first as a result of dealing
+            winner = computer;
+        } else {
+            winner = human;
+        }
     }
-    if (dealer == human) {
-        cardToBoard.computer = computerPlay(computerAI());   // if human deal, computer plays first else human plays first
-         // winner = waitOnUserPlay(userPlayLast);
-         let awaitUser = setInterval(waitOnUserPlay(userPlayLast), 200);
-    } else {
-         let awaitUser = setInterval(waitOnUserPlay(userPlayFirst), 200);
+
+    cardToBoard.init();                                 // initialize/clear game play... (just as a precaution)
+    if (winner === computer) {
+        computerPlay(computerAI());                                             // if human deal, computer plays first 
+        await cardToBoard.listenForUserCard(async ()=> {
+            if (cardToBoard.user) {
+                 await cardToBoard.stopListening();
+                 winner = determineWinner(cardToBoard.computer, cardToBoard.user);
+                 postPlay(winner);
+            }
+            console.log("a.b.c");
+
+        });
+    } else {                                                                    //  else human plays first
+        await cardToBoard.listenForUserCard(async() => {
+            if (cardToBoard.user) {
+                await cardToBoard.stopListening();
+                computerPlay(computerAI());
+                winner = determineWinner(cardToBoard.user, cardToBoard.computer);
+                postPlay(winner);
+            }
+            console.log("1.2.3");
+        });
     }
+}
+
+async function postPlay(winner) {
     // announce winner
-    msgboard.text = " " + human.name + "won.";
+    msgboard.text =  `${winner.name} won!`;
     msgboard.visible = true;
     await gWaitState(3);
-    // winner.lift += cardToBoard.computer;
-    // winner.lift += cardToBoard.human;
+    winner.lift += cardToBoard.computer;
+    winner.lift += cardToBoard.human;
     cardToBoard.init();
-    await gWaitState(1)
-    msgboard.text = " " + human.name + " plays first, please play a card now. Disregard!";
+    await gWaitState(1);
+    msgboard.text = `${winner.name} will play first.`;
     msgboard.visible = true;
     await gWaitState(3);
+}
 
     // gRound();
-
     //  let gPlay = setInterval(gRound());       // Play Rounds
 
     /*
@@ -1076,7 +1135,8 @@ async function playGameRound() {
         allocatePoints();
     }
     */
-}
+
+
 
 function allocatePoints() {
     if (countForGame(computer) > countForGame(human)) {
@@ -1215,15 +1275,15 @@ function computerAI() {
 
 /**
  * 
- * @param {*} called Card 
- * @param {*} computerHand Players.Hand 
+ * @param {*} i integer [0 .. length of computer's hand]
  */
 function computerPlay(i) {                          // run the 'thinking animation'
     cardToBoard.computer = computer.hand[i];
     let card = computer.hand[i];
     let cardName = card.getCardName();
-    computer.hand.splice(i, 1);
     console.log(cardName);
+    computer.hand.splice(i, 1);
+}
     /*
         return new Promise(function (resolve, reject) {
             var position = "top";
@@ -1269,29 +1329,34 @@ function computerPlay(i) {                          // run the 'thinking animati
     // reject("Error: Computer could not select a card");
     // }
     //});
-}
 
+/**
+ * Compares compares cards from both players and returns who won.
+ * @param {*} called  Card
+ * @param {*} played  Card
+ * @returns player 
+ */
 function determineWinner(called, played) {
     // determines the higher rank card
     // parameters: called and played card objects
     // return: player (who won)
-    // pause
-    var win;
-    return new Promise(function (resolve) {
-        if (called.suit === played.suit) {
-            if (called.rank > played.rank) {
-                win = called; // replace console.log with msgboard text
-            } else {
-                win = played;
-            }
-        } else if (played.suit === deck.trump.suit) {
-            win = played;
+    let win = null;
+    if (called.suit === played.suit) {
+        if (called.rank > played.rank) {
+            win = called; // replace console.log with msgboard text
         } else {
-            win = called;
+            win = played;
         }
-        // console.log(win);
-        resolve(win);
-    });
+    } else if (played.suit === deck.trump.suit) {
+        win = played;
+    } else {
+        win = called;
+    }
+    if (win === cardToBoard.user) {
+        return human;
+    } else {
+        return computer;
+    }
 }
 
 //  Points associated with KickCard
@@ -2026,6 +2091,7 @@ function mainGameLoop() {
 
 
     //while (human.points <= 14 && computer.points <= 14) {
+        console.log("playGameRound");
     playGameRound();
     // }
 
