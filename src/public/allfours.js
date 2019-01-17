@@ -130,17 +130,19 @@ function Card(rank, face, suit) {
     };
     //this.image =            new Image();
     this.init = () => {
-        if (gCardImageCache[this.getCardName]) {
-            this.image = gCardImageCache[this.getCardName];
-            console.log('Using cached version of image.');
+        if (gCardImageCache[this.getCardName()]) {
+            this.image = gCardImageCache[this.getCardName()];
+            console.log(`Using cached version of ${gCardImageCache[this.getCardName()]} image.`);
         } else {
             this.image = new Image();
             this.image.id = this.getCardName();
             this.image.src = "img/" + this.getCardName() + ".png";
+            gCardImageCache[this.getCardName()] = this.image;
             this.image.onload = () => {
-                let card = this.getCardName();
-                gCardImageCache[card] = this.image;
+               // let card = this.getCardName();
+               if (gCardImageCache[this.getCardName()] === this.image) {
                 console.log(this.getCardName() + ' image loaded into cache object.');
+               }
             };
         }
     };
@@ -821,16 +823,42 @@ function inputUpdate() {
         }
     }
     if (inputMgr.actions['selectNext']) {
-        if (cardToBoard.user === null) {
-            // play(5);
+        if (cardToBoard.select === null) {
+            cardToBoard.select = human.hand[0];
+        } else {
+        for (i=0; i < human.hand.length; i++) {
+            if (cardToBoard.select === human.hand[i] && i < human.hand.length - 1) {
+                // cardToBoard.select = null;
+               // setTimeout(() => {
+                    cardToBoard.select = human.hand[i++];
+                    console.log(i);
+                // }, 1000);
+            }
+            if (cardToBoard.select === human.hand[human.hand.length - 1]) {
+                cardToBoard.select = null;
+            }
         }
+        }   
     }
+
     if (inputMgr.actions['selectPrevious']) {
         if (cardToBoard.user === null) {
             // play(5);
         }
     }
-
+ 
+    if (inputMgr.actions['confirmSelection']) {
+        if (cardToBoard.user === null) {
+            // cardToBoard.user = cardToBoard.select;
+            for (i=0; i<human.hand.length; i++) {
+                if (cardToBoard.select === human.hand[i]) {
+                    cardToBoard.user = human.hand[i];
+                    human.hand.splice(i,1);
+                    cardToBoard.select = null;
+                }
+            }
+        }
+    }
 
 }
 /*
@@ -945,8 +973,8 @@ async function gWaitState(secs) { // institutes a wait state until user input is
 }
 
 function listCardOnBoard() {
-    console.log(`Users: ${cardToBoard.user.getCardName()}`);
-    console.log(`Computers: ${cardToBoard.computer.getCardName()}`);
+    console.log(`User: ${cardToBoard.user.getCardName()}`);
+    console.log(`Computer: ${cardToBoard.computer.getCardName()}`);
 }
 
 function waitOnUserPlayFirst()  {
@@ -1072,7 +1100,7 @@ async function playGameRound() {
     // deal
     if (computer.hand.length == 0 && human.hand.length == 0) {
         console.log(`${dealer.name} deals.`);
-        // deck.init();
+        deck.init();
         deck.shuffle();
         deck.deal(human, computer);
         dealer.points += kickPoints(deck.trump);
@@ -1083,30 +1111,31 @@ async function playGameRound() {
             winner = human;
         }
     }
+    // while (computer.hand.length > 0 && human.hand.length >0) {
+        cardToBoard.init();                                 // initialize/clear game play... (just as a precaution)
+        if (winner === computer) {
+            computerPlay(computerAI());                                             // if human deal, computer plays first 
+            await cardToBoard.listenForUserCard(async ()=> {
+                if (cardToBoard.user) {
+                    await cardToBoard.stopListening();
+                    winner = determineWinner(cardToBoard.computer, cardToBoard.user);
+                    postPlay(winner);
+                }
+                console.log("a.b.c");
 
-    cardToBoard.init();                                 // initialize/clear game play... (just as a precaution)
-    if (winner === computer) {
-        computerPlay(computerAI());                                             // if human deal, computer plays first 
-        await cardToBoard.listenForUserCard(async ()=> {
-            if (cardToBoard.user) {
-                 await cardToBoard.stopListening();
-                 winner = determineWinner(cardToBoard.computer, cardToBoard.user);
-                 postPlay(winner);
-            }
-            console.log("a.b.c");
-
-        });
-    } else {                                                                    //  else human plays first
-        await cardToBoard.listenForUserCard(async() => {
-            if (cardToBoard.user) {
-                await cardToBoard.stopListening();
-                computerPlay(computerAI());
-                winner = determineWinner(cardToBoard.user, cardToBoard.computer);
-                postPlay(winner);
-            }
-            console.log("1.2.3");
-        });
-    }
+            });
+        } else {                                                                    //  else human plays first
+            await cardToBoard.listenForUserCard(async() => {
+                if (cardToBoard.user) {
+                    await cardToBoard.stopListening();
+                    computerPlay(computerAI());
+                    winner = determineWinner(cardToBoard.user, cardToBoard.computer);
+                    postPlay(winner);
+                }
+                console.log("1.2.3");
+            });
+        }
+    // }
 }
 
 async function postPlay(winner) {
@@ -1116,11 +1145,16 @@ async function postPlay(winner) {
     await gWaitState(3);
     winner.lift += cardToBoard.computer;
     winner.lift += cardToBoard.human;
+    console.log(`before init function`);
     cardToBoard.init();
+    console.log(`after init function`);
     await gWaitState(1);
     msgboard.text = `${winner.name} will play first.`;
     msgboard.visible = true;
     await gWaitState(3);
+    if (computer.hand.length > 0 && human.hand.length > 0) {
+        playGameRound();
+    }
 }
 
     // gRound();
@@ -1582,6 +1616,13 @@ function confirmCardSelection(card) {
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*  Display Functions   */
 
+
+function displayCardCache() {
+    for (card in gCardImageCache) {
+        console.log(`${card} : ${gCardImageCache[card].id}`);
+    }
+}
+
 //  labels on game objects on the game board                                                          
 function displayLabels() {
     // let c=gameBoard.canvas;
@@ -1602,12 +1643,12 @@ function displayComputerCard() {
     playCard('top', cardToBoard.computer);
 }
 
-function displayCardSelection() {
+function displayShowcaseCard() {
     // poll the cardToBoard object for a card in the select-property and displays it 1.5x its normal size
     let bigCard = cardToBoard.select;
     let c = cardLayer.canvas;
     let x = cardLayer.ctx;
-    x.drawImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
+    x.drawImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
 }
 
 function emphasizeTrump() {
@@ -1936,7 +1977,13 @@ function updateCardScreen() {
         displayPlayerHand(human);
         //selectCard(human);
     }
+    if (cardToBoard.select) {
+        displayShowcaseCard();
+    }
     // emphasizeTrump();
+    /*
+
+    */
 }
 
 function updateMsgScreen() {
