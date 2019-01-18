@@ -95,6 +95,9 @@ function mouseEventHandler(e) {
 });
 }
 
+msgboard.text = `${whoPlaysFirst} shall play now, please.`;
+msgboard.visible = true;
+
 function onClick(e) {
     return new Promise(function(resolve, reject) {
             let canvasX = e.clientX - LEFTOFFSET;
@@ -111,7 +114,9 @@ function onClick(e) {
         });  
     }
 
-        
+    msgboard.text = `${whoPlaysFirst} shall play now, please.`;
+    msgboard.visible = true;
+
 //  Team Object Constructor
     function Team() {
         this.name = "";                         // MAX_CHARACTERS=8;
