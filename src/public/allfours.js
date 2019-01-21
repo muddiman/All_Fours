@@ -2068,7 +2068,7 @@ const HANG_JACK = 3;
  *   @param: null
  *   @return: void
  */
-function mainGameLoop() {
+async function mainGameLoop() {
     // var gObjectsArr = loadGameAssets();              // passes an array of all game object 
     // if (document.getElementById('card_layer')) {console.log('Card Screen exists.');} else {console.log('No card screen found!');}
     /*  document.getElementById('card_layer').addEventListener('keydown', (event) => {
@@ -2127,7 +2127,7 @@ function mainGameLoop() {
 
     //while (human.points <= 14 && computer.points <= 14) {
         console.log("playGameRound");
-    playGameRound();
+    await playGameRound();
     // }
 
     /*
