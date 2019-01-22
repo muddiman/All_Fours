@@ -410,7 +410,7 @@ var cardToBoard = {         // gPlay display object
     stopListening: () => {
             clearInterval(this.listen);
             clearInterval(this.listeningForSelectCard);
-    }
+    },
 };
 
 /**
@@ -1066,11 +1066,11 @@ function firstJackDeal() {
 
 async function dealHandFcn(dealer) {
    // let dealer = null;
-// Deal Cards
+    /*  Deal Cards  */
     //assign dealer -->      TODO: animation
     if (!dealer) {              // then firstJackDeal();
         dealer = firstJackDeal();
-    } else if (dealer == human) {
+    } else if (dealer == human) {               // switch dealer
         dealer = computer;
         //playFirst = human;
     } else {
