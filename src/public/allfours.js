@@ -402,7 +402,7 @@ var cardToBoard = {         // gPlay display object
         this.select = null;
     },
     listenForSelectCard: (callback) => {
-        this.listen = setInterval(callback, FPS_2);
+        this.listeningForSelectCard = setInterval(callback, FPS_2);
     },
     listenForUserCard: (callback) => {
         this.listen = setInterval(callback, FPS_2);
@@ -1064,12 +1064,9 @@ function firstJackDeal() {
     }
 }
 
-async function playGameRound() {
-    let dealer = null;
-    let winner = null;
-    let whoPlaysFirst = null;
-    /*  deal, play rounds, distribute points --> repeat    */
-    // Deal Cards
+async function dealHandFcn(dealer) {
+   // let dealer = null;
+// Deal Cards
     //assign dealer -->      TODO: animation
     if (!dealer) {              // then firstJackDeal();
         dealer = firstJackDeal();
@@ -1080,7 +1077,7 @@ async function playGameRound() {
         dealer = human;
     }
     // deal
-    if (computer.hand.length == 0 && human.hand.length == 0) {
+    // if (computer.hand.length == 0 && human.hand.length == 0) {
         console.log(`${dealer.name} deals.`);
         deck.init();
         deck.shuffle();
@@ -1092,8 +1089,16 @@ async function playGameRound() {
         } else {
             whoPlaysFirst = human;
         }
-    }
-    while (computer.hand.length > 0 && human.hand.length > 0) {
+   // }
+    return whoPlaysFirst;
+}
+
+
+async function playGameRound(whoPlaysFirst) {
+    let winner = null;
+    // let whoPlaysFirst = null;
+    /*  deal, play rounds, distribute points --> repeat    */
+   // while (computer.hand.length > 0 && human.hand.length > 0) {
         cardToBoard.init();
         await gWaitState(2);                                                         // initialize/clear game play... (just as a precaution)
         if (whoPlaysFirst === computer) {
@@ -1115,11 +1120,12 @@ async function playGameRound() {
                     winner = determineWinner(cardToBoard.user, cardToBoard.computer);
                     whoPlaysFirst = winner;
                     postPlay(winner);
+                    console.log("1.2.3");
                 }
-                console.log("1.2.3");
             });
+            console.log(`lets see if it reaches here!`)
         }
-    }
+   // }
 }
 
 async function postPlay(winner) {
@@ -1141,7 +1147,7 @@ async function postPlay(winner) {
     await cardToBoard.init();
     if (computer.hand.length > 0 && human.hand.length > 0) {
         console.log(`Call playGameRound function.`);
-        // playGameRound();
+        playGameRound(winner);
     }
 }
 
@@ -2127,7 +2133,7 @@ async function mainGameLoop() {
 
     //while (human.points <= 14 && computer.points <= 14) {
         console.log("playGameRound");
-    await playGameRound();
+        await playGameRound(dealHandFcn());
     // }
 
     /*
