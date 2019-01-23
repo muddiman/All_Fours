@@ -396,7 +396,7 @@ var cardToBoard = {         // gPlay display object
     user: null,
     computer: null,
     select: null,
-    init: () => {
+    init: function () {
         this.user = null;
         this.computer = null;
         this.select = null;
@@ -1102,6 +1102,7 @@ async function playGameRound(whoPlaysFirst) {
         cardToBoard.init();
         await gWaitState(2);                                                         // initialize/clear game play... (just as a precaution)
         if (whoPlaysFirst === computer) {
+            console.log("Computer plays first.");
             computerPlay(computerAI());                                             // if human deal, computer plays first 
             await cardToBoard.listenForUserCard(async () => {
                 if (cardToBoard.user) {
@@ -1110,9 +1111,9 @@ async function playGameRound(whoPlaysFirst) {
                     whoPlaysFirst = winner;
                     postPlay(winner);
                 }
-                console.log("a.b.c");
             });
-        } else {                                                                    //  else human plays first
+        } else {                                        //  else human plays first
+            console.log("Roger plays first.");
             await cardToBoard.listenForUserCard(async() => {
                 if (cardToBoard.user) {
                     await cardToBoard.stopListening();
@@ -1120,10 +1121,9 @@ async function playGameRound(whoPlaysFirst) {
                     winner = determineWinner(cardToBoard.user, cardToBoard.computer);
                     whoPlaysFirst = winner;
                     postPlay(winner);
-                    console.log("1.2.3");
                 }
             });
-            console.log(`lets see if it reaches here!`)
+            console.log(`lets see if it reaches here!`);
         }
    // }
 }
