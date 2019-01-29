@@ -1,56 +1,90 @@
 
 
-/*  Unit Test Functions  */
+/*                              Title:      Unit Test Library Functions
+                                Programmer: .Muddicode
+                                Language:   Javascript
+                                Code:       Assertion Functions
+
+*/ 
+// assertion functions, generic, can be use with any code       
 
 /*  Describe    */
-function describeFunction(description) {
-    let descriptionString = description;
-    console.log(`Function Purpose: ${description}`);
+function describe(Title) {
+    //let descriptionString = Title;
+    console.log(`Function Title: ${Title}`);
+}
+module.exports = describe;
+
+function it(verboseDescription) {
+    console.log(`Purpose: ${verboseDescription}`);
 }
                                             /*  Unit Test Types */
                                             
-/*  expect  */
+/*  Assertion Functions  */
 
 /*  EqualTo */
-function assertEqual(testFunction, expected_value, n) {         //  n = testNumber
+function assertIsEqual(testFunction, expected_value, n, customPassMsg, customFailMsg) {         //  n = testNumber
     if (testFunction(testParameters) === expected_value) {
-        console.log('Test '+ n +': pass.');
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
         return true;
     } else {
-        console.log('Test '+ n +': fail.');
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
         return false;
     }
 }
 
 /*  Greater Than    */
-function assertGreater(testFunction, lowerBoundary, n) {         //  n = testNumber
+function assertIsAbove(testFunction, lowerBoundary, n) {         //  n = testNumber
     if (testFunction(testParameters) > lowerBoundary) {
-        console.log('Test '+ n +': pass.');
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
         return true;
     } else {
-        console.log('Test '+ n +': fail.');
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
         return false;
     }
 }
 
 /*  Less Than   */
-function assertLess(testFunction, upperBoundary, n) {         //  n = testNumber
+function assertIsBelow(testFunction, upperBoundary, n) {         //  n = testNumber
     if (testFunction(testParameters) < upperBoundary) {
-        console.log('Test '+ n +': pass.');
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
         return true;
     } else {
-        console.log('Test '+ n +': fail.');
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
         return false;
     }
 }
 
-/*  Type Test    */
-function assertType(testFunction, expected_type, n) {         //  n = testNumber
-    if (testFunction(testParameters) === expected_type) {
-        console.log('Test '+ n +': pass.');
+/*  If defined/undefined   */
+function assertIsDefined(testFunction, n) {         //  n = testNumber
+    if (testFunction(testParameters) < upperBoundary) {
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
         return true;
     } else {
-        console.log('Test '+ n +': fail.');
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
+        return false;
+    }
+}
+
+/*  If equal to null   */
+function assertIsNull(testFunction, n) {         //  n = testNumber
+    if (testFunction(testParameters) === null) {
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
+        return true;
+    } else {
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
+        return false;
+    }
+}
+
+
+/*  Type Test    */
+function assertTypeOf(testFunction, expected_type, n) {         //  n = testNumber
+    if (testFunction(testParameters) === expected_type) {
+        console.log(`Test ${n}: pass. ${customPassMsg}`);
+        return true;
+    } else {
+        console.log(`Test ${n}: fail. ${customFailMsg}`);
         return false;
     }
 }

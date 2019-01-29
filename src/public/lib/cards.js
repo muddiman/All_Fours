@@ -1,4 +1,4 @@
-// class DECK {
+// class DECK 
    var deck = {
         // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()    
            cards : [],
@@ -86,11 +86,11 @@
            }
         };
 
-//}
+
 
 module.exports = DECK
 
-
+// class Card
 function Card(rank, face, suit) {       // rank is an extension of normal card object property, specific for All Fours
     // Card object constructor (game components are usually created writing a constructor for each type of component)
     this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
