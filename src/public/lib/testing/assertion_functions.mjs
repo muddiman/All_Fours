@@ -1,34 +1,35 @@
-
+//  unittest_functions.mjs
 
 /*                              Title:      Unit Test Library Functions
                                 Programmer: .Muddicode
-                                Language:   Javascript
-                                Code:       Assertion Functions
+                                Language:   JavaScript
+                                Code:       Assertion Functions Library
 
 */ 
-// assertion functions, generic, can be use with any code       
+// generic assertion functions, can be use with any code       
 
 /*  Describe    */
-function describe(Title) {
+export function describe(Title) {
     //let descriptionString = Title;
-    console.log(`Function Title: ${Title}`);
+    console.log(`Function ${Title}:`);
 }
-module.exports = describe;
 
-function it(verboseDescription) {
-    console.log(`Purpose: ${verboseDescription}`);
+export function it(verboseDescription) {
+    console.log(`   should ${verboseDescription}`);
 }
                                             /*  Unit Test Types */
                                             
 /*  Assertion Functions  */
 
 /*  EqualTo */
-function assertIsEqual(testFunction, expected_value, n, customPassMsg, customFailMsg) {         //  n = testNumber
-    if (testFunction(testParameters) === expected_value) {
-        console.log(`Test ${n}: pass. ${customPassMsg}`);
+export function assertIsEqual(testFunction, expected_value, n, customPassMsg, customFailMsg) {         //  n = testNumber
+    if (testFunction === expected_value) {
+        console.log(`   --> Test ${n}: pass. ${customPassMsg}`);
         return true;
     } else {
-        console.log(`Test ${n}: fail. ${customFailMsg}`);
+        console.log(`   ==> Test ${n}: fail. ${customFailMsg}`);
+        console.log(`   --> Received: ${testFunction}`);
+        console.log(`   --> Expected: ${expected_value}`);
         return false;
     }
 }
@@ -98,7 +99,7 @@ function assertEqualBatchTests(assertEqualObject, testFunction) {
     let failedTests=0;
     let n=0;
     for (var item in assertEqualObject) {
-        if (assertEqual(testFunction, assertEqualObject(item), n)) {
+        if (assertEqual(testFunction, assertEqualObject[item], n)) {
             passedTests++;
         } else {
             failedTests++;
@@ -116,7 +117,7 @@ function assertEqualBatchTests(assertEqualObject, testFunction) {
         console.log('Check your code.');
     }
 }
-
+var expectedValues = "functionReturns";
 var testObject = {                              //  assertEqual test object format (JSON notation also accepted)
     functionParameters : expectedValues,
 };
@@ -131,3 +132,11 @@ function jsonParser(jsonFile) {
 //  place in an object
 //  run multiple batch tests, all test types
 //  test all aspects of code base, all functions                                           
+
+
+
+
+
+/********************************************************************************************** */
+/*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
+/********************************************************************************************** */

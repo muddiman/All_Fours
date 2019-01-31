@@ -1,4 +1,7 @@
-// class DECK 
+//  game_components.mjs
+
+
+//  DECK Object
    var deck = {
         // deck object: deck.init(), deck.shuffle(), deck.cut(), deck.deal()    
            cards : [],
@@ -119,3 +122,27 @@ function Card(rank, face, suit) {       // rank is an extension of normal card o
     
 
 // module.exports = new CARD
+
+//----------------------------------------------------------------------------------------------
+//  Player Class
+
+/**
+ *     Player object constructor (or class)
+ *     
+ */
+/* Player Class/Object Constructor */
+function Player() { // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
+    this.init = function () {
+        this.hand = [];     // MAX_CARDS_IN_HAND=12;
+        this.points = 0;    // MAX_POINTS=14;
+        this.lift = [];     // MAX_CARDS_IN_LIFT=48;
+        this.name = "";     // MAX_CHARACTERS=12;
+    };
+    //this.player1 = playerA;
+    //this.player2 = playerB;
+    //this.team = "";
+    //this.setPlayerName = function (name) {this.name = name;}
+    //this.setPlayerTeam = function (team) {this.team = team;}
+    //this.setTeamName   = function (name) {this.teamName = name;}
+    //this.setTeamPlayers = function (player1, player2) {this.teamPlayers = [player1, player2];}
+}

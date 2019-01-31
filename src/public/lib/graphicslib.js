@@ -1,8 +1,10 @@
+//  graphicslib.mjs
+
 /*
                      Title:  ALL FOURS GAME
                      Language: Javascript
                      Programmer: .muddicode 
-                     Code: GRAPHICS LIBRARY MODULE - 'graphicslib.js'                            
+                     Code: GRAPHICS LIBRARY MODULE - 'graphicslib.mjs'                            
 */
 
 /**
@@ -44,16 +46,16 @@
  /**  globals   */
  /**  VARIABLES   */
  /**  Graphical Dimensions  */
-export var WIDTH=700;  //FOR Mobile Phones use: 400px;   // for fullscreen gaming use: window.innerWidth;
-export var HEIGHT=450;  //FOR Mobile Phones use: 600px;  // for fullscreen gaming use: window.innerHeight;
-export var CARDW=71;     // WIDTH of Cards in px
-export var CARDH=96;     // HEIGHT of Cards in px
+export const WIDTH=700;  //FOR Mobile Phones use: 400px;   // for fullscreen gaming use: window.innerWidth;
+export const HEIGHT=450;  //FOR Mobile Phones use: 600px;  // for fullscreen gaming use: window.innerHeight;
+export const CARDW=71;     // WIDTH of Cards in px
+export const CARDH=96;     // HEIGHT of Cards in px
 
 export var gameBoard = {
     //  Object: gameBoard --> TODO: turn into a "class"
     canvas : document.createElement("canvas"), 
     init : function () {
-    // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+    //  initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
         this.canvas.width = WIDTH;
         this.canvas.height = HEIGHT;
         this.canvas.id = "game_board";
@@ -265,7 +267,7 @@ export function tickertape(message) {
     }, 20);
 }
 //-------------------------------------------------------------------------------------------------------
-// Animation Board has its own transparent game board
+// Animation Board has its own transparent canvas layer
 // var gb[3] = new canvas
 // ab = gb[3]
 export function animate(framesArr, frameRate, x, y) {

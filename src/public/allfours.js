@@ -143,7 +143,7 @@ function Card(rank, face, suit) {               // Card object constructor (TODO
             this.image.onload = () => {
                // let card = this.getCardName();
                if (gCardImageCacheObj[this.getCardName()] === this.image) {
-                console.log(`${this.getCardName()} image loaded into cache object.`);
+                //console.log(`${this.getCardName()} image loaded into cache object.`);
                }
             };
         }
@@ -1794,3 +1794,12 @@ FrontEnd:
               Create animation layer, 
               hang jack animation shows video clip of mute-rapper dis 
 */
+
+function postRoundFcn() {
+    return null;
+}
+
+
+/********************************************************************************************** */
+/*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
+/********************************************************************************************** */
