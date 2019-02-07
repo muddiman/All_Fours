@@ -9,16 +9,17 @@
 ==================================================================
 */
 
-/** 
-        @Title: All FOURS GAME 0.1.0
-        @Description: Popular Card game played in teams of two players.
-        @author: Roger Clarke (muddiman | .muddicode)
-        @license: Copyright (c) 2018. All Rights Reserved. See license.md.
+/**
+    @Title: All FOURS GAME 0.1.0
+    @Description: Popular Card game played in teams of two players.
+    @author: Roger Clarke (muddiman | .muddicode)
+    @license: Copyright (c) 2018. All Rights Reserved. See license.md.
 
-        Card face images:
-        @author:
-        @link: http://
-        @license: http://
+    Card face images:
+    @author:
+    @link: http://www.roger-clarke.com/allfours/
+    @Source Code: https://www.github/muddiman/All_Fours/
+    @license: http://www.roger-clarke.com/allfours/license.html
 
 */
 

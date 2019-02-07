@@ -33,6 +33,7 @@ it(`conducting manual, individual function tests`);
 testFirstJackDeal();
 postRoundFcnTest();
 var jSONFile = loadJSONTestsFile();
+console.log(jSONFile);
 console.log(parseJSONTestsFile(jSONFile));
 
 //-------------------------------------------------------------------------------------------------------
@@ -41,11 +42,11 @@ console.log(parseJSONTestsFile(jSONFile));
 function loadJSONTestsFile() {
   let JSONTestsFile;
   var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
+  xhttp.onreadystatechange = async function() {
     if (this.readyState == 4 && this.status == 200) {
-        JSONTestsFile = this.responseText;
+        JSONTestsFile = await this.responseText;
     }
-  };
+  }
   xhttp.open("GET", "/lib/testing/test_runner_config.JSON", true);
   xhttp.send();
   return JSONTestsFile;
