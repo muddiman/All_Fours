@@ -29,4 +29,24 @@
 
  //require('graphicslib');
 
- //import { displayScoreboard(a,b) } from 'graphicslib';       // 'graphicslib.mjs'
+ /*   the globals */
+const _WIDTH=700;
+const _HEIGHT=480;
+const OPAQUE=0;      
+const drawFcn=_drawMenuScreen; 
+const FPS_30=30;
+
+ import { gCanvasLayer } from "./lib/screen.mjs";       // 'graphicslib.mjs'
+
+ /* Canvas Layer Objects */
+//                     new gCanvasLayer(ID,            _WIDTH,_HEIGHT,OPACITY,      _drawScreenFcn,  period, Z, red, green, blue)
+//  var gameBoard    = new gCanvasLayer("game_board",  WIDTH, HEIGHT, OPAQUE,       _drawScreenFcn,          0,              );
+//  var cardsLayer   = new gCanvasLayer("cards_layer", WIDTH, HEIGHT, TRANSPARENT,  _drawScreenFcn,          1,              );
+//  var msgLayer     = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT,  _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
+var menuLayer        = new gCanvasLayer("menu_layer",  _WIDTH, _HEIGHT, OPAQUE,     _drawMenuScreen, FPS_30, 3,    0,  0,   0);
+
+
+/*    Menu Screen       */
+/*    Card Screen       *
+/*    Game Board        */
+/*    Msg Screen        */

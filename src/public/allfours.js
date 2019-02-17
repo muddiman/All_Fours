@@ -4,6 +4,10 @@
 
 // import { CANVAS_LAYER } from "./lib/graphicslib";
 
+// import { Player } from "./lib/player.js";
+
+// import { Card } from "./lib/card.js";
+
 /*
                 Title:  ALL FOURS GAME
                 Language: Javascript
@@ -46,6 +50,12 @@
         3. Draw Surface
         4. Show Surface
    III. Shut Down Game 
+
+   MVC Model:
+     Display Module     ==> DispInt.mjs     --> screens.mjs, 
+     Controller Module  ==> controls.mjs    --> mouse.mjs, keyboard.mjs, touch.mjs, keymap.JSON
+     Game Engine        ==> gEngine.mjs     --> 
+     Main Game          ==> allfours.js
 */
 
 /*  Programming Note:
@@ -155,7 +165,7 @@ function Card(rank, face, suit) {               // Card object constructor (TODO
  *     Player object constructor (or class)
  *     
  */
-/* Player Class/Object Constructor */
+/* Player Class/Object Constructor 
 function Player() { // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
     this.init = function () {
         this.hand = [];     // MAX_CARDS_IN_HAND=12;
@@ -171,7 +181,7 @@ function Player() { // Add a "Team" constructor when coding the 4-player version
     //this.setTeamName   = function (name) {this.teamName = name;}
     //this.setTeamPlayers = function (player1, player2) {this.teamPlayers = [player1, player2];}
 }
-
+*/
 
 //-------------------------------------------------------------------------------------------------------------------------
 /*          THE OBJECTS             */
