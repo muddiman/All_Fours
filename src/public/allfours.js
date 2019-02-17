@@ -38,7 +38,7 @@
  *     Final Version:  Shipped Version, released to the entire public                                                               (1.0.0)
  *     Version: 0.0.0 (a.b.c) -- where a --> major update, redesign, cumulative group of new features
  *                                     b --> addition of features, cumulative group of bug fixes
- *                                     c --> bug fixes
+ *                                     c --> incremental bug fixes
  */
 
 /*
