@@ -8,10 +8,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
-    <script type="module" src="/lib/graphicslib.js"></script> 
+   <!-- <script type="module" src="/lib/graphicslib.js"></script> 
     <script src="/lib/player.js"></script>
     <script src="/lib/card.js"></script>  
-    <!-- <script type="module" src="/lib/testing/unittest_functions.mjs"></script>    
+    <script type="module" src="/lib/testing/unittest_functions.mjs"></script>    
     <script type="module" src="allfours.test.mjs"></script> -->
    
 </head>
@@ -74,14 +74,15 @@
         </div>
     </footer>
 
-    <script src="allfours.js">
+    <script type="module" src="allfours.js">
         window.onload = function () {
-            loadGameAssets();
+           // loadGameAssets();
             /*
             setTimeout(() => {
                mainGameLoop();
             }, 3000);
            */
+           mainGameLoop();
         }
     </script>     
 </body>

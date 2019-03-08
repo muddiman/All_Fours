@@ -1,4 +1,4 @@
-//      /lib/screen.mjs
+//      /src/public/lib/screen.mjs
 
 /*
                 Title:  ALL FOURS GAME
@@ -6,15 +6,15 @@
                 Programmer: .muddicode 
                 Code: Screen Class Module  (allfours.js)   
     
-    DESCRIPTION:    Player module for All Fours Game
-    PURPOSE:    Players class, generates new players for all fours game
+    DESCRIPTION:    screen module for All Fours Game
+    PURPOSE:    screen class, generates new screens for all fours game
 */
 
 /*  globals  */
 
 
 /*  screen canvas class */
-export function gCanvasLayer(ID, _WIDTH, _HEIGHT, _OPACITY, drawScreenFcn, period, Z, red, green, blue) {
+export function gCanvasLayer(ID, _LEFTOFFSET, _TOPOFFSET, _WIDTH, _HEIGHT, _OPACITY, Z, red, green, blue) {
     this.canvas = document.createElement("canvas");
     this.init = function () {
         this.canvas.width = _WIDTH;
@@ -22,20 +22,25 @@ export function gCanvasLayer(ID, _WIDTH, _HEIGHT, _OPACITY, drawScreenFcn, perio
         this.canvas.id = ID;
         this.ctx = this.canvas.getContext('2d');
         document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById(ID).style = `position: absolute; left: ${LEFTOFFSET}px; top: ${TOPOFFSET}px; z-index: ${Z}; background-color: rgba(${red}, ${green}, ${blue}, ${_OPACITY});`;
+        document.getElementById(ID).style = `position: absolute; left: ${_LEFTOFFSET}px; top: ${_TOPOFFSET}px; z-index: ${Z}; background-color: rgba(${red}, ${green}, ${blue}, ${_OPACITY});`;
         console.log(`New ${this.canvas.id} canvas initialized.`);
         // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-        this.refresh = setInterval(drawScreenFcn(), period);
+        // this.refresh = setInterval(drawScreenFcn(), period);
     };
-    this.clear = function () {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    };
-    this.stop = function () {
+
+/*     this.stop = function () {
         clearInterval(this.refresh);
-    };
-}
+    }; */
+};
+//  Prototypes
+//  gCanvasLayer.prototype.ctx      = this.canvas.getContext('2d');
+gCanvasLayer.prototype.clear    = function () {
+                                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                                };
 
-
+gCanvasLayer.prototype.setFont  = function (fontString) {
+                                     this.ctx.font = fontString;
+                                };
 
 //================================================================================================================================
 
