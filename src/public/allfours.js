@@ -1558,20 +1558,38 @@ function displayScore(playerA, playerB) {
  */
 function loadGameAssets() {
     return new Promise(function (resolve, reject) {
+        console.log(`0.0`);
         Game.Components.deck.init()             // Promise: load all  card images into cache   and daisy chain all other tasks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            images into cache array
-        .then(Game.Components.gameboard.init()) // game play cards cache for display
-
+        .then(() => {
+        console.log(`0.1`);
+        Game.Components.gameboard.init(); // game play cards cache for display
+        })
         //  load all graphical assets and screen objects/canvas layers, to cache
-        .then(_initializeScreens())
+        .then(() => {
+            console.log(`0.2`);
+            _initializeScreens();
+        })
     // init, draw, stop, clear, remove
 
     // initialize all game objects & components
-    .then(Game.Controller.init()) // load/initialize user input
+    .then(() => {
+        console.log(`0.3`);
+        Game.Controller.init();
+    }) // load/initialize user input
     //  from classes & constructor functions       
     // let gObjectsArr = _initializePlayers();
     //  load objects
-    .then(Game.Screens.menuScreen.init())            // print welcome message
-    .then(Game.Components.msgboard.init());
+/*     .then(() => {
+        console.log(`0.4`);
+        Game.Screens.menuScreen.init();
+    })  */           // print welcome message
+    .then(() => {
+        console.log(`0.5`);
+        Game.Components.msgboard.init();
+    })
+    .catch((err) => {
+        console.log(`${err} assets not loaded.`);
+    });
 
     //  sound components      
     // return gObjectsArr;
@@ -1811,10 +1829,11 @@ function mainGameLoop() {
     //  Initialize game properties
     //  Play 14 pts Game --> multiple dealt rounds --> Players play cards
     //  Quit or replay
-
+    console.log(`0`);
     // var gObjectsArr = 
     loadGameAssets() 
     .then(() => {
+        console.log(`1`);
         setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
             // Game.Screens.menuScreen.stop();
             Game.Screens.menuScreen.clear();
@@ -1822,11 +1841,21 @@ function mainGameLoop() {
         }, 4000);
         console.log(Game.Player.human.hand);
     })             // passes an array of all game object 
-    .then(gControllerListeners())             //  mouse, keyboard & touch  
-    .then(Game.Engine.start())          //  gentlemen start your engines
     .then(() => {
+        console.log(`2`);
+        gControllerListeners();
+    })             //  mouse, keyboard & touch  
+    .then(() => {
+        console.log(`3`);
+        Game.Engine.start();
+    })          //  gentlemen start your engines
+    .then(() => {
+        console.log(`4`);
         console.log("playGameRound");
         playGameRound(dealHandFcn());
+    })
+    .catch((err) => {
+        console.log(`${err} something went wrong somewhere.`);
     });
     //while (human.points <= 14 && computer.points <= 14) {
 

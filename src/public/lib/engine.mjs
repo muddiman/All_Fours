@@ -16,7 +16,13 @@ export const Engine = function(time_step, render) {
     this.time           = 0;                        // previous time_stamp
     this.accumulated_time = 0;                      // amt. of time that has accumulated since last update fcn call
     this.isUpdated      = false;
+/*     this.animate        = function () {
+                            this.update();
+                            this.render();
+                            requestAnimationFrame(this.animate);
+                        }; */
     this.start          = function () {
+                            // requestAnimationFrame(this.animate);
                             this.init();
                             var n=0;                // for debugging
                             var r=0;
@@ -67,6 +73,7 @@ Engine.prototype.init = function () {
     this.time             = 0;                        // previous time_stamp
     this.accumulated_time = 0;                      // amt. of time that has accumulated since last update fcn call
     this.isUpdated        = false;
+    //  this.animate          = requestAnimationFrame(callback);
 };
 
 
