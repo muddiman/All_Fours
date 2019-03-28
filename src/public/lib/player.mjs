@@ -29,9 +29,8 @@ export function Player(name, team) {         // Add a "Team" constructor when co
     this.name       = name;
     this.team       = team;
     //  Methods
-    this.addCardToHand  = (card, callback) => {
+    this.addCardToHand  = (card) => {
         this.hand.push(card);
-        callback();
     };
 }
 //  Prototypes
@@ -61,6 +60,9 @@ Player.prototype.getPoints      = () => {
 Player.prototype.getHand        = () => {
                                     return this.hand;
                                 };
+Player.prototype.getName        = () => {
+                                    return this.name;
+                                };                                
 Player.prototype.getLift        = () => {
                                     return this.lift;
                                 };
@@ -96,11 +98,12 @@ Player.prototype.setTeamName    =   (name) => {
 Player.prototype.setPlayerName  =   (name) => {
                                         try {
                                             if (name.length >= MAX_CHARACTERS) throw (`Invalid input: name has too many characters.`);
-                                            this.team = name;                                
+                                            this.name = name;                                
                                         } 
                                         catch(err) {
                                                 console.log(err);
-                                        }                                      
+                                        } 
+                                        // callback();       // callback may not be necessary                            
                                     };
 
 //-----------------------------------------------------------------------------------------------------------------------------------

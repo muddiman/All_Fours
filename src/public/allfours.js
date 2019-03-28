@@ -66,9 +66,9 @@
 */
 
 /*  imports */
-import { Player }       from "/lib/player.mjs";
-import { Engine }       from "/lib/engine.mjs";
-import { gCanvasLayer } from "/lib/screen.mjs";
+import { Player }       from "./lib/player.mjs";
+import { Engine }       from "./lib/engine.mjs";
+import { gCanvasLayer } from "./lib/screen.mjs";
 // import { Display } from "/lib/disp-int.mjs";
 
 /* the globals */
@@ -255,8 +255,8 @@ Game.Background = {
     labels      : null,
     trump       : null,
     isUpdated   : false,
-    updateBackground : function () {
-        isUpdated = true;
+    update : function (trueOrFalse) {
+        this.isUpdated = trueOrFalse;
     }
 /*     init        : function () {
         this.scoreboard = null;
@@ -286,12 +286,11 @@ Game.Background.display = {
         this.canvas.id = "game_board";
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; border: 5px solid black;";
+        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; ";
         //  this.refresh = setInterval(_drawGameBoard, FPS_2);
     },
     clear: function () {
-        // wipes the entire gameBoard clean
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);        // wipes the entire gameBoard clean
     },
     setFont: function (fontString) {
         this.ctx.font = fontString;
@@ -328,7 +327,36 @@ Game.Screens.gameScreen = {                                                     
     // this.frameNo =0;
 };
 
-
+Game.Background.scoreboard = {
+    playerAname    :  `Empty`,
+    playerBname    :  `Empty`,
+    playerAscore   :   0,
+    playerBscore   :   0,
+    init            :   function () {
+                            this.playerAname = `${PLAYER1_NAME}`;
+                            this.playerBname = `${PLAYER2_NAME}`;        
+                            this.playerAscore = 0;
+                            this.playerBscore = 0;
+                            Game.Background.update(true);
+                        },
+    update          :   function () {
+                            this.playerAname = Game.Player.computer.getName();
+                            this.playerBname = Game.Player.human.getName();
+                            this.playerAscore = Game.Player.computer.getPoints();
+                            this.playerBscore = Game.Player.human.getPoints();
+                            Game.Background.update(true);
+                        },
+    setNames        :   function (nameA, nameB) {
+                            this.playerAname = nameA;
+                            this.playerBname = nameB;
+                            Game.Background.update(true);
+                        },
+    setScores       :   function (scoreA, scoreB) {
+                            this.playerAscore = scoreA;
+                            this.playerBscore = scoreB;
+                            Game.Background.update(true);
+    }
+};
 /* Message layer object */
 //var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
 
@@ -344,8 +372,8 @@ Game.Screens.msgScreen = {
         document.getElementById("msg_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
         // this.refresh = setInterval(_drawMsgScreen, FPS_2);
     },
-    clear: function () { // wipes the entire gameBoard clean
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    clear: function () { 
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);    // wipes the entire msgScreen clean
     },/* 
     stop: function () { // if 'setInterval is used, there should be stop function
         clearInterval(this.refresh);
@@ -419,7 +447,7 @@ Game.Components.deck = {
     },
     setTrump: function (card) {
         this.trump  = card;
-        updateBackground();
+        Game.Background.update(true);
     },
     getTrump: function (card) {
         return this.trump; //  = card;
@@ -431,14 +459,17 @@ Game.Components.deck = {
          */
         var n = 0;
         while (human.hand.length < 6) {
-            let card = this.cards.shift();
-            Game.Player.human.addCardToHand(card, updateBackground);
-            card = this.cards.shift();
-            Game.Player.computer.addCardToHand(card, updateBackground);
+            // let card = this.cards.shift();
+            Game.Player.human.addCardToHand(this.cards.shift());
+            Game.Components.gameboard.update(true);
+            // card = this.cards.shift();
+            Game.Player.computer.addCardToHand(this.cards.shift());
+            Game.Components.gameboard.update(true);
             n++;
         }
         let trump = this.cards.shift();
         this.setTrump(trump);
+        Game.Background.update(true);
         //return human, computer;
     },
     beg: function (human, computer) {
@@ -446,23 +477,24 @@ Game.Components.deck = {
          *  @param: null
          *  @returns: void
          */
-        while (human.length <= 9) {
-            human.hand = this.cards.shift();
-            computer.hand = this.cards.shift();
+        while (Game.Player.human.length <= 9) {
+            Game.Player.human.hand = this.cards.shift();
+            Game.Player.computer.hand = this.cards.shift();
         }
         if (this.trump.suit != this.cards[0].suit) {
-            this.trump = this.cards.shift();
+            this.setTrump(this.cards.shift());
         } else {
-            this.trump = this.cards.shift();
-            while (human.length <= 12) {
-                human = this.cards.shift();
-                computer = this.cards.shift();
+            this.setTrump(this.cards.shift());
+            while (Game.Player.human.length <= 12) {
+                Game.Player.human = this.cards.shift();
+                Game.Player.computer = this.cards.shift();
             }
             if (this.trump.suit === this.cards[0].suit) {
-                this.trump = this.cards.shift();
-                this.trump = this.cards.shift();
+                this.setTrump(this.cards.shift());
+                this.setTrump(this.cards.shift());
             } else {
-                this.trump = this.cards.shift();
+                this.setTrump(this.cards.shift());
+                // this.trump = this.cards.shift();
             }
         }
         // return this.cards;
@@ -485,14 +517,14 @@ Game.Components.msgboard = {
                     this.isUpdated = false;
                 },
     makeVisible : function () {
-        this.visible = true;
-    },
+                    this.visible = true;
+                },
     makeInvisible : function () {
-        this.visible = false;
-    },
+                    this.visible = false;
+                },
     message     : function (text) {
-        this.text = text;
-    }
+                    this.text = text;
+                }
 };
 
 Game.Components.gameboard = {                       // the gameplay board
@@ -518,8 +550,8 @@ Game.Components.gameboard = {                       // the gameplay board
             clearInterval(this.listen);
             clearInterval(this.listeningForSelectCard);
     },
-    updateGameboard:    function () {
-        this.isUpdated = true;
+    update:    function (trueOrFalse) {
+        this.isUpdated = trueOrFalse;
     }
 
 };
@@ -708,10 +740,10 @@ function clickConfirmation() {
 function arrowKeySelect() {
     // Pass;
     if (Game.Controller.keyState[KEY_RA]) {
-        Game.Background.select = hand[i];
+        Game.Components.gameboard.select = hand[i];
     }
     if (Game.Controller.keyState[KEY_LA]) {
-        Game.Background.select = hand[-i];
+        Game.Components.gameboard.select = hand[-i];
     }
 }
 
@@ -749,7 +781,7 @@ function clickEventHandler() {
         for (let i = 1; i <= myHand.length; i++) {
             if (locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2) {
                 // play(i);
-                // Game.Background.user = myHand[i - 1];
+                // Game.Components.gameboard.user = myHand[i - 1];
                 // play(i - 1);
                 let key = i.toString();
                 // console.log(key);
@@ -808,86 +840,86 @@ function inputUpdate() {
     clickEventHandler();
 
     if (Game.Controller.actions['playCard_1']) {      // queries the key's state, and calls the corresponding function
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[0];
-            human.hand.splice(0, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[0];
+            Game.Player.human.hand.splice(0, 1);
         }
     }
     if (Game.Controller.actions['playCard_2']) {
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[1];
-            human.hand.splice(1, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[1];
+            Game.Player.human.hand.splice(1, 1);
         }
     }
     if (Game.Controller.actions['playCard_3']) {
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[2];       // 
-            human.hand.splice(2, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[2];       // 
+            Game.Player.human.hand.splice(2, 1);
         }
     }
     if (Game.Controller.actions['playCard_4']) {
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[3];       // 
-            human.hand.splice(3, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[3];       // 
+            Game.Player.human.hand.splice(3, 1);
         }
     }
     if (Game.Controller.actions['playCard_5']) {
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[4];       //
-            human.hand.splice(4, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[4];       //
+            Game.Player.human.hand.splice(4, 1);
 
         }
     }
     if (Game.Controller.actions['playCard_6']) {
-        if (Game.Background.user === null) {
-            Game.Background.user = human.hand[5];       // 
-            human.hand.splice(5, 1);
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[5];       // 
+            Game.Player.human.hand.splice(5, 1);
         }
     }
     if (Game.Controller.actions['selectNext']) {
-        if (Game.Background.select) {
-            for (i=0; i < human.hand.length; i++) {
-                if (i < human.hand.length - 1) {
-                    if (Game.Background.select === human.hand[i]) {
-                        Game.Background.select = human.hand[i+1];
+        if (Game.Components.gameboard.select) {
+            for (let i=0; i < Game.Player.human.hand.length; i++) {
+                if (i < Game.Player.human.hand.length - 1) {
+                    if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
+                        Game.Components.gameboard.select = Game.Player.human.hand[i+1];
                         console.log(i);
                         break;
                     }
                 } else {
-                    Game.Background.select = null;
+                    Game.Components.gameboard.select = null;
                 }
             }
         } else {
-                Game.Background.select = human.hand[0];
+                Game.Components.gameboard.select = Game.Player.human.hand[0];
         }  
     }
 
     if (Game.Controller.actions['selectPrevious']) {
-        if (Game.Background.select) {
-            for (i=human.hand.length; i >=0; i--) {
+        if (Game.Components.gameboard.select) {
+            for (let i=Game.Player.human.hand.length; i >=0; i--) {
                 if (i > 0) {
-                    if (Game.Background.select === human.hand[i]) {
-                            Game.Background.select = human.hand[i-1];
+                    if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
+                            Game.Components.gameboard.select = Game.Player.human.hand[i-1];
                             console.log(i);
                             break;
                     }
                 } else {
-                    Game.Background.select = null;
+                    Game.Components.gameboard.select = null;
                 }
             }  
         } else {
-            Game.Background.select = human.hand[-1];
+            Game.Components.gameboard.select = Game.Player.human.hand[-1];
         }
     }
 
     if (Game.Controller.actions['confirmSelection']) {
-        if (!Game.Background.user) {
-            // Game.Background.user = Game.Background.select;
-            for (i=0; i<human.hand.length; i++) {
-                if (Game.Background.select === human.hand[i]) {
-                    Game.Background.user = human.hand[i];
-                    human.hand.splice(i,1);
-                    Game.Background.select = null;
+        if (!Game.Components.gameboard.user) {
+            // Game.Components.gameboard.user = Game.Components.gameboard.select;
+            for (let i=0; i<Game.Player.human.hand.length; i++) {
+                if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
+                    Game.Components.gameboard.user = Game.Player.human.hand[i];
+                    Game.Player.human.hand.splice(i,1);
+                    Game.Components.gameboard.select = null;
                 }
             }
         }
@@ -905,7 +937,7 @@ async function gWaitState(secs) {                       // institutes a wait sta
 }
 
 function listCardOnBoard() {                                    // debugging function to view the played cards in memory
-    console.log(`User: ${Game.Background.user.getCardName()}`);
+    console.log(`User: ${Game.Components.gameboard.user.getCardName()}`);
     console.log(`Computer: ${Game.Background.computer.getCardName()}`);
 }
 
@@ -937,6 +969,7 @@ async function dealHandFcn(dealer) {
         Game.Components.deck.shuffle();
         Game.Components.deck.deal(Game.Player.human, Game.Player.computer);
         dealer.points += kickPoints(Game.Components.deck.getTrump());
+        Game.Background.scoreboard.update();
         console.log(`${dealer.name} gets ${kickPoints(Game.Components.deck.trump)} points.`);
         if (dealer === Game.Player.human) {             // assign who plays first as a result of dealing
             var whoPlaysFirst = Game.Player.computer;
@@ -949,7 +982,7 @@ async function dealHandFcn(dealer) {
 
 function allocatePoints() {
     // game
-    if (countForGame(computer) > countForGame(human)) {
+    if (countForGame(Game.Player.computer) > countForGame(Game.Player.human)) {
         Game.Player.computer.points += GAME;
     } else {
         Game.Player.human.points += GAME;
@@ -959,10 +992,10 @@ function allocatePoints() {
     playedHigh.points += HIGH;
     // low
     // jack
-    if (didPlayerPlayedJack(computer) == true) {
+    if (didPlayerPlayedJack(Game.Player.computer) === true) {
         Game.Player.computer.points += JACK;
     } 
-    if (didPlayerPlayedJack(human) == true) {
+    if (didPlayerPlayedJack(Game.Player.human) === true) {
         Game.Player.human.points += JACK;
     }
     // continue game if there is no winner as yet
@@ -1022,13 +1055,13 @@ async function playGameRound(whoPlaysFirst) {
 async function postPlay(winner) {
     let time=4;
     Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
-    Game.Components.msgboard.visible = true;
+    Game.Components.msgboard.makeVisible();             //  = true;
     await gWaitState(time);
     console.log(`Wait ${time} seconds.`);
     winner.lift += Game.Components.gameboard.computer;
-    winner.lift += Game.Components.gameboard.human;
+    winner.lift += Game.Components.gameboard.user;
     Game.Components.msgboard.text = `${winner.name} will play first.`;
-    Game.Components.msgboard.visible = true;
+    Game.Components.msgboard.makeVisible();         //   = true;
     await gWaitState(time);
     console.log(`Wait ${time} seconds.`);
     // await Game.Components.gameboard.init();
@@ -1079,7 +1112,7 @@ function humanPlay() {
     //let cardChoice;
     return new Promise(function (resolve) {
         let hand = Game.Player.human.hand;
-        let cardChoice = Game.Components.Game.Background.user;
+        let cardChoice = Game.Components.Game.Components.gameboard.user;
         let i = hand.indexOf(cardChoice);
         let cardName = cardChoice.getCardName(); // not needed - delete after debugging
         console.log(cardName);
@@ -1134,7 +1167,7 @@ function determineWinner(called, played) {
     } else {
         win = called;
     }
-    if (win === Game.Components.Game.Background.user) {
+    if (win === Game.Components.gameboard.user) {
         return Game.Player.human;
     } else {
         return Game.Player.computer;
@@ -1229,20 +1262,20 @@ function countForGame(player) {
 function whoPlayedHigh() {
     let highestHumanTrumpCard = null;
     let highestComputerTrumpCard = null;
-    for (var eachCard in human.lift) {
+    for (var eachCard in Game.Player.human.lift) {
         if (eachCard.suit === Game.Components.deck.trump.suit && highestHumanTrumpCard.rank < eachCard.rank) {
             highestTrumpCard = eachCard;
         }
     }
-    for (var eachAndEveryCard in computer.lift) {
+    for (var eachAndEveryCard in Game.Player.computer.lift) {
         if (eachAndEveryCard.suit === Game.Components.deck.trump.suit && highestComputerTrumpCard < eachAndEveryCard.rank) {
             highestComputerTrumpCard = eachAndEveryCard;
         }
     }
     if (highestComputerTrumpCard > highestHumanTrumpCard) {
-        return computer;
+        return Game.Player.computer;
     } else {
-        return human;
+        return Game.Player.human;
     }
 }
 
@@ -1502,7 +1535,7 @@ function cleanBoard() {
  * @param {object} b Team B's current score - int
  * @returns void
  */
-function displayScore(playerA, playerB) {
+function displayScore(scoreboard) {
     var c = Game.Background.display.canvas;
     var x = Game.Background.display.ctx;
     var upperLeftCornerX = c.width - 265; //   (LxB: 260 x 120 box; x,y => 400,5)
@@ -1524,11 +1557,11 @@ function displayScore(playerA, playerB) {
     // text
     x.fillStyle = "#ffffff"; // white
     x.font = "30px Arial";
-    x.fillText(playerA.name, upperLeftCornerX + 15, 40);
-    x.fillText(playerB.name, upperLeftCornerX + 15, 105);
+    x.fillText(scoreboard.playerAname, upperLeftCornerX + 15, 40);
+    x.fillText(scoreboard.playerBname, upperLeftCornerX + 15, 105);
     // score tiles (numbers)
-    x.fillText(playerA.points, upperLeftCornerX + 215, 40);
-    x.fillText(playerB.points, upperLeftCornerX + 215, 105);
+    x.fillText(scoreboard.playerAscore, upperLeftCornerX + 215, 40);
+    x.fillText(scoreboard.playerBscore, upperLeftCornerX + 215, 105);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1559,10 +1592,12 @@ function displayScore(playerA, playerB) {
 function loadGameAssets() {
     return new Promise(function (resolve, reject) {
         console.log(`0.0`);
-        Game.Components.deck.init()             // Promise: load all  card images into cache   and daisy chain all other tasks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            images into cache array
-        .then(() => {
-        console.log(`0.1`);
-        Game.Components.gameboard.init(); // game play cards cache for display
+        Game.Components.deck.init(); 
+        resolve(`0.1`)       
+        })                                      // Promise: loads all  card images into cache   and daisy chain all other tasks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            images into cache array
+        .then((count) => {
+          console.log(`${count}`);
+          Game.Components.gameboard.init(); // game play cards cache for display
         })
         //  load all graphical assets and screen objects/canvas layers, to cache
         .then(() => {
@@ -1590,14 +1625,14 @@ function loadGameAssets() {
     .catch((err) => {
         console.log(`${err} assets not loaded.`);
     });
-
-    //  sound components      
+} 
+/*     //  sound components      
     // return gObjectsArr;
     resolve(`Assets loaded.`);
     reject(`Error: Assets were not all loaded.`);
-    });
+    };
 }
-    
+    */ 
 
 /*  INITIALIZE GRAPHICS OBJECTS */
 function _initializeScreens() {
@@ -1640,15 +1675,19 @@ function updateGameScreen() {
     displayLabels();
 }
  */
-function updateBackground() {
+/* function update() {
     Game.Background.isUpdated = true;
 }
-
+ */
 
 function displayBackground() {
-    displayLabels();
-    displayScore(Game.Player.computer, Game.Player.human);
-    displayTrump(Game.Components.deck.getTrump());
+    // if (Game.Background.isUpdated === true) {
+        // Game.Background.display.clear();
+        displayLabels();
+        displayScore(Game.Background.scoreboard);
+        displayTrump(Game.Components.deck.getTrump());
+        Game.Background.update(false);
+    // }
 }
 
 function updateGameScreen() {
@@ -1697,7 +1736,7 @@ function updateMsgScreen() {
  }
 
 function _updateGame() {
-    //  updateBackground();
+    //  update();
     //  updateGameScreen();
     //  updateMsgScreen();
     //  updateMenuScreen();
@@ -1723,12 +1762,14 @@ function _drawGameScreen() {
         displayGameScreen();
         Game.Components.gameboard.isUpdated = false;
     }
+    Game.Screens.gameScreen.clear();
+    displayGameScreen();
 }
 function updateMsgboard() {
     Game.Components.msgboard. isUpdated = true;
 }
 function _drawMsgScreen() {
-    if (Game.Components.msgboard.isUpdated === true) {
+    if (Game.Components.msgboard.visible === true) {
     Game.Screens.msgScreen.clear();
     message();
     // updateMsgScreen();
@@ -1745,8 +1786,10 @@ function _drawBackground() {
     if (Game.Background.isUpdated === true) {
         Game.Background.display.clear();
         displayBackground();
-        Game.Background.isUpdated = false;
+        //  Game.Background.isUpdated = false;
     }
+    Game.Background.display.clear();
+    displayBackground(); 
 }
 
 
@@ -1865,6 +1908,7 @@ function mainGameLoop() {
 
 }
 
+mainGameLoop();
 
 //------------------------------------------------------------------------------------------------------------------
 
@@ -1942,7 +1986,6 @@ FrontEnd:
 */
 
 /*  call the main program   */
-mainGameLoop();
 /********************************************************************************************** */
 /*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
 /********************************************************************************************** */

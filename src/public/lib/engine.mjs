@@ -65,7 +65,7 @@ export const Engine = function(time_step, render) {
                                clearInterval(this.running);
                         };
 };
-// Prototypes
+/* Prototypes   */
 Engine.prototype.init = function () {
     //  this.time_interval    = time_step;                // related to the games frame rate
     //  this.update           = update;                   // update function
