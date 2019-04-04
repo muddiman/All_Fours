@@ -8,26 +8,37 @@
                                                 Code: Game Engine    (Main Graphics & Animation Loop Class)                        
 */
 
+import { gameLoop } from "../allfours.js";
+
 /*   Game Engine    */
-export const Engine = function(time_step, render) {
+export const Engine = function(time_step, render,gameLoop) {
+//  this.update         = update;                   // update function
     this.time_interval  = time_step;                // related to the games frame rate
-    //  this.update         = update;                   // update function
     this.render         = render;                   // render function (undefined)
+    this.gameLoop       = gameLoop;                 // game logic loop
     this.time           = 0;                        // previous time_stamp
     this.accumulated_time = 0;                      // amt. of time that has accumulated since last update fcn call
+    this.loopCounter    = 0;
     this.isUpdated      = false;
-/*     this.animate        = function () {
-                            this.update();
+    this.animate        = function () {
+                            this.loopCounter = (this.loopCounter + 1) % 60;
+                                if (this.loopCounter === 0) {
+                                    gameLoop();
+                                }
+                            // this.update();
                             this.render();
+                            this.gameLoop();
                             requestAnimationFrame(this.animate);
-                        }; */
+                        }; 
     this.start          = function () {
                             // requestAnimationFrame(this.animate);
                             this.init();
                             var n=0;                // for debugging
                             var r=0;
                             this.running = setInterval(() => {
-                                // render();
+                                // console.log(`engine`);
+
+                            // render();
                                let time_stamp = Date.now();
                                 if (this.time === 0) {
                                     this.time = time_stamp;
@@ -37,6 +48,10 @@ export const Engine = function(time_step, render) {
                                 this.time = time_stamp;
                                 //  this.update();
                                 this.render();
+                                this.loopCounter = (this.loopCounter + 1) % 24;
+                                if (this.loopCounter === 0) {
+                                    this.gameLoop();
+                                }
                             /*  this check ensures the system won't crash trying to keep up with timely cycles 
                             it ignores updates & renders if the accumulated time extends for more than 3 cycles   */
                             if (this.accumulated_time >= this.time_interval * 3) {
@@ -63,6 +78,8 @@ export const Engine = function(time_step, render) {
                         };
     this.stop           = () => {
                                clearInterval(this.running);
+                               cancelAnimationFrame(this.animate);
+
                         };
 };
 /* Prototypes   */

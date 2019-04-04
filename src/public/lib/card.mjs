@@ -12,7 +12,7 @@
 
 
 /* Card Class/Object Constructor */
-function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
+/* export function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
     this.suit = suit;                           // ['c', 'd', 'h', 's'],  MAX_SUITS=4
     this.face = face;                           // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank;                           // [0, 1,.. 12], to assist in determining who played the higher card
@@ -36,16 +36,41 @@ function Card(rank, face, suit) {               // Card object constructor (TODO
             };
         }
     };
-}
-
-
+} */
+export var gCardImageCacheObj = {};
+export function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
+    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
+    this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
+    this.getCardName = function () {
+        return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
+    };
+    this.init = function () {
+        if (gCardImageCacheObj[this.getCardName()]) {
+            this.image = gCardImageCacheObj[this.getCardName()];
+            // console.log(`${gCardImageCacheObj[this.getCardName()].id} image retrieved from cache.`);
+        } else {
+            this.image = new Image();
+            this.image.id = this.getCardName();
+//            this.image.src = "img/" + this.getCardName() + ".png";
+            this.image.src = `img/${this.getCardName()}.png`;
+            gCardImageCacheObj[this.getCardName()] = this.image;
+            this.image.onload = () => {
+               // let card = this.getCardName();
+               if (gCardImageCacheObj[this.getCardName()] === this.image) {
+                //console.log(`${this.getCardName()} image loaded into cache object.`);
+               }
+            };
+        }
+    };
+} 
 
 
 
 //================================================================================================================================
 
 /**
- *  @copyright (c) 2018 Roger Clarke. All rights reserved.
+ *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  

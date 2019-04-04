@@ -1,12 +1,3 @@
-// import { gameBoard } from "/lib/graphicslib";
-
-// import { displayScoreboard } from "./lib/graphicslib";
-
-// import { CANVAS_LAYER } from "./lib/graphicslib";
-
-
-// import { Card } from "./lib/card.js";
-
 /*
                 Title:  ALL FOURS GAME
                 Language: Javascript
@@ -67,6 +58,7 @@
 
 /*  imports */
 import { Player }       from "./lib/player.mjs";
+import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }       from "./lib/engine.mjs";
 import { gCanvasLayer } from "./lib/screen.mjs";
 // import { Display } from "/lib/disp-int.mjs";
@@ -86,15 +78,6 @@ const FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
 const TRANSPARENT = 0;
 const OPAQUE = 1.0;
 
-/* Frame Rate */
-// const LOW_REFRESH_RATE = 2; // IN FPS (frames per second)
-// const FIVE_REFRESH_RATE = 5;
-// const TEN_REFRESH_RATE = 10;
-// const HIGH_REFRESH_RATE = 30; // in FPS (frames per second)
-// const FPS_2 = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
-// const FPS_5 = (1 / FIVE_REFRESH_RATE) * 1000;
-// const FPS_30 = (1 / HIGH_REFRESH_RATE) * 1000;
-// const FPS_10 = (1 / TEN_REFRESH_RATE) * 1000;
 
 /* Players */
 const PLAYER1_NAME = "Computer";
@@ -107,86 +90,11 @@ const TOPOFFSET = 110;
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
 
-
-
-
 //------------------------------------------------------------------------------------------------------------------
 /*  THE CLASSES/OBJECT CONSTRUCTORS  */
 
-
-
-/* function gCanvasLayer(ID, _WIDTH, _HEIGHT, OPACITY, Z, red, green, blue) {          //drawScreenFcn, period
-    this.canvas = document.createElement("canvas");
-    this.init = function () {
-        this.canvas.width = _WIDTH;
-        this.canvas.height = _HEIGHT;
-        this.canvas.id = ID;
-        this.ctx = this.canvas.getContext('2d');
-        document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById(ID).style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: " + Z + "; background-color: rgba(" + red + ", " + green + ", " + blue + ", " + OPACITY + ");";
-        console.log("New " + this.canvas.id + " canvas initialized.");
-        // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-        // this.refresh = setInterval(drawScreenFcn(), period);
-    };
-    this.clear = function () {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    };
-     this.stop = function () {
-        clearInterval(this.refresh);
-    }; 
-}
- */
 // var gAssetCacheArr = [];    OR as an object:    var gAssetCacheObj = {};
-/* Card Class/Object Constructor */
-function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
-    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
-    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
-    this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
-    this.getCardName = function () {
-        return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
-    };
-    this.init = function () {
-        if (gCardImageCacheObj[this.getCardName()]) {
-            this.image = gCardImageCacheObj[this.getCardName()];
-            console.log(`${gCardImageCacheObj[this.getCardName()].id} image retrieved from cache.`);
-        } else {
-            this.image = new Image();
-            this.image.id = this.getCardName();
-//            this.image.src = "img/" + this.getCardName() + ".png";
-            this.image.src = `img/${this.getCardName()}.png`;
-            gCardImageCacheObj[this.getCardName()] = this.image;
-            this.image.onload = () => {
-               // let card = this.getCardName();
-               if (gCardImageCacheObj[this.getCardName()] === this.image) {
-                //console.log(`${this.getCardName()} image loaded into cache object.`);
-               }
-            };
-        }
-    };
-}
 
-
-/**
- *     Player object constructor (or class)
- *     
- */
-/* Player Class/Object Constructor 
-function Player() { // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
-    this.init = function () {
-        this.hand = [];     // MAX_CARDS_IN_HAND=12;
-        this.points = 0;    // MAX_POINTS=14;
-        this.lift = [];     // MAX_CARDS_IN_LIFT=48;
-        this.name = "";     // MAX_CHARACTERS=12;
-    };
-    //this.player1 = playerA;
-    //this.player2 = playerB;
-    //this.team = "";
-    //this.setPlayerName = function (name) {this.name = name;}
-    //this.setPlayerTeam = function (team) {this.team = team;}
-    //this.setTeamName   = function (name) {this.teamName = name;}
-    //this.setTeamPlayers = function (player1, player2) {this.teamPlayers = [player1, player2];}
-}
-*/
 
 //-------------------------------------------------------------------------------------------------------------------------
 /*          THE OBJECTS             */
@@ -196,40 +104,15 @@ function Player() { // Add a "Team" constructor when coding the 4-player version
 
 /*  Image Cache  */
 // card images
-var gCardImageCacheObj = {}; // object of cached card images
+// var gCardImageCacheObj = {}; // object of cached card images
 
 /* game board object */
 // import gameBoard from '/lib/graphicslib.js';         INCL. score board, trump...
 
-/* Game.Background = {
-    //  Object: gameBoard --> TODO: turn into a "class"
-    canvas: document.createElement("canvas"),
-    init: function () {
-        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
-        this.canvas.width = WIDTH;
-        this.canvas.height = HEIGHT;
-        this.canvas.id = "game_board";
-        this.ctx = this.canvas.getContext("2d");
-        document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; border: 5px solid black;";
-        this.refresh = setInterval(_drawGameBoard, FPS_2);
-    },
-    clear: function () {
-        // wipes the entire gameBoard clean
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    },
-    // this.frameNo =0;
-    // if 'setInterval is used, there should be stop function
-    stop: function () {
-        clearInterval(this.refresh);
-    }
-};
- */
 /*  Remove game_board and use game Background instead.
     there is no need to constantly update the background @ 30 fps.
     All game components that are not frequently updated can be placed in the background
 */
-
 
 /*  Main Game Object (parent object)    */
 var Game = {
@@ -239,8 +122,10 @@ var Game = {
     Screens    : {},                // Transparent canvas cardLayer, menulayer, msgLayer --> msgBoard, gameMenu, gameBoard 
     Player     : {},
     Controller : {},
-    Engine     : new Engine(1000/24, _renderAllScreens)
+    State      : {},
+    Engine     : new Engine(1000/24, _renderAllScreens, gameLoop),
 };
+
 /*  Prototypes  */
 Game.Components = {
     gameboard   : null,                     //   or:    "gameTable"
@@ -258,55 +143,20 @@ Game.Background = {
     update : function (trueOrFalse) {
         this.isUpdated = trueOrFalse;
     }
-/*     init        : function () {
-        this.scoreboard = null;
-        // this.labels     = null;
-        this.trump      = null;
-    }  */
 };
 
+Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
-    gameScreen  : null,
-    menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE, 3,    0,  0,   0),
-    msgScreen   : null
+    gameScreen  : null, //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
+    menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, OPAQUE,      3,   0,   0,   0),
+    msgScreen   : new gCanvasLayer("msg_layer", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255)
 };
 Game.Player = {
-    computer : new Player(PLAYER2_NAME, "Androids"),
-    human    : new Player(PLAYER1_NAME, "A-Team")
+    computer    : new Player(PLAYER1_NAME, "Androids"),
+    human       : new Player(PLAYER2_NAME, "A-Team")
 };
 
-
-Game.Background.display = {
-    //  Object: gameBoard --> TODO: turn into a "class"
-    canvas: document.createElement("canvas"),
-    init: function () {
-        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
-        this.canvas.width  = WIDTH;
-        this.canvas.height = HEIGHT;
-        this.canvas.id = "game_board";
-        this.ctx = this.canvas.getContext("2d");
-        document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; ";
-        //  this.refresh = setInterval(_drawGameBoard, FPS_2);
-    },
-    clear: function () {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);        // wipes the entire gameBoard clean
-    },
-    setFont: function (fontString) {
-        this.ctx.font = fontString;
-    }
-    // this.frameNo =0;
-    // if 'setInterval is used, there should be stop function
-/*     stop: function () {
-        clearInterval(this.refresh);
-    }   */
-  }; 
- 
-
-// var cardLayer   = new gCanvasLayer("card_layer", WIDTH, HEIGHT, TRANSPARENT, _drawCardScreen, FPS_30, 1, 255, 255, 255);
 /* Card layer object */
-
-// var cardLayer = {
 Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
@@ -321,83 +171,41 @@ Game.Screens.gameScreen = {                                                     
     clear: function () {                                                        // wipes the entire card screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
-/*     stop: function () {                                                         // if 'setInterval is used, there should be stop function
-        clearInterval(this.refresh);
-    }, */
-    // this.frameNo =0;
 };
 
 Game.Background.scoreboard = {
-    playerAname    :  `Empty`,
-    playerBname    :  `Empty`,
-    playerAscore   :   0,
-    playerBscore   :   0,
-    init            :   function () {
-                            this.playerAname = `${PLAYER1_NAME}`;
-                            this.playerBname = `${PLAYER2_NAME}`;        
+    playerAname    :   Game.Player.computer.getName(),
+    playerBname    :   Game.Player.human.getName(),
+    playerAscore   :   Game.Player.computer.score, //  getPoints(),
+    playerBscore   :   Game.Player.human.score,    //  getPoints(),
+    init           :   function () {
+                            this.playerAname = Game.Player.computer.getName();  // `${PLAYER1_NAME}`;
+                            this.playerBname = Game.Player.human.getName();     // `${PLAYER2_NAME}`;        
                             this.playerAscore = 0;
                             this.playerBscore = 0;
                             Game.Background.update(true);
                         },
-    update          :   function () {
-                            this.playerAname = Game.Player.computer.getName();
-                            this.playerBname = Game.Player.human.getName();
+    update         :   function () {
+                            // this.playerAname = Game.Player.computer.getName();
+                            // this.playerBname = Game.Player.human.getName();
                             this.playerAscore = Game.Player.computer.getPoints();
                             this.playerBscore = Game.Player.human.getPoints();
                             Game.Background.update(true);
                         },
-    setNames        :   function (nameA, nameB) {
+    setNames       :   function (nameA, nameB) {
                             this.playerAname = nameA;
                             this.playerBname = nameB;
                             Game.Background.update(true);
                         },
-    setScores       :   function (scoreA, scoreB) {
+    setScores      :   function (scoreA, scoreB) {
                             this.playerAscore = scoreA;
                             this.playerBscore = scoreB;
                             Game.Background.update(true);
-    }
+                        }
 };
-/* Message layer object */
-//var msgLayer  = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT, _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
-
-Game.Screens.msgScreen = {
-// var msgLayer = {        //  Object: msgLayer --> TODO: turn into a "class"
-    canvas: document.createElement("canvas"),
-    init: function () {
-        this.canvas.width = WIDTH;
-        this.canvas.height = HEIGHT;
-        this.canvas.id = "msg_layer";
-        this.ctx = this.canvas.getContext("2d");
-        document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("msg_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: 2; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
-        // this.refresh = setInterval(_drawMsgScreen, FPS_2);
-    },
-    clear: function () { 
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);    // wipes the entire msgScreen clean
-    },/* 
-    stop: function () { // if 'setInterval is used, there should be stop function
-        clearInterval(this.refresh);
-    }, */
-    // this.frameNo =0;
-};
-
-/* Menu layer object */
-
-/* Canvas Layer Objects */
-//                     new gCanvasLayer(ID,            _WIDTH,_HEIGHT,OPACITY,      _drawScreenFcn,  period, Z, red, green, blue)
-//  var gameBoard    = new gCanvasLayer("game_board",  WIDTH, HEIGHT, OPAQUE,       _drawScreenFcn,          0,              );
-//  var cardsLayer   = new gCanvasLayer("cards_layer", WIDTH, HEIGHT, TRANSPARENT,  _drawScreenFcn,          1,              );
-//  var msgLayer     = new gCanvasLayer("msg_layer",   WIDTH, HEIGHT, TRANSPARENT,  _drawMsgScreen,  FPS_2,  2, 255, 255, 255);
-//  var menuLayer    = new gCanvasLayer("menu_layer",  WIDTH, HEIGHT, OPAQUE,       _drawMenuScreen, FPS_30, 3,    0,  0,   0);
-
-/*  Image Cache  */
-// card images
-// var gCardImageCacheObj = {};
 
 /* Deck of cards objects   */
 Game.Components.deck = {
-//  var deck = {
-    // deck object: Game.Components.deck.init(), Game.Components.deck.shuffle(), Game.Components.deck.cut(), Game.Components.deck.deal()    
     cards: [],
     trump: null,
     init: function () {
@@ -419,7 +227,6 @@ Game.Components.deck = {
                 }
             }
         });
-
         // return this.cards;
     },
     shuffle: function () {
@@ -434,7 +241,7 @@ Game.Components.deck = {
             this.cards[i] = this.cards[j];
             this.cards[j] = temp;
         }
-        //return this.cards;
+        return this;
     },
     cut: function (n) {
         /** randomly mixes up the cards in the deck
@@ -448,17 +255,18 @@ Game.Components.deck = {
     setTrump: function (card) {
         this.trump  = card;
         Game.Background.update(true);
+
     },
     getTrump: function (card) {
         return this.trump; //  = card;
     },
-    deal: function (human, computer) {
+    deal: function () {
         /** randomly mixes up the cards in the deck
          *  @param: human, computer (players' hand --array-of-cards )
          *  @returns: randomized deck
          */
         var n = 0;
-        while (human.hand.length < 6) {
+        while (Game.Player.human.hand.length < 6) {
             // let card = this.cards.shift();
             Game.Player.human.addCardToHand(this.cards.shift());
             Game.Components.gameboard.update(true);
@@ -504,6 +312,35 @@ Game.Components.deck = {
 //  Load JSON file from file system
 // var fs = require('fs');
 
+/*   game state */
+Game.State = {
+    assetsLoaded:    false,
+    startOfFourteen:    false,
+    startOfRound:   false,
+    startOfGame:    false,
+    deal:           false,
+    playFirst:      null,
+    userTurn:        false,
+    computerTurn:    false,
+    userPlayed:       false,
+    computerPlayed:   false,
+    endOfRound:     false,
+    endOfGame:      false,
+    endOfFourteen:  false,
+    init:           function () {
+                        this.startOfFourteen =    false;
+                        this.startOfRound =   false;
+                        this.startOfGame =    false;
+                        this.deal =           false;
+                        this.userPlay =       false;
+                        this.computerPlay =   false;
+                        this.endOfRound =     false;
+                        this.endOfGame =      false;
+                        this.endOfFourteen =  false;
+                        this.playFirst =        null; 
+                    },
+};
+
 
 //  message board object
 Game.Components.msgboard = {
@@ -515,6 +352,9 @@ Game.Components.msgboard = {
                     this.visible = false;
                     this.text = null;
                     this.isUpdated = false;
+                },
+    update      : function () {
+                    this.isUpdated = true;
                 },
     makeVisible : function () {
                     this.visible = true;
@@ -595,15 +435,20 @@ Game.Controller = {
         'selectPrevious': false,
         'confirmSelection': false,
     },
+    isMyTurn:   false,
     clickState: [],
     keyState: {},
     bind: function (key, action) {
         this.bindings[key] = action;
     },
     init: function () {
+        this.isMyTurn = false;
         this.clickPosition = [];
         this.cardSelection = null;
         this.refresh = setInterval(inputUpdate, 250); //      FPS_2
+        for (let action in this.actions) {
+            this.actions[action] = false;
+        }    
     },
     stop: function () {
         clearInterval(this.refresh);
@@ -752,12 +597,12 @@ function enterConfirm() {
 }
 
 function onMouseDown(event) {
+    // document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
     console.log("Click location: (", locX, ", ", locY, ")");
     Game.Controller.clickPosition[1] = locX;
     Game.Controller.clickPosition[2] = locY;
-    document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);
 }
 
 function onMouseUp(event) {
@@ -786,16 +631,20 @@ function clickEventHandler() {
                 let key = i.toString();
                 // console.log(key);
                 let action = Game.Controller.bindings[key];
-                if (Game.Controller.actions[action] === false) {
-                    Game.Controller.actions[action] = true;
+                if (Game.Controller.isMyTurn === true) {
+                    if (Game.Controller.actions[action] === false) {
+                        Game.Controller.actions[action] = true;
+                    }
                 }
                 break;
             }
             if (i == myHand.length && locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2 + CARD_W / 2) {
                 let key = i.toString();
                 let action = Game.Controller.bindings[key];
-                if (Game.Controller.actions[action] === false) {
-                    Game.Controller.actions[action] = true;
+                if (Game.Controller.isMyTurn === true) {
+                    if (Game.Controller.actions[action] === false) {
+                        Game.Controller.actions[action] = true;
+                    }
                 }
                 break;
             }
@@ -812,15 +661,20 @@ async function onKeyDown(event) {
         //  stop listening
     }
     let action = Game.Controller.bindings[key];
-    if (Game.Controller.actions[action] === false) {
+    if (key === 'Escape') {
         Game.Controller.actions[action] = true;
+    }
+    if (Game.Controller.isMyTurn===true){
+        if (Game.Controller.actions[action] === false) {
+            Game.Controller.actions[action] = true;
+        }
     }
 }
 
 function onKeyUp(event) {
     let key = event.key;
     let action = Game.Controller.bindings[key];
-    Game.Controller.actions[action] = false;
+    // Game.Controller.actions[action] = false;
     window.addEventListener('keydown', onKeyDown); // keyboard
 }
 
@@ -838,44 +692,18 @@ function toggleMenuScreen() {
 function inputUpdate() {
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     clickEventHandler();
+    /*  take specific game 'action' once the action is set to 'true'  */ 
+    for (let i=0; i<6; i++) {
+      let play = `playCard_${i+1}`;
+      if (Game.Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[i];
+            Game.Player.human.hand.splice(i, 1);
+            Game.Controller.init();
+        }
+      }
+    }   
 
-    if (Game.Controller.actions['playCard_1']) {      // queries the key's state, and calls the corresponding function
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[0];
-            Game.Player.human.hand.splice(0, 1);
-        }
-    }
-    if (Game.Controller.actions['playCard_2']) {
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[1];
-            Game.Player.human.hand.splice(1, 1);
-        }
-    }
-    if (Game.Controller.actions['playCard_3']) {
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[2];       // 
-            Game.Player.human.hand.splice(2, 1);
-        }
-    }
-    if (Game.Controller.actions['playCard_4']) {
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[3];       // 
-            Game.Player.human.hand.splice(3, 1);
-        }
-    }
-    if (Game.Controller.actions['playCard_5']) {
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[4];       //
-            Game.Player.human.hand.splice(4, 1);
-
-        }
-    }
-    if (Game.Controller.actions['playCard_6']) {
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[5];       // 
-            Game.Player.human.hand.splice(5, 1);
-        }
-    }
     if (Game.Controller.actions['selectNext']) {
         if (Game.Components.gameboard.select) {
             for (let i=0; i < Game.Player.human.hand.length; i++) {
@@ -883,6 +711,7 @@ function inputUpdate() {
                     if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
                         Game.Components.gameboard.select = Game.Player.human.hand[i+1];
                         console.log(i);
+                        Game.Controller.init();
                         break;
                     }
                 } else {
@@ -891,6 +720,7 @@ function inputUpdate() {
             }
         } else {
                 Game.Components.gameboard.select = Game.Player.human.hand[0];
+                Game.Controller.init();
         }  
     }
 
@@ -924,16 +754,18 @@ function inputUpdate() {
             }
         }
     }
-
+    // Game.Controller.init();
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*  game play functions   */
 
-async function gWaitState(secs) {                       // institutes a wait state for specified time interval
-    console.log(`Waiting ${secs} seconds...`)
-    await new Promise((resolve, reject) => setTimeout(resolve, secs * 1000));
+function gWaitState(secs) {                       // institutes a wait state for specified time interval
+    return new Promise((resolve, reject) => {
+        console.log(`Waiting ${secs} seconds...`);
+        setTimeout(resolve, secs * 1000);
+    });
 }
 
 function listCardOnBoard() {                                    // debugging function to view the played cards in memory
@@ -950,7 +782,7 @@ function firstJackDeal() {
     }
 }
 
-async function dealHandFcn(dealer) {
+function dealHandFcn(dealer) {
     // let dealer = null;
     /*  Deal Cards  */
     //assign dealer -->      TODO: animation
@@ -964,12 +796,13 @@ async function dealHandFcn(dealer) {
     }
     // deal
     // if (computer.hand.length == 0 && human.hand.length == 0) {
-        console.log(`${dealer.name} deals.`);
+        console.log(`${dealer.getName()} deals.`);
         Game.Components.deck.init();
-        Game.Components.deck.shuffle();
-        Game.Components.deck.deal(Game.Player.human, Game.Player.computer);
-        dealer.points += kickPoints(Game.Components.deck.getTrump());
-        Game.Background.scoreboard.update();
+        Game.Components.deck.shuffle().deal();
+        // Game.Components.deck.deal();
+        let kick_points = kickPoints(Game.Components.deck.getTrump());
+        dealer.addPoints(kick_points);
+        // Game.Background.scoreboard.update();
         console.log(`${dealer.name} gets ${kickPoints(Game.Components.deck.trump)} points.`);
         if (dealer === Game.Player.human) {             // assign who plays first as a result of dealing
             var whoPlaysFirst = Game.Player.computer;
@@ -983,25 +816,25 @@ async function dealHandFcn(dealer) {
 function allocatePoints() {
     // game
     if (countForGame(Game.Player.computer) > countForGame(Game.Player.human)) {
-        Game.Player.computer.points += GAME;
+        Game.Player.computer.addPoints(GAME);
     } else {
-        Game.Player.human.points += GAME;
+        Game.Player.human.addPoints(GAME);      //   += GAME;
     }
     // high
     let playedHigh = whoPlayedHigh();
-    playedHigh.points += HIGH;
+    playedHigh.addPoints(HIGH);
     // low
     // jack
     if (didPlayerPlayedJack(Game.Player.computer) === true) {
-        Game.Player.computer.points += JACK;
+        Game.Player.computer.addPoints(JACK);
     } 
     if (didPlayerPlayedJack(Game.Player.human) === true) {
-        Game.Player.human.points += JACK;
+        Game.Player.human.addPoints(JACK); // += JACK;
     }
     // continue game if there is no winner as yet
-    if (Game.Player.computer.points < 14 && Game.Player.human.points < 14) {
-        playGameRound();
-    }
+/*     if (Game.Player.computer.getPoints() < 14 && Game.Player.human.getPoints() < 14) {
+        // playGameRound(winner);
+    } */
 }
 
 
@@ -1016,43 +849,100 @@ function didUserPlayCard() {
     }
 }
 
-async function playGameRound(whoPlaysFirst) {
-    let winner = null;
-    //  let time=4;
-    // let whoPlaysFirst = null;
-    /*  deal, play rounds, distribute points --> repeat    */
-   // while (computer.hand.length > 0 && human.hand.length > 0) {
-        await Game.Components.gameboard.init();
-        await gWaitState(4);                                                         // initialize/clear game play... (just as a precaution)
-        if (whoPlaysFirst === Game.Player.computer) {
-            console.log(`${whoPlaysFirst.name} plays first!`);
-            computerPlay(computerAI());                                             // if human deal, computer plays first 
-            await Game.Components.gameboard.listenForUserCard(async () => {
-                if (Game.Components.gameboard.user) {
-                    Game.Components.gameboard.stopListening();
-                    winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
-                    whoPlaysFirst = winner;
-                    postPlay(winner);
-                }
-            });
-        } else {  
-            whoPlaysFirst = Game.Player.human;                                      //  else human plays first
-            console.log(`${whoPlaysFirst.name} plays first!`);
-            await Game.Components.gameboard.listenForUserCard(async() => {
-                if (Game.Components.gameboard.user) {
-                    Game.Components.gameboard.stopListening();
-                    computerPlay(computerAI());
-                    winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
-                    whoPlaysFirst = winner;
-                    postPlay(winner);
-                }
-            });
-            console.log(`lets see if it reaches here!`);
+function play(player) {
+    return new Promise((resolve, reject) => {
+      if (player === Game.Player.computer) {
+        computerPlay(computerAI());
+        // resolve(Game.Components.gameboard.computer);
+      } else {
+        Game.Controller.isMyTurn = true; 
+        console.log(`YOUR TURN!`);
+        Game.Components.gameboard.listenForUserCard(() => {
+            if (Game.Components.gameboard.user) {
+                Game.Components.gameboard.stopListening();
+                Game.Controller.isMyTurn = false;
+                resolve(`${Game.Player.human.getName()} picked a card.`);
+            } else {
+                throw new Error(`Didn't wait for user to pick a card.`);
+            }
+        } );  
+/*         let counter = 0;
+        while (!Game.Components.gameboard.user) {
+            
+            setTimeout(() => {
+                counter++;
+                console.log(`${counter}`)
+            }, )
+        } */
+        if (Game.Components.gameboard.user) {
+            resolve(`${Game.Player.human.getName()} picked a card.`);
         }
-   // }
+      }
+    }); 
 }
 
-async function postPlay(winner) {
+async function playGameRound(whoPlaysFirst) {
+    let otherPlayer = null;
+    let winner = null;
+    if (whoPlaysFirst === Game.Player.computer) {
+        otherPlayer = Game.Player.human;
+    } else {
+        otherPlayer = Game.Player.computer;
+    }
+
+    Game.Components.gameboard.init();
+    // console.log(`${whoPlaysFirst.getName()} plays first!`);
+    gWaitState(2)
+    .then(play(whoPlaysFirst))
+    .then(gWaitState(1))
+    .then(play(otherPlayer))                                  // if human deal, computer plays first 
+    .then(() => {
+        if (whoPlaysFirst === Game.Player.computer) {
+            winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
+        } else {
+            winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
+        }
+        whoPlaysFirst = winner;
+        postPlay(winner);
+    })
+    .catch(err => console.log(err));
+    return winner;
+}                                            // if human deal, computer plays first 
+            // Game.Components.gameboard.user = null;
+
+            // console.log(`lets see if it reaches here!`);
+        
+/*         if (Game.Player.computer.hand.length === 0 && Game.Player.human.hand.length === 0) {
+            allocatePoints();    
+            if (Game.Player.computer.getPoints() < 14 && Game.Player.human.getPoints() < 14) {
+                Game.Components.gameboard.init();
+                // playGameRound(winner);
+            } 
+
+            // playGameRound(winner);  
+        } else {
+            // playGameRound(winner);  
+        } */
+
+/*
+        dealer plays last
+        other person plays a card
+        dealer plays a card
+        determine who won
+        winner get lift
+        winner always plays first
+        repeat until all cards are played
+        
+*/
+
+/*      function userPlayCard() {
+        //  listens for user's selection
+        getCardSelection
+        return card user selected
+        }
+*/
+
+async function  postPlay(winner) {
     let time=4;
     Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
     Game.Components.msgboard.makeVisible();             //  = true;
@@ -1063,19 +953,20 @@ async function postPlay(winner) {
     Game.Components.msgboard.text = `${winner.name} will play first.`;
     Game.Components.msgboard.makeVisible();         //   = true;
     await gWaitState(time);
-    console.log(`Wait ${time} seconds.`);
+    // console.log(`Wait ${time} seconds.`);
     // await Game.Components.gameboard.init();
-    if (Game.Player.human.hand.length === Game.Player.computer.hand.length) {        //  while card in hand hasn't finish, keep playing
+/*     if (Game.Player.human.hand.length === Game.Player.computer.hand.length) {        //  while card in hand hasn't finish, keep playing
         if (Game.Player.computer.hand.length > 0) {
             console.log(`Call playGameRound function.`);
             playGameRound(winner);
         } else {
             console.log(`Round finish. Calculating points.`);
             allocatePoints();
+            Game.State.endOfGame = true;
         }
     } else {
-        console.log(`Error!`);
-    }
+        // console.log(`Error!`);
+    } */
 }
 
    function didPlayerPlayedJack(player) {
@@ -1385,7 +1276,6 @@ function rotateImage(img, x, y, angle) {
     Game.Screens.gameScreen.ctx.drawImage(img,
         -(img.width / 2),
         -(img.height / 2));
-
     Game.Screens.gameScreen.ctx.restore();
 }
 
@@ -1557,11 +1447,11 @@ function displayScore(scoreboard) {
     // text
     x.fillStyle = "#ffffff"; // white
     x.font = "30px Arial";
-    x.fillText(scoreboard.playerAname, upperLeftCornerX + 15, 40);
-    x.fillText(scoreboard.playerBname, upperLeftCornerX + 15, 105);
+    x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
+    x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
     // score tiles (numbers)
-    x.fillText(scoreboard.playerAscore, upperLeftCornerX + 215, 40);
-    x.fillText(scoreboard.playerBscore, upperLeftCornerX + 215, 105);
+    x.fillText(Game.Player.computer.score, upperLeftCornerX + 215, 40);
+    x.fillText(Game.Player.human.score, upperLeftCornerX + 215, 105);
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1589,43 +1479,60 @@ function displayScore(scoreboard) {
  *  to make sure all the games assets are fully loaded before the game runs
  *  this will be handled by game-loader.js in the final version
  */
-function loadGameAssets() {
+var asset1 = new Promise(function (resolve, reject) {
+    Game.Components.deck.init();
+    resolve(`1`);
+});
+var asset2 = new Promise(function (resolve, reject) {
+    Game.Components.gameboard.init();
+    resolve(`2`);
+});
+var asset3 = new Promise(function (resolve, reject) {
+    _initializeScreens();
+    resolve(`3`);
+});
+var asset4 = new Promise(function (resolve, reject) {
+    Game.Controller.init();
+    resolve(`4`);
+});
+var asset5 = new Promise(function (resolve, reject) {
+    Game.Components.msgboard.init();
+    resolve(`5`);
+});
+var asset6 = new Promise(function (resolve, reject) {
+    Game.State.init();
+    resolve(`6`);
+});
+/* function loadGameAssets() {
     return new Promise(function (resolve, reject) {
         console.log(`0.0`);
         Game.Components.deck.init(); 
-        resolve(`0.1`)       
+        resolve(`0.1`);       
         })                                      // Promise: loads all  card images into cache   and daisy chain all other tasks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            images into cache array
         .then((count) => {
           console.log(`${count}`);
           Game.Components.gameboard.init(); // game play cards cache for display
+          resolve(`0.2`);       
         })
         //  load all graphical assets and screen objects/canvas layers, to cache
-        .then(() => {
-            console.log(`0.2`);
+        .then((count) => {
+            console.log(`${count}`);
             _initializeScreens();
+            resolve(`0.3`);
         })
-    // init, draw, stop, clear, remove
-
-    // initialize all game objects & components
-    .then(() => {
-        console.log(`0.3`);
-        Game.Controller.init();
-    }) // load/initialize user input
-    //  from classes & constructor functions       
-    // let gObjectsArr = _initializePlayers();
-    //  load objects
-/*     .then(() => {
-        console.log(`0.4`);
-        Game.Screens.menuScreen.init();
-    })  */           // print welcome message
-    .then(() => {
-        console.log(`0.5`);
+        .then((count) => {
+            console.log(`${count}`);
+            Game.Controller.init();
+            resolve(`0.4`);
+        }) // load/initialize user input
+        .then((count) => {
+        console.log(`${count}`);
         Game.Components.msgboard.init();
     })
     .catch((err) => {
         console.log(`${err} assets not loaded.`);
     });
-} 
+}  */
 /*     //  sound components      
     // return gObjectsArr;
     resolve(`Assets loaded.`);
@@ -1810,6 +1717,7 @@ function displayMenuScreen() {
 }
 
 function _renderAllScreens() {
+    
     _drawBackground();
     _drawGameScreen();
     _drawMsgScreen();
@@ -1844,15 +1752,195 @@ function firstJackDeal(player1, player2) {
         i++;
     }
     return player;
-}
+} 
 */
+/* Game.State = {
+    assetsLoaded:    false,
+    startOfFourteen:    false,
+    startOfRound:   false,
+    startOfGame:    false,
+    deal:           false,
+    computerTurn    false,
+    userTurn        false,
+    userPlayed:       false,
+    computerPlayed:   false,
+    endOfRound:     false,
+    endOfGame:      false,
+    endOfFourteen:  false,
+    init:           function () {
+                        this.startOfFourteen =    false;
+                        this.startOfRound =   false;
+                        this.startOfGame =    false;
+                        this.deal =           false;
+                        this.userPlay =       false;
+                        this.computerPlay =   false;
+                        this.endOfRound =     false;
+                        this.endOfGame =      false;
+                        this.endOfFourteen =  false; 
+                    },
+};
+ */
+export function gameLoop() {
+    if (Game.State.deal === true) {
+        // playGameRound(dealHandFcn());
+        console.log(`Deal!`);
+        Game.State.playFirst = dealHandFcn();
+
+        Game.State.deal = false;
+    }
+    if (Game.State.playFirst === Game.Player.computer) {
+        Game.State.computerTurn = true;
+        Game.State.playFirst = null;
+    } else {
+        Game.State.userTurn = true;
+        Game.State.playFirst = null
+    }
+    if (Game.State.userTurn === true) {
+        Game.State.userTurn = false;
+        Game.Controller.isMyTurn = true;
+        play(Game.Player.human);
+    } 
+    if (Game.State.computerTurn === true) {
+        Game.State.computerTurn = false;
+        play(Game.Player.computer);
+        // Game.State.computerPlayed = true;
+    }
+    if (Game.Components.gameboard.computer) {
+        Game.State.computerPlayed = true;
+        // Game.State.computerTurn = false;
+    }
+    if (Game.Components.gameboard.user) {
+        Game.State.userPlayed = true;
+    }
+    if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
+    
+        var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.computer);
+        console.log(`${winner.name}!`);
+        Game.State.userPlayed = false;
+        Game.State.computerPlayed = false;
+        Game.Components.gameboard.init();
+        Game.State.playFirst = winner;
+        setTimeout(() => {
+            postPlay(winner);
+            // allocatePoints();
+            // playGameRound(winner);
+             if (winner === Game.Player.computer) {
+                Game.State.computerTurn = true;
+            } else {
+                Game.State.userTurn = true;
+            }
+            if (Game.Player.computer.hand.length === Game.Player.human.hand.length) {
+                if (Game.Player.computer.hand.length = 0) {
+                    allocatePoints();
+                    Game.State.endOfGame = true;
+                }
+            }
+/*             if (winner === Game.Player.human) {
+                Game.Controller.isMyTurn = true;
+            } */   
+        }, 2000); 
+    }   
+    if (Game.State.endOfGame === true) {
+        Game.State.endOfGame === false;
+        console.log(`End of game is true. Set it to false.`);
+        Game.State.startOfGame = true;
+    }
+    if (Game.State.startOfGame === true) {
+        console.log(`Start of game is true. Set it to false.`);
+        // dealHandFcn();
+        Game.State.deal = true; 
+        Game.State.startOfGame = false; 
+    }
+
+
+    //  Initialize game properties
+    //  Play 14 pts Game --> multiple dealt rounds --> Players play cards
+    //  Quit or replay
+
+    // if hand === 0:
+    //  deal()
+    //  console.log(`good`);
+/*     if (gameState.assetsLoaded === false) {
+        Promise.all([asset1, asset2, asset3, asset4, asset5]) 
+        .then((values) => {
+            console.log(values);
+            Game.Components.deck.init();
+            // gameState.assetsLoaded = true;
+        });         
+    } */
+/*         Game.Components.deck.init()
+        .then(() => { */
+
+            // Game.Components.deck.shuffle().deal(); 
+/*             Game.Player.computer.init();
+            Game.Player.human.init();
+            Game.Components.gameboard.init();
+            Game.Components.deck.init();
+            Game.Components.deck.shuffle().deal();
+            // Game.Components.deck.deal();
+            let kick_points = kickPoints(Game.Components.deck.getTrump());
+            dealer.addPoints(kick_points); */
+        // }); 
+/*     if (Game.Player.computer.hand.length === 0 && Game.Player.human.hand.length === 0)  {
+        Game.Components.deck.init();
+        Game.Components.deck.deal();
+        dealHandFcn(Game.Player.human);
+    }
+ */
+    //  if computer turn to play, computer plays 
+   // var gameLoop = function () {
+       /*  if (dealer === Game.Player.computer) {
+            whoPlaysFirst = Game.Player.human;
+        } else {
+            whoPlaysFirst = computer;
+        }
+        if (!Game. && !Game) {
+            if (whoPlaysFirst === computer) {
+                computerPlay(computerAI());
+            } else {
+                //  listen for human's play
+                // break;
+            }
+        } */
+
+/*         if (whoPlaysFirst == human) {
+            //  listen for human's play
+        } */
+/*         if (Game. && !Game.) {
+                    // computerPlay(computerAI);
+        }
+        if (Game. && Game.) {
+            //  determinewinner();
+            //  allocate points;
+            if (Game.points || Game.points >= 14) {
+                //  set message 'You Win!!';
+                //  ask if want to play again:
+                //  if yes {
+                    //  reset GAME;
+                }
+            }
+            //  reset Board;
+            //  whoPlaysFirst = winner;
+        }
+    } */
+
+    //  if user turn to play, listen for user play
+
+    // after both party=ies play:
+    //  determine winner
+    //  set winnerturn to play
+    //  if hand finish:
+    //  allocate points & deal again if point < 14
+
+}
+
 
 /********************************************************************************************************************************************************************************** */
 //                                                                      THE MAIN GAME FUNCTION
 
 /* All Fours Points */
 const HIGH = 1;
-const LOW = 1;
+const LOW  = 1;
 const JACK = 1;
 const GAME = 1;
 const HANG_JACK = 3;
@@ -1869,45 +1957,55 @@ function mainGameLoop() {
     
     //  Play game
 
-    //  Initialize game properties
-    //  Play 14 pts Game --> multiple dealt rounds --> Players play cards
-    //  Quit or replay
+
+    /*  PRE-GAME    */
     console.log(`0`);
-    // var gObjectsArr = 
-    loadGameAssets() 
+    Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
+    .then(gWaitState(3))           // passes an array of all game object 
     .then(() => {
+        // console.log(values);
         console.log(`1`);
-        setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
-            // Game.Screens.menuScreen.stop();
-            Game.Screens.menuScreen.clear();
-            removeGameMenu();
-        }, 4000);
+        // Game.State.init();
+        // Game.Components.gameboard.init();
         console.log(Game.Player.human.hand);
-    })             // passes an array of all game object 
-    .then(() => {
-        console.log(`2`);
-        gControllerListeners();
-    })             //  mouse, keyboard & touch  
-    .then(() => {
-        console.log(`3`);
-        Game.Engine.start();
-    })          //  gentlemen start your engines
-    .then(() => {
+        setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
+            // Game.Engine.start();
+            Game.Screens.menuScreen.clear();
+            // Game.State.deal = true;
+            removeGameMenu();
+            console.log(`2`);
+            gControllerListeners();
+            console.log(`3`);
+            // Game.Engine.start();
+        }, 4000);
+    })  
+    .then(gWaitState(1))           // passes an array of all game object 
+    .then(() => {     
         console.log(`4`);
         console.log("playGameRound");
+        setTimeout(() => {
+            console.log(`5`);
+            // Game.State.deal = true;
+            Game.Engine.start();
+        }, 7000);
         playGameRound(dealHandFcn());
-    })
+        console.log(`End of Game!!!`);
+    })             //  mouse, keyboard & touch  
     .catch((err) => {
         console.log(`${err} something went wrong somewhere.`);
     });
-    //while (human.points <= 14 && computer.points <= 14) {
-
-
-    console.log("END OF GAME!!!");
-    //  Promises to control game flow
-
 }
-
+function quitGame() {
+    //  pass;
+    //  stop game Engine
+    //  stop listenere
+    //  stop Intervals
+    //  remove screens
+}
+function restartGame() {
+    //  quit game
+    //  mainGameLoop();
+}
 mainGameLoop();
 
 //------------------------------------------------------------------------------------------------------------------

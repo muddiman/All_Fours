@@ -634,3 +634,229 @@ function displayMsgFor(time) {
 
 var fs = require('fs');
 
+/* Frame Rate */
+// const LOW_REFRESH_RATE = 2; // IN FPS (frames per second)
+// const FIVE_REFRESH_RATE = 5;
+// const TEN_REFRESH_RATE = 10;
+// const HIGH_REFRESH_RATE = 30; // in FPS (frames per second)
+// const FPS_2 = (1 / LOW_REFRESH_RATE) * 1000; // in milliseconds
+// const FPS_5 = (1 / FIVE_REFRESH_RATE) * 1000;
+// const FPS_30 = (1 / HIGH_REFRESH_RATE) * 1000;
+// const FPS_10 = (1 / TEN_REFRESH_RATE) * 1000;
+
+
+
+
+/* function gCanvasLayer(ID, _WIDTH, _HEIGHT, OPACITY, Z, red, green, blue) {          //drawScreenFcn, period
+    this.canvas = document.createElement("canvas");
+    this.init = function () {
+        this.canvas.width = _WIDTH;
+        this.canvas.height = _HEIGHT;
+        this.canvas.id = ID;
+        this.ctx = this.canvas.getContext('2d');
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById(ID).style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index: " + Z + "; background-color: rgba(" + red + ", " + green + ", " + blue + ", " + OPACITY + ");";
+        console.log("New " + this.canvas.id + " canvas initialized.");
+        // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
+        // this.refresh = setInterval(drawScreenFcn(), period);
+    };
+    this.clear = function () {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    };
+     this.stop = function () {
+        clearInterval(this.refresh);
+    }; 
+}
+ */
+
+ 
+
+/**
+ *     Player object constructor (or class)
+ *     
+ */
+/* Player Class/Object Constructor 
+function Player() { // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
+    this.init = function () {
+        this.hand = [];     // MAX_CARDS_IN_HAND=12;
+        this.points = 0;    // MAX_POINTS=14;
+        this.lift = [];     // MAX_CARDS_IN_LIFT=48;
+        this.name = "";     // MAX_CHARACTERS=12;
+    };
+    //this.player1 = playerA;
+    //this.player2 = playerB;
+    //this.team = "";
+    //this.setPlayerName = function (name) {this.name = name;}
+    //this.setPlayerTeam = function (team) {this.team = team;}
+    //this.setTeamName   = function (name) {this.teamName = name;}
+    //this.setTeamPlayers = function (player1, player2) {this.teamPlayers = [player1, player2];}
+}
+*/
+
+/* Game.Background = {
+    //  Object: gameBoard --> TODO: turn into a "class"
+    canvas: document.createElement("canvas"),
+    init: function () {
+        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+        this.canvas.width = WIDTH;
+        this.canvas.height = HEIGHT;
+        this.canvas.id = "game_board";
+        this.ctx = this.canvas.getContext("2d");
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: darkolivegreen; border: 5px solid black;";
+        this.refresh = setInterval(_drawGameBoard, FPS_2);
+    },
+    clear: function () {
+        // wipes the entire gameBoard clean
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+    // this.frameNo =0;
+    // if 'setInterval is used, there should be stop function
+    stop: function () {
+        clearInterval(this.refresh);
+    }
+};
+ */
+
+     // this.frameNo =0;
+    // if 'setInterval is used, there should be stop function
+/*     stop: function () {
+        clearInterval(this.refresh);
+    }   */
+
+    /* Card Class/Object Constructor */
+/* function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
+    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
+    this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
+    this.getCardName = function () {
+        return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
+    };
+    this.init = function () {
+        if (gCardImageCacheObj[this.getCardName()]) {
+            this.image = gCardImageCacheObj[this.getCardName()];
+            console.log(`${gCardImageCacheObj[this.getCardName()].id} image retrieved from cache.`);
+        } else {
+            this.image = new Image();
+            this.image.id = this.getCardName();
+//            this.image.src = "img/" + this.getCardName() + ".png";
+            this.image.src = `img/${this.getCardName()}.png`;
+            gCardImageCacheObj[this.getCardName()] = this.image;
+            this.image.onload = () => {
+               // let card = this.getCardName();
+               if (gCardImageCacheObj[this.getCardName()] === this.image) {
+                //console.log(`${this.getCardName()} image loaded into cache object.`);
+               }
+            };
+        }
+    };
+} */
+
+    /*
+    if (Game.Controller.actions['playCard_1']) {      // queries the key's state, and calls the corresponding function
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[0];
+            Game.Player.human.hand.splice(0, 1);
+            Game.Controller.init();
+        }
+    }
+    if (Game.Controller.actions['playCard_2']) {
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[1];
+            Game.Player.human.hand.splice(1, 1);
+        }
+    }
+    if (Game.Controller.actions['playCard_3']) {
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[2];       // 
+            Game.Player.human.hand.splice(2, 1);
+        }
+    }
+    if (Game.Controller.actions['playCard_4']) {
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[3];       // 
+            Game.Player.human.hand.splice(3, 1);
+        }
+    }
+    if (Game.Controller.actions['playCard_5']) {
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[4];       //
+            Game.Player.human.hand.splice(4, 1);
+
+        }
+    }
+    if (Game.Controller.actions['playCard_6']) {
+        if (Game.Components.gameboard.user === null) {
+            Game.Components.gameboard.user = Game.Player.human.hand[5];       // 
+            Game.Player.human.hand.splice(5, 1);
+        }
+    }   */
+
+
+        //  let time=4;
+    // let whoPlaysFirst = null;
+    /*  deal, play rounds, distribute points --> repeat    */
+   // while (computer.hand.length > 0 && human.hand.length > 0) {
+
+
+   /*             await Game.Components.gameboard.listenForUserCard(async () => {
+                if (Game.Components.gameboard.user) {
+                    Game.Components.gameboard.stopListening();
+                    Game.Controller.isMyTurn = false;
+                }
+            }); */
+
+                //  from classes & constructor functions       
+    // let gObjectsArr = _initializePlayers();
+    //  load objects
+/*     .then(() => {
+        console.log(`0.4`);
+        Game.Screens.menuScreen.init();
+    })  */           // print welcome message
+
+    //  Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, _OPACITY, 0, 68, 102, 0);
+    //  Object: gameBoard --> TODO: turn into a "class"
+  /*   canvas: document.createElement("canvas"),
+    init: function () {
+        // initialize gameBoard by applying context & inserting the canvas in the "game_container" <div> 
+        this.canvas.width  = WIDTH;
+        this.canvas.height = HEIGHT;
+        this.canvas.id = "game_board";
+        this.ctx = this.canvas.getContext("2d");
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById("game_board").style = "position: absolute; left: " + LEFTOFFSET + "px; top: " + TOPOFFSET + "px; z-index:0; background-color: rgba(68, 102, 0, 1.0); ";
+        //  this.refresh = setInterval(_drawGameBoard, FPS_2);
+    },
+    clear: function () {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);        // wipes the entire gameBoard clean
+    },
+    setFont: function (fontString) {
+        this.ctx.font = fontString;
+    }
+  }; 
+  */
+
+
+  //  var deck = {
+    // deck object: Game.Components.deck.init(), Game.Components.deck.shuffle(), Game.Components.deck.cut(), Game.Components.deck.deal()  
+
+    /* 
+        } else {  
+            whoPlaysFirst = Game.Player.human;                                      //  else human plays first
+            console.log(`${whoPlaysFirst.name} plays first!`);
+            Game.Controller.isMyTurn = true;
+            console.log(`YOUR TURN!`);                                            // if human deal, computer plays first 
+            await Game.Components.gameboard.listenForUserCard(async() => {
+                if (Game.Components.gameboard.user) {
+                    Game.Components.gameboard.stopListening();
+                    Game.Controller.isMyTurn = false;
+                }
+            });
+            console.log(`COMPUTER TURN!`);                                            // if human deal, computer plays first 
+            computerPlay(computerAI());
+            winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
+            whoPlaysFirst = winner;
+            postPlay(winner); */
+        
+
+            

@@ -85,3 +85,7 @@ footer div p {
     right: 20px;
     top: 150px;
 }
+#copyright {
+    position: fixed;
+    bottom: 0;
+}

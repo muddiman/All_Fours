@@ -10,7 +10,7 @@
 */
 
 /**
-    @Title: All FOURS GAME 0.1.0
+    @Title: All FOURS GAME 0.6.3    (alpha release: coming soon)
     @Description: Popular Card game played in teams of two players.
     @author: Roger Clarke (muddiman | .muddicode)
     @license: Copyright (c) 2018. All Rights Reserved. See license.md.
@@ -26,7 +26,7 @@
 ## About the author
 
 Roger Clarke AKA .muddicode
-Chemical Engineer working for a Water Utility.
+Chemical Engineer working for a large water utility.
 Use computer modeling to assess, design and upgrade water distribution systems.
 Has a minor in Mathematics and Computer Science.
 Interests in Scientific Computing.

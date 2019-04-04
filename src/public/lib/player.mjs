@@ -16,77 +16,65 @@ const MAX_POINTS=14;
 const MAX_CARDS_IN_LIFT=48;
 const MAX_CHARACTERS=12;
 
-/**
- *     Player object constructor (or class)
- *     
- */
+
 /* Player Class/Object Constructor */
-export function Player(name, team) {         // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
-    //  Properties
+export function Player(playerName, teamName) {         // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
+    /*  Properties  */
     this.hand       = [];
     this.lift       = [];
-    this.points     = 0;
-    this.name       = name;
-    this.team       = team;
+    this.score      = 0;
+    this.name       = playerName;
+    this.team       = teamName;
     //  Methods
     this.addCardToHand  = (card) => {
-        this.hand.push(card);
-    };
+                        this.hand.push(card); 
+                     };
+    this.addPoints  = (points) => {
+                        this.score += points;
+                    };
+    this.getPoints  = () => {
+                        return this.score;
+                    };
+                    
 }
-//  Prototypes
-Player.prototype.init           = () => {
+/*  Prototypes  */
+Player.prototype.init           = function () {
                                     this.hand   = [];       // MAX_CARDS_IN_HAND=12;
-                                    this.points =  0;       // MAX_POINTS=14;
+                                    this.score  =  0;       // MAX_POINTS=14;
                                     this.lift   = [];       // MAX_CARDS_IN_LIFT=48;
                                     // this.name   = "";       // MAX_CHARACTERS=12;
                                 };
-Player.prototype.addPoints      = (points, callback) => {
-                                    try {
-                                        if (points > 6) throw (`Invalid points earned: points > 6.`);
-                                        if (this.points >= MAX_POINTS) throw (`Maximum points reached.`);
-                                        if (isNaN(points)) throw (`Invalid type: points not a number`);
-                                        if (points < 0) throw (`Points can not be negagtive.`);
-                                        this.points += points;
-                                        callback();
-                                    } 
-                                    catch(err) {
-                                       console.log(error); 
-                                    }
-                                   
-                                };
-Player.prototype.getPoints      = () => {
-                                    return this.points;
-                                };
-Player.prototype.getHand        = () => {
+
+Player.prototype.getHand        = function () {
                                     return this.hand;
                                 };
-Player.prototype.getName        = () => {
+Player.prototype.getName        = function () {
                                     return this.name;
                                 };                                
-Player.prototype.getLift        = () => {
+Player.prototype.getLift        = function () {
                                     return this.lift;
                                 };
-Player.prototype.pointsInit     = () => {
+Player.prototype.pointsInit     = function () {
                                     this.points = 0;            
                                 };
-Player.prototype.liftInit     = () => {
+Player.prototype.liftInit     = function () {
                                     this.lift = [];            
                                 };
-Player.prototype.handInit     = () => {
+Player.prototype.handInit     = function () {
                                     this.hand = [];            
                                 };
-Player.prototype.removeCardFromHand = (card, callback) => {
+Player.prototype.removeCardFromHand = function (card) {
                                     for (let index = 0; index < this.hand.length; index++) {
                                         if (this.hand[index] === card) {
                                             this.hand = this.hand.splice(index, 1);
-                                            callback();
+                                            // callback();
                                         }                                        
                                     }
                                 }; 
-Player.prototype.addCardsToLift = (cardArr) => {
+Player.prototype.addCardsToLift = function (cardArr) {
                                     this.lift = this.lift.concat(cardArr);
                                 };                               
-Player.prototype.setTeamName    =   (name) => {
+Player.prototype.setTeamName    =   function (name) {
                                       try {
                                         if (name.length >= MAX_CHARACTERS) throw (`Invalid input: name has too many characters.`);
                                         this.team = name;                                
@@ -95,7 +83,7 @@ Player.prototype.setTeamName    =   (name) => {
                                             console.log(err);
                                       }
                                     };
-Player.prototype.setPlayerName  =   (name) => {
+Player.prototype.setPlayerName  =   function (name) {
                                         try {
                                             if (name.length >= MAX_CHARACTERS) throw (`Invalid input: name has too many characters.`);
                                             this.name = name;                                

@@ -55,8 +55,16 @@
                     <button class="w3-btn" id="quitBtn" onclick="mainGameLoop()">Start</button>
                 </div>
                 <div class="user_input">
-                    <div><h4>Enter your name:</h4></div>
-                    <div><h4>Enter your team name:</h4></div>
+                    
+                    <form>
+                      <div><h4>Enter your name:</h4>
+                      <input name="name" type="text"><br> 
+                    </div>
+                    <div><h4>Enter the name of your team :</h4>
+                    <input name="team" type="text"><br><br>
+                    </div>
+                    <input class="w3-button w3-round-xlarge w3-border-blue" type="submit">
+                    </form>
                 </div>
                 <!-- Display of Player 1's hand -->
                 <div class="hand" id="tophand"></div>
@@ -69,8 +77,8 @@
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <p>Copyright &copy; 2018 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
+        <div class="container" id="copyright">
+            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
         </div>
     </footer>
 
@@ -101,7 +109,7 @@
 
 
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
+/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
 /********************************************************************************************** */
 
 -->

@@ -27,11 +27,7 @@ export function gCanvasLayer(ID, _LEFTOFFSET, _TOPOFFSET, _WIDTH, _HEIGHT, _OPAC
         // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
         // this.refresh = setInterval(drawScreenFcn(), period);
     };
-
-/*     this.stop = function () {
-        clearInterval(this.refresh);
-    }; */
-};
+}
 //  Prototypes
 //  gCanvasLayer.prototype.ctx      = this.canvas.getContext('2d');
 gCanvasLayer.prototype.clear    = function () {
