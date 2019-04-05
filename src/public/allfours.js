@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.6.3
+ *  @version   0.6.5
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -215,7 +215,7 @@ Game.Components.deck = {
          */
         // var SUITS = ['c', 'd', 'h', 's'];
         // var FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
-        return new Promise(() => {
+        // return new Promise(() => {
             let n = 0;
             for (let y = 0; y < SUITS.length; y++) {
                 var rank = 1;
@@ -226,8 +226,8 @@ Game.Components.deck = {
                     rank++;
                 }
             }
-        });
-        // return this.cards;
+        // });
+        return this;
     },
     shuffle: function () {
         /** randomly mixes up the cards in the deck
@@ -320,6 +320,8 @@ Game.State = {
     startOfGame:    false,
     deal:           false,
     playFirst:      null,
+    dealer:         null,
+    whoPlayedCallCard: null,
     userTurn:        false,
     computerTurn:    false,
     userPlayed:       false,
@@ -337,7 +339,9 @@ Game.State = {
                         this.endOfRound =     false;
                         this.endOfGame =      false;
                         this.endOfFourteen =  false;
-                        this.playFirst =        null; 
+                        this.dealer =           null;
+                        this.playFirst =        null;
+                        this.whoPlayedCallCard = null;
                     },
 };
 
@@ -788,22 +792,22 @@ function dealHandFcn(dealer) {
     //assign dealer -->      TODO: animation
     if (!dealer) {              // then firstJackDeal();
         dealer = firstJackDeal();
-    } else if (dealer === human) {               // switch dealer
-        dealer = Game.Player.computer;
+    }       //      else if (dealer === human) {               // switch dealer
+        // dealer = Game.Player.computer;
         //playFirst = human;
-    } else {
-        dealer = Game.Player.human;
-    }
+    // } else {
+        // dealer = Game.Player.human;
+  //  }
     // deal
     // if (computer.hand.length == 0 && human.hand.length == 0) {
         console.log(`${dealer.getName()} deals.`);
-        Game.Components.deck.init();
-        Game.Components.deck.shuffle().deal();
+        // Game.Components.deck.init();
+        Game.Components.deck.init().shuffle().deal();
         // Game.Components.deck.deal();
         let kick_points = kickPoints(Game.Components.deck.getTrump());
         dealer.addPoints(kick_points);
         // Game.Background.scoreboard.update();
-        console.log(`${dealer.name} gets ${kickPoints(Game.Components.deck.trump)} points.`);
+        console.log(`${dealer.name} gets ${kickPoints(Game.Components.deck.getTrump())} points.`);
         if (dealer === Game.Player.human) {             // assign who plays first as a result of dealing
             var whoPlaysFirst = Game.Player.computer;
         } else {
@@ -860,11 +864,11 @@ function play(player) {
         Game.Components.gameboard.listenForUserCard(() => {
             if (Game.Components.gameboard.user) {
                 Game.Components.gameboard.stopListening();
-                Game.Controller.isMyTurn = false;
+                // Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
-            } else {
+            } /* else {
                 throw new Error(`Didn't wait for user to pick a card.`);
-            }
+            } */
         } );  
 /*         let counter = 0;
         while (!Game.Components.gameboard.user) {
@@ -1029,8 +1033,8 @@ function computerAI() {
  * @param {int} i integer [0 .. length of computer's hand]
  */
 function computerPlay(i) {                          // run the 'thinking animation'
-    Game.Components.gameboard.computer = Game.Player.computer.hand[i];
     let card = Game.Player.computer.hand[i];
+    Game.Components.gameboard.computer = card;
     let cardName = card.getCardName();
     console.log(cardName);
     Game.Player.computer.hand.splice(i, 1);
@@ -1760,6 +1764,9 @@ function firstJackDeal(player1, player2) {
     startOfRound:   false,
     startOfGame:    false,
     deal:           false,
+    dealer:         null,
+    playFirst:      null,
+    whoPlayedCallCard: null,
     computerTurn    false,
     userTurn        false,
     userPlayed:       false,
@@ -1772,31 +1779,55 @@ function firstJackDeal(player1, player2) {
                         this.startOfRound =   false;
                         this.startOfGame =    false;
                         this.deal =           false;
+                        this.dealer =         null;
+                        this.playFirst =      null;
                         this.userPlay =       false;
                         this.computerPlay =   false;
                         this.endOfRound =     false;
                         this.endOfGame =      false;
                         this.endOfFourteen =  false; 
+                        this.whoPlayedCallCard = null;
                     },
 };
  */
 export function gameLoop() {
+    if (Game.State.startOfGame === true) {
+        Game.State.startOfGame = false;
+        console.log(`Start of game is true. Set it to false.`);
+        if (Game.State.dealer === Game.Player.computer) {               //  switch/toggle dealer
+            Game.State.dealer   = Game.Player.human;  
+        } 
+        if (Game.State.dealer === Game.Player.human) {
+            Game.State.dealer   = Game.Player.computer;   
+        }
+        if (!Game.State.dealer) {
+            Game.State.dealer = firstJackDeal();
+        }
+        Game.State.deal = true; 
+    }
+    
     if (Game.State.deal === true) {
+        Game.State.deal  = false;
+        Game.State.playFirst = dealHandFcn(Game.State.dealer);
         // playGameRound(dealHandFcn());
-        console.log(`Deal!`);
-        Game.State.playFirst = dealHandFcn();
-
-        Game.State.deal = false;
+/*         console.log(`Deal!`);        Game.Components.deck.init();
+        Game.Components.deck.shuffle().deal();
+        // Game.Components.deck.deal();
+        //  let kick_points = kickPoints();
+        dealer.addPoints(Game.Components.deck.getTrump()); */
     }
     if (Game.State.playFirst === Game.Player.computer) {
-        Game.State.computerTurn = true;
         Game.State.playFirst = null;
-    } else {
-        Game.State.userTurn = true;
-        Game.State.playFirst = null
+        Game.State.whoPlayedCallCard = Game.Player.computer;
+        Game.State.computerTurn = true;
+    } 
+    if (Game.State.playFirst === Game.Player.human) { 
+        Game.State.playFirst   = null;
+        Game.State.whoPlayedCallCard = Game.Player.human;
+        Game.State.userTurn    = true;
     }
     if (Game.State.userTurn === true) {
-        Game.State.userTurn = false;
+        Game.State.userTurn   = false;
         Game.Controller.isMyTurn = true;
         play(Game.Player.human);
     } 
@@ -1811,26 +1842,45 @@ export function gameLoop() {
     }
     if (Game.Components.gameboard.user) {
         Game.State.userPlayed = true;
+        Game.Controller.isMyTurn = false;
+    }
+    if (Game.State.userPlayed === false && Game.State.computerPlayed === true) {
+        Game.State.userTurn = true;
+        // play(Game.Player.human);
+    }
+    if (Game.State.userPlayed === true && Game.State.computerPlayed === false) {
+        Game.State.computerTurn = true;
+        // play(Game.Player.computer);
     }
     if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
-    
-        var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.computer);
-        console.log(`${winner.name}!`);
-        Game.State.userPlayed = false;
+        Game.State.userPlayed   = false;
         Game.State.computerPlayed = false;
+        /*  End of Round Logic  */
+        if (Game.State.whoPlayedCallCard === Game.Player.computer) {
+            Game.State.whoPlayedCallCard = null;
+            var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
+        }
+        if (Game.State.whoPlayedCallCard === Game.Player.human) {
+            Game.State.whoPlayedCallCard = null;
+            winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
+        }
+        console.log(`${winner.getName()}!`);
+        postPlay(winner);
         Game.Components.gameboard.init();
-        Game.State.playFirst = winner;
+
         setTimeout(() => {
-            postPlay(winner);
+            if (Game.Player.computer.hand.length > 0 && Game.Player.human.hand.length > 0) {
+                Game.State.playFirst = winner;
+            }
             // allocatePoints();
             // playGameRound(winner);
-             if (winner === Game.Player.computer) {
-                Game.State.computerTurn = true;
+/*             if (winner === Game.Player.computer) {
+                 Game.State.computerTurn = true;
             } else {
                 Game.State.userTurn = true;
-            }
-            if (Game.Player.computer.hand.length === Game.Player.human.hand.length) {
-                if (Game.Player.computer.hand.length = 0) {
+            } */
+            if (Game.Player.computer.hand.length === Game.Player.human.hand.length) {         //  if unequal throw an error
+                if (Game.Player.computer.hand.length === 0) {                                 //  if -ve, throw an error
                     allocatePoints();
                     Game.State.endOfGame = true;
                 }
@@ -1841,16 +1891,16 @@ export function gameLoop() {
         }, 2000); 
     }   
     if (Game.State.endOfGame === true) {
-        Game.State.endOfGame === false;
+        Game.State.endOfGame = false;
+        Game.Components.gameboard.init();
         console.log(`End of game is true. Set it to false.`);
-        Game.State.startOfGame = true;
+        if (Game.Player.human.getPoints() < 14 && Game.Player.computer.getPoints() < 14) {
+            Game.State.startOfGame = true;          //  restart game
+        }   /*  else {
+            //  announce winner!
+        }   */
     }
-    if (Game.State.startOfGame === true) {
-        console.log(`Start of game is true. Set it to false.`);
-        // dealHandFcn();
-        Game.State.deal = true; 
-        Game.State.startOfGame = false; 
-    }
+
 
 
     //  Initialize game properties
@@ -1968,16 +2018,13 @@ function mainGameLoop() {
         // Game.State.init();
         // Game.Components.gameboard.init();
         console.log(Game.Player.human.hand);
-        setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
-            // Game.Engine.start();
+        // setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
             Game.Screens.menuScreen.clear();
-            // Game.State.deal = true;
             removeGameMenu();
             console.log(`2`);
             gControllerListeners();
             console.log(`3`);
-            // Game.Engine.start();
-        }, 4000);
+        // }, 4000);
     })  
     .then(gWaitState(1))           // passes an array of all game object 
     .then(() => {     
@@ -1985,10 +2032,12 @@ function mainGameLoop() {
         console.log("playGameRound");
         setTimeout(() => {
             console.log(`5`);
-            // Game.State.deal = true;
+            Game.State.deal = true;
             Game.Engine.start();
         }, 7000);
-        playGameRound(dealHandFcn());
+        Game.Player.playFirst = dealHandFcn();
+        // play(Game.Player.computer);
+        // playGameRound(dealHandFcn());
         console.log(`End of Game!!!`);
     })             //  mouse, keyboard & touch  
     .catch((err) => {

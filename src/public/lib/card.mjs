@@ -58,7 +58,7 @@ export function Card(rank, face, suit) {               // Card object constructo
             this.image.onload = () => {
                // let card = this.getCardName();
                if (gCardImageCacheObj[this.getCardName()] === this.image) {
-                //console.log(`${this.getCardName()} image loaded into cache object.`);
+                //  console.log(`${this.getCardName()} image has been successfully loaded into cache object.`);
                }
             };
         }
@@ -74,7 +74,7 @@ export function Card(rank, face, suit) {               // Card object constructo
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.6.3
+ *  @version   0.6.5
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.

@@ -48,7 +48,7 @@ export const Engine = function(time_step, render,gameLoop) {
                                 this.time = time_stamp;
                                 //  this.update();
                                 this.render();
-                                this.loopCounter = (this.loopCounter + 1) % 24;
+                                this.loopCounter = (this.loopCounter + 1) % 48;
                                 if (this.loopCounter === 0) {
                                     this.gameLoop();
                                 }
@@ -104,7 +104,7 @@ Engine.prototype.init = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.6.3
+ *  @version   0.6.5
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
