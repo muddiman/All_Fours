@@ -61,7 +61,8 @@ import { Player }       from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }       from "./lib/engine.mjs";
 import { gCanvasLayer } from "./lib/screen.mjs";
-// import { Display } from "/lib/disp-int.mjs";
+// import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
+// import { Display } from "/lib/displayInterface.mjs";
 
 /* the globals */
 /* necessary game dimensions */
@@ -117,6 +118,7 @@ const TOPOFFSET = 110;
 /*  Main Game Object (parent object)    */
 var Game = {
     //  Display : Display,
+    // Sound      : gSM,
     Components : {},
     Background : {},                // OPAQUE Canvas scoreboard, labels, trump
     Screens    : {},                // Transparent canvas cardLayer, menulayer, msgLayer --> msgBoard, gameMenu, gameBoard 
@@ -128,6 +130,7 @@ var Game = {
 
 /*  Prototypes  */
 Game.Components = {
+    Sound       : {},
     gameboard   : null,                     //   or:    "gameTable"
     msgBoard    : null,
     gameMenu    : null,
@@ -203,6 +206,9 @@ Game.Background.scoreboard = {
                             Game.Background.update(true);
                         }
 };
+/*  Sound Elements  */
+
+// cardSlideSnd.play();Game.Components.Sound.cardSlideSnd
 
 /* Deck of cards objects   */
 Game.Components.deck = {
@@ -345,7 +351,14 @@ Game.State = {
                     },
 };
 
-
+/* Game.Components.Sound = {
+    // cardSlideSnd:  new Sound("./lib/snd/ui-sound3.oga"),
+    uiSnd:         new Sound("./lib/snd/ui-sound-19.oga"),
+    uiSnd2:        new Sound("./lib/snd/ui-sound-20.oga"),
+    init:          function () {
+                    // play;
+                },
+}; */
 //  message board object
 Game.Components.msgboard = {
 // var msgboard = {
@@ -356,6 +369,7 @@ Game.Components.msgboard = {
                     this.visible = false;
                     this.text = null;
                     this.isUpdated = false;
+                    return this;
                 },
     update      : function () {
                     this.isUpdated = true;
@@ -368,6 +382,7 @@ Game.Components.msgboard = {
                 },
     message     : function (text) {
                     this.text = text;
+                    return this;
                 }
 };
 
@@ -787,23 +802,14 @@ function firstJackDeal() {
 }
 
 function dealHandFcn(dealer) {
-    // let dealer = null;
     /*  Deal Cards  */
     //assign dealer -->      TODO: animation
     if (!dealer) {              // then firstJackDeal();
         dealer = firstJackDeal();
     }       //      else if (dealer === human) {               // switch dealer
-        // dealer = Game.Player.computer;
-        //playFirst = human;
-    // } else {
-        // dealer = Game.Player.human;
-  //  }
-    // deal
-    // if (computer.hand.length == 0 && human.hand.length == 0) {
         console.log(`${dealer.getName()} deals.`);
         // Game.Components.deck.init();
         Game.Components.deck.init().shuffle().deal();
-        // Game.Components.deck.deal();
         let kick_points = kickPoints(Game.Components.deck.getTrump());
         dealer.addPoints(kick_points);
         // Game.Background.scoreboard.update();
@@ -813,12 +819,11 @@ function dealHandFcn(dealer) {
         } else {
             whoPlaysFirst = Game.Player.human;
         }
-   // }
     return whoPlaysFirst;
 }
 
 function allocatePoints() {
-    // game
+    /*  game  */
     if (countForGame(Game.Player.computer) > countForGame(Game.Player.human)) {
         Game.Player.computer.addPoints(GAME);
     } else {
@@ -835,10 +840,6 @@ function allocatePoints() {
     if (didPlayerPlayedJack(Game.Player.human) === true) {
         Game.Player.human.addPoints(JACK); // += JACK;
     }
-    // continue game if there is no winner as yet
-/*     if (Game.Player.computer.getPoints() < 14 && Game.Player.human.getPoints() < 14) {
-        // playGameRound(winner);
-    } */
 }
 
 
@@ -857,27 +858,18 @@ function play(player) {
     return new Promise((resolve, reject) => {
       if (player === Game.Player.computer) {
         computerPlay(computerAI());
-        // resolve(Game.Components.gameboard.computer);
       } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
         Game.Components.gameboard.listenForUserCard(() => {
             if (Game.Components.gameboard.user) {
                 Game.Components.gameboard.stopListening();
-                // Game.Controller.isMyTurn = false;
+                Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
             } /* else {
                 throw new Error(`Didn't wait for user to pick a card.`);
             } */
         } );  
-/*         let counter = 0;
-        while (!Game.Components.gameboard.user) {
-            
-            setTimeout(() => {
-                counter++;
-                console.log(`${counter}`)
-            }, )
-        } */
         if (Game.Components.gameboard.user) {
             resolve(`${Game.Player.human.getName()} picked a card.`);
         }
@@ -1053,7 +1045,7 @@ function determineWinner(called, played) {
     let win = null;
     if (called.suit === played.suit) {
         if (called.rank > played.rank) {
-            win = called; // replace console.log with msgboard text
+            win = called;                               // replace console.log with msgboard text
         } else {
             win = played;
         }
@@ -1267,7 +1259,8 @@ function playCard(playPosition, card) {
             break;
         default:
             x.drawImage(card.image, xCenter - 60, yCenter - 30);
-    }
+    };
+    // Game.Components.Sound.cardSlideSnd.play();
 }
 
 
@@ -1386,23 +1379,29 @@ function message() {
     var c = Game.Screens.msgScreen.ctx;
     c.beginPath();
     c.lineWidth = 2;
-    c.strokeStyle = "white";
+    c.strokeStyle = "rgba(0,0,0,0.0)";
     c.rect(170, 100, 400, 200);
     c.stroke();
     //c.globalAlpha=0.4;
-    c.fillStyle = "rgba(0,0,0, 0.7)"; // black, transparent
+    c.fillStyle = "rgba(0,0,0, 0.0)"; // black, transparent
     c.fillRect(170, 100, 400, 200);
     // c.globalAlpha=0.1;
-    c.font = "20px Arial";
-    c.fillStyle = "rgba(254,254,254,1.0)"; // white
+    c.font = "40px Consolas";
+    c.fillStyle = "rgba(102,0,102,1.0)"; // white
     // let msgText = msgboard.text;
     c.fillText(Game.Components.msgboard.text, 200, 200);
     document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
     let pause = setTimeout(clearMsgBoard, 3000);
+/*     Game.Sound.loadAsync("./lib/snd/ui-sound3.oga", () => {
+        console.log(`Sound loaded.`);
+    });
+    // Game.Sound.playSound("./lib/snd/ui-sound3.oga", settings);
+    playSoundInstance("./lib/snd/ui-sound3.oga"); */
     // clearTimeout(pause);    //  garbage collection
 }
  
 function clearMsgBoard() { // garbage collection
+    // Game.Components.Sound.cardSlideSnd.play();
     Game.Components.msgboard.init();
     document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
     document.getElementById("msg_layer").style.visibility = "hidden";
@@ -1450,7 +1449,7 @@ function displayScore(scoreboard) {
     x.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
     // text
     x.fillStyle = "#ffffff"; // white
-    x.font = "30px Arial";
+    x.font = "30px Consolas";
     x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
     x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
     // score tiles (numbers)
@@ -1507,6 +1506,15 @@ var asset6 = new Promise(function (resolve, reject) {
     Game.State.init();
     resolve(`6`);
 });
+/* var asset7 = new Promise(function (resolve, reject) {
+    resolve(`7`);
+    var cardSlideSnd = new Sound("./lib/snd/ui-sound3.oga");
+
+}); */
+/* var asset7 = new Promise(function (resolve, reject) {
+    Game.Sound.init();
+    resolve(`7`);
+}); */
 /* function loadGameAssets() {
     return new Promise(function (resolve, reject) {
         console.log(`0.0`);
@@ -1808,13 +1816,7 @@ export function gameLoop() {
     
     if (Game.State.deal === true) {
         Game.State.deal  = false;
-        Game.State.playFirst = dealHandFcn(Game.State.dealer);
-        // playGameRound(dealHandFcn());
-/*         console.log(`Deal!`);        Game.Components.deck.init();
-        Game.Components.deck.shuffle().deal();
-        // Game.Components.deck.deal();
-        //  let kick_points = kickPoints();
-        dealer.addPoints(Game.Components.deck.getTrump()); */
+        Game.State.playFirst = dealHandFcn(Game.State.dealer);                  //      TODO: refactor deal function
     }
     if (Game.State.playFirst === Game.Player.computer) {
         Game.State.playFirst = null;
@@ -1828,17 +1830,14 @@ export function gameLoop() {
     }
     if (Game.State.userTurn === true) {
         Game.State.userTurn   = false;
-        Game.Controller.isMyTurn = true;
         play(Game.Player.human);
     } 
     if (Game.State.computerTurn === true) {
         Game.State.computerTurn = false;
         play(Game.Player.computer);
-        // Game.State.computerPlayed = true;
     }
     if (Game.Components.gameboard.computer) {
         Game.State.computerPlayed = true;
-        // Game.State.computerTurn = false;
     }
     if (Game.Components.gameboard.user) {
         Game.State.userPlayed = true;
@@ -1846,142 +1845,50 @@ export function gameLoop() {
     }
     if (Game.State.userPlayed === false && Game.State.computerPlayed === true) {
         Game.State.userTurn = true;
-        // play(Game.Player.human);
     }
     if (Game.State.userPlayed === true && Game.State.computerPlayed === false) {
         Game.State.computerTurn = true;
-        // play(Game.Player.computer);
     }
     if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
         Game.State.userPlayed   = false;
         Game.State.computerPlayed = false;
         /*  End of Round Logic  */
         if (Game.State.whoPlayedCallCard === Game.Player.computer) {
-            Game.State.whoPlayedCallCard = null;
+            Game.State.whoPlayedCallCard   = null;
             var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
         }
         if (Game.State.whoPlayedCallCard === Game.Player.human) {
-            Game.State.whoPlayedCallCard = null;
+            Game.State.whoPlayedCallCard   = null;
             winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
         }
         console.log(`${winner.getName()}!`);
         postPlay(winner);
-        Game.Components.gameboard.init();
 
         setTimeout(() => {
             if (Game.Player.computer.hand.length > 0 && Game.Player.human.hand.length > 0) {
                 Game.State.playFirst = winner;
             }
-            // allocatePoints();
-            // playGameRound(winner);
-/*             if (winner === Game.Player.computer) {
-                 Game.State.computerTurn = true;
-            } else {
-                Game.State.userTurn = true;
-            } */
+            Game.Components.gameboard.init();
             if (Game.Player.computer.hand.length === Game.Player.human.hand.length) {         //  if unequal throw an error
                 if (Game.Player.computer.hand.length === 0) {                                 //  if -ve, throw an error
                     allocatePoints();
                     Game.State.endOfGame = true;
                 }
             }
-/*             if (winner === Game.Player.human) {
-                Game.Controller.isMyTurn = true;
-            } */   
-        }, 2000); 
+        }, 1500); 
     }   
     if (Game.State.endOfGame === true) {
         Game.State.endOfGame = false;
         Game.Components.gameboard.init();
-        console.log(`End of game is true. Set it to false.`);
         if (Game.Player.human.getPoints() < 14 && Game.Player.computer.getPoints() < 14) {
             Game.State.startOfGame = true;          //  restart game
-        }   /*  else {
-            //  announce winner!
-        }   */
+        }   else {
+            /*  announce winner!    */
+            let text = `YOU WON!!!`;
+            Game.Components.msgboard.init().message(text).makeVisible();
+
+        }   
     }
-
-
-
-    //  Initialize game properties
-    //  Play 14 pts Game --> multiple dealt rounds --> Players play cards
-    //  Quit or replay
-
-    // if hand === 0:
-    //  deal()
-    //  console.log(`good`);
-/*     if (gameState.assetsLoaded === false) {
-        Promise.all([asset1, asset2, asset3, asset4, asset5]) 
-        .then((values) => {
-            console.log(values);
-            Game.Components.deck.init();
-            // gameState.assetsLoaded = true;
-        });         
-    } */
-/*         Game.Components.deck.init()
-        .then(() => { */
-
-            // Game.Components.deck.shuffle().deal(); 
-/*             Game.Player.computer.init();
-            Game.Player.human.init();
-            Game.Components.gameboard.init();
-            Game.Components.deck.init();
-            Game.Components.deck.shuffle().deal();
-            // Game.Components.deck.deal();
-            let kick_points = kickPoints(Game.Components.deck.getTrump());
-            dealer.addPoints(kick_points); */
-        // }); 
-/*     if (Game.Player.computer.hand.length === 0 && Game.Player.human.hand.length === 0)  {
-        Game.Components.deck.init();
-        Game.Components.deck.deal();
-        dealHandFcn(Game.Player.human);
-    }
- */
-    //  if computer turn to play, computer plays 
-   // var gameLoop = function () {
-       /*  if (dealer === Game.Player.computer) {
-            whoPlaysFirst = Game.Player.human;
-        } else {
-            whoPlaysFirst = computer;
-        }
-        if (!Game. && !Game) {
-            if (whoPlaysFirst === computer) {
-                computerPlay(computerAI());
-            } else {
-                //  listen for human's play
-                // break;
-            }
-        } */
-
-/*         if (whoPlaysFirst == human) {
-            //  listen for human's play
-        } */
-/*         if (Game. && !Game.) {
-                    // computerPlay(computerAI);
-        }
-        if (Game. && Game.) {
-            //  determinewinner();
-            //  allocate points;
-            if (Game.points || Game.points >= 14) {
-                //  set message 'You Win!!';
-                //  ask if want to play again:
-                //  if yes {
-                    //  reset GAME;
-                }
-            }
-            //  reset Board;
-            //  whoPlaysFirst = winner;
-        }
-    } */
-
-    //  if user turn to play, listen for user play
-
-    // after both party=ies play:
-    //  determine winner
-    //  set winnerturn to play
-    //  if hand finish:
-    //  allocate points & deal again if point < 14
-
 }
 
 
@@ -2002,47 +1909,35 @@ const HANG_JACK = 3;
  */
 function mainGameLoop() {
 
-    //  Load game assets (graphics into cache etc)
-    //  Initialize game properties
-    
-    //  Play game
-
 
     /*  PRE-GAME    */
-    console.log(`0`);
     Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
-    .then(gWaitState(3))           // passes an array of all game object 
     .then(() => {
-        // console.log(values);
-        console.log(`1`);
-        // Game.State.init();
-        // Game.Components.gameboard.init();
         console.log(Game.Player.human.hand);
-        // setTimeout(() => { // remove menu screen when all game assets are loaded and game is ready to be played
-            Game.Screens.menuScreen.clear();
-            removeGameMenu();
-            console.log(`2`);
-            gControllerListeners();
-            console.log(`3`);
-        // }, 4000);
-    })  
-    .then(gWaitState(1))           // passes an array of all game object 
-    .then(() => {     
-        console.log(`4`);
-        console.log("playGameRound");
-        setTimeout(() => {
-            console.log(`5`);
-            Game.State.deal = true;
-            Game.Engine.start();
-        }, 7000);
+        Game.Screens.menuScreen.clear();
+        removeGameMenu();
+        gControllerListeners();
+        Game.State.startOfGame = true;
         Game.Player.playFirst = dealHandFcn();
-        // play(Game.Player.computer);
-        // playGameRound(dealHandFcn());
-        console.log(`End of Game!!!`);
-    })             //  mouse, keyboard & touch  
+        Game.Engine.start();  
+    })  
+    .then(() => { 
+        // Game.Components.Sound.cardSlideSnd.muteAudio(); 
+        // playSoundInstance("./lib/snd/ui-sound3.oga");   
+        // console.log("playGameRound");
+        // setTimeout(() => {
+            // Game.State.startOfGame = true;
+            // Game.Player.playFirst = dealHandFcn();
+            // Game.Engine.start();                            //  Start Game
+        // }, 5000);
+        // Game.Player.playFirst = dealHandFcn();              //  dealing here because objects not loading properly in gameLoop()
+    })             
     .catch((err) => {
-        console.log(`${err} something went wrong somewhere.`);
+        console.error(`${err} something went wrong somewhere.`);
     });
+}
+function start() {
+    Game.Engine.start();  
 }
 function quitGame() {
     //  pass;

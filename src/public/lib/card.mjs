@@ -45,6 +45,7 @@ export function Card(rank, face, suit) {               // Card object constructo
     this.getCardName = function () {
         return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
     };
+    //  this.callback = callback;
     this.init = function () {
         if (gCardImageCacheObj[this.getCardName()]) {
             this.image = gCardImageCacheObj[this.getCardName()];
@@ -52,7 +53,6 @@ export function Card(rank, face, suit) {               // Card object constructo
         } else {
             this.image = new Image();
             this.image.id = this.getCardName();
-//            this.image.src = "img/" + this.getCardName() + ".png";
             this.image.src = `img/${this.getCardName()}.png`;
             gCardImageCacheObj[this.getCardName()] = this.image;
             this.image.onload = () => {

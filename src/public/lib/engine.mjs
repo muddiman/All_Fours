@@ -48,7 +48,7 @@ export const Engine = function(time_step, render,gameLoop) {
                                 this.time = time_stamp;
                                 //  this.update();
                                 this.render();
-                                this.loopCounter = (this.loopCounter + 1) % 48;
+                                this.loopCounter = (this.loopCounter + 1) % 24;
                                 if (this.loopCounter === 0) {
                                     this.gameLoop();
                                 }
