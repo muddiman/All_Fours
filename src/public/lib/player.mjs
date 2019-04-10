@@ -57,10 +57,10 @@ Player.prototype.getLift        = function () {
 Player.prototype.pointsInit     = function () {
                                     this.points = 0;            
                                 };
-Player.prototype.liftInit     = function () {
+Player.prototype.liftInit       = function () {
                                     this.lift = [];            
                                 };
-Player.prototype.handInit     = function () {
+Player.prototype.handInit       = function () {
                                     this.hand = [];            
                                 };
 Player.prototype.removeCardFromHand = function (card) {

@@ -78,7 +78,7 @@ export const Engine = function(time_step, render,gameLoop) {
                         };
     this.stop           = () => {
                                clearInterval(this.running);
-                               cancelAnimationFrame(this.animate);
+                            //    cancelAnimationFrame(this.animate);
 
                         };
 };

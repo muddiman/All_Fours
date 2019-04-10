@@ -438,6 +438,7 @@ Game.Controller = {
         'ArrowLeft' : 'selectPrevious',
         'Enter'     : 'confirmSelection',
         ' '         : 'confirmSelection',
+        'p'         : 'pause',
     },
     actions: {
         'showMenuScreen': false,
@@ -453,6 +454,7 @@ Game.Controller = {
         'selectNext'    : false,
         'selectPrevious': false,
         'confirmSelection': false,
+        'pause'         : false,
     },
     isMyTurn:   false,
     clickState: [],
@@ -680,9 +682,12 @@ async function onKeyDown(event) {
         //  stop listening
     }
     let action = Game.Controller.bindings[key];
-    if (key === 'Escape') {
+    if (key === 'Escape' || key === 'p') {
         Game.Controller.actions[action] = true;
     }
+   /*  if (key === 'p') {
+        Game.Controller.actions[action] = true;
+    } */
     if (Game.Controller.isMyTurn===true){
         if (Game.Controller.actions[action] === false) {
             Game.Controller.actions[action] = true;
@@ -697,6 +702,32 @@ function onKeyUp(event) {
     window.addEventListener('keydown', onKeyDown); // keyboard
 }
 
+/* function togglePause() {
+    //  probe all game keys
+    if (Game.Controller.actions['pause']) {           // toggle game pause
+        if (document.getElementById('msg_layer').style.visibility === 'visible') {
+            document.getElementById('msg_layer').style.visibility = 'hidden';
+                unPauseGame();
+
+        } else {
+            document.getElementById('msg_layer').style.visibility = 'visible';
+            pauseGame();
+            setAttribute("", "");
+        }
+    }
+} */
+function togglePause() {
+    //  probe all game keys
+    if (Game.Controller.actions['pause']) {           // toggle menu screen
+        if (document.getElementById('menu_layer').style.visibility == 'visible') {
+            document.getElementById('menu_layer').style.visibility = 'hidden';
+            unPauseGame();
+        } else {
+            document.getElementById('menu_layer').style.visibility = 'visible';
+            pauseGame();
+        }
+    }
+}
 function toggleMenuScreen() {
     //  probe all game keys
     if (Game.Controller.actions['showMenuScreen']) {           // toggle menu screen
@@ -824,16 +855,20 @@ function dealHandFcn(dealer) {
 
 function allocatePoints() {
     /*  game  */
-    if (countForGame(Game.Player.computer) > countForGame(Game.Player.human)) {
+    let computerPoints = countForGame(Game.Player.computer);
+    let humanPoints    = countForGame(Game.Player.human);
+    console.log(`${Game.Player.computer.getName()} Game Points: ${computerPoints}`);
+    console.log(`${Game.Player.human.getName()} Game Points: ${humanPoints}`);
+    if (computerPoints > humanPoints) {
         Game.Player.computer.addPoints(GAME);
     } else {
         Game.Player.human.addPoints(GAME);      //   += GAME;
     }
-    // high
+    /*  high  */
     let playedHigh = whoPlayedHigh();
     playedHigh.addPoints(HIGH);
-    // low
-    // jack
+    /*  low */
+    /*  jack  */
     if (didPlayerPlayedJack(Game.Player.computer) === true) {
         Game.Player.computer.addPoints(JACK);
     } 
@@ -939,16 +974,18 @@ async function playGameRound(whoPlaysFirst) {
 */
 
 async function  postPlay(winner) {
-    let time=4;
+    let time=2;
     Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
     Game.Components.msgboard.makeVisible();             //  = true;
     await gWaitState(time);
     console.log(`Wait ${time} seconds.`);
-    winner.lift += Game.Components.gameboard.computer;
-    winner.lift += Game.Components.gameboard.user;
-    Game.Components.msgboard.text = `${winner.name} will play first.`;
+    winner.lift.push(Game.Components.gameboard.user);
+    winner.lift.push(Game.Components.gameboard.computer);
+    // winner.addCardsToLift([Game.Components.gameboard.computer, Game.Components.gameboard.user]);
+    //  Game.Components.gameboard.init();
+/*     Game.Components.msgboard.text = `${winner.name} will play first.`;
     Game.Components.msgboard.makeVisible();         //   = true;
-    await gWaitState(time);
+    await gWaitState(time); */
     // console.log(`Wait ${time} seconds.`);
     // await Game.Components.gameboard.init();
 /*     if (Game.Player.human.hand.length === Game.Player.computer.hand.length) {        //  while card in hand hasn't finish, keep playing
@@ -965,10 +1002,11 @@ async function  postPlay(winner) {
     } */
 }
 
-   function didPlayerPlayedJack(player) {
-    for (let eachCard in player.lift) {
-        if (player.lift[eachCard].suit == Game.Components.deck.trump.suit) {
-            if (player.lift[eachCard].face == j) {
+function didPlayerPlayedJack(player) {
+    let lift = player.getLift();
+    for (let eachCard in lift) {
+        if (lift[eachCard].suit === Game.Components.deck.trump.suit) {
+            if (lift[eachCard].face ==='j') {
                 return true;
             }
         } 
@@ -1084,10 +1122,12 @@ function kickPoints(card) {
 }
 
 function countForGame(player) {
-    var points = 0;
-    for (let eachCard in player.lift) {
+    let points = 0;
+    let lift = player.getLift();
+    console.log(lift);
+    for (let eachCard in lift) {
         // var card = player.lift.pop;
-        switch (player.lift[eachCard].face) {
+        switch (lift[eachCard].getFace()) {
             case 'a':
                 points += 4;
                 break;
@@ -1850,8 +1890,11 @@ export function gameLoop() {
         Game.State.computerTurn = true;
     }
     if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
+        Game.Engine.stop();
+        console.log(`Engine Stopped!`);
         Game.State.userPlayed   = false;
         Game.State.computerPlayed = false;
+        //  pause game engine
         /*  End of Round Logic  */
         if (Game.State.whoPlayedCallCard === Game.Player.computer) {
             Game.State.whoPlayedCallCard   = null;
@@ -1862,29 +1905,39 @@ export function gameLoop() {
             winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
         }
         console.log(`${winner.getName()}!`);
-        postPlay(winner);
-
+        console.log(Game.Components.gameboard.user.getCardName()); 
+        console.log(Game.Components.gameboard.computer.getCardName());
+        // postPlay(winner);
+        winner.lift.push(Game.Components.gameboard.user);
+        winner.lift.push(Game.Components.gameboard.computer);
         setTimeout(() => {
             if (Game.Player.computer.hand.length > 0 && Game.Player.human.hand.length > 0) {
                 Game.State.playFirst = winner;
             }
-            Game.Components.gameboard.init();
-            if (Game.Player.computer.hand.length === Game.Player.human.hand.length) {         //  if unequal throw an error
-                if (Game.Player.computer.hand.length === 0) {                                 //  if -ve, throw an error
-                    allocatePoints();
-                    Game.State.endOfGame = true;
-                }
+            if (Game.Player.computer.hand.length === 0 && Game.Player.computer.hand.length === 0) { 
+                console.log(Game.Player.human.lift);                                //  if -ve, throw an error
+                console.log(Game.Player.computer.lift);                                //  if -ve, throw an error
+                allocatePoints();
+                Game.Player.computer.liftInit();
+                Game.Player.human.liftInit();
+                Game.State.endOfGame = true;
             }
+            Game.Components.gameboard.init();
+            Game.Engine.start();
+            console.log(`Engine Restarted!`);
         }, 1500); 
     }   
     if (Game.State.endOfGame === true) {
         Game.State.endOfGame = false;
         Game.Components.gameboard.init();
+
         if (Game.Player.human.getPoints() < 14 && Game.Player.computer.getPoints() < 14) {
             Game.State.startOfGame = true;          //  restart game
         }   else {
             /*  announce winner!    */
             let text = `YOU WON!!!`;
+            Game.Engine.Stop();
+            console.log(`Engine Stopped!`);
             Game.Components.msgboard.init().message(text).makeVisible();
 
         }   
@@ -1945,6 +1998,14 @@ function quitGame() {
     //  stop listenere
     //  stop Intervals
     //  remove screens
+}
+function pauseGame() {
+    Game.Engine.stop();
+    document.getElementById('menu_layer').style.backgroundColor = "rgba(255, 0, 0, 0.8)";  
+}
+function unPauseGame() {
+    Game.Engine.start();
+    document.getElementById('menu_layer').style.backgroundColor = "rgba(0, 0, 0, 0.0)";  
 }
 function restartGame() {
     //  quit game

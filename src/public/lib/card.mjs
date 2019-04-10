@@ -64,7 +64,9 @@ export function Card(rank, face, suit) {               // Card object constructo
         }
     };
 } 
-
+Card.prototype.getFace = function () {
+                            return this.face;
+                        };
 
 
 //================================================================================================================================
