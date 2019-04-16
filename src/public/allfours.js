@@ -61,6 +61,8 @@ import { Player }       from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }       from "./lib/engine.mjs";
 import { gCanvasLayer } from "./lib/screen.mjs";
+import { computerAI }   from "./lib/ai.mjs";
+
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
 
@@ -263,7 +265,7 @@ Game.Components.deck = {
         Game.Background.update(true);
 
     },
-    getTrump: function (card) {
+    getTrump: function () {
         return this.trump; //  = card;
     },
     deal: function () {
@@ -892,7 +894,13 @@ function didUserPlayCard() {
 function play(player) {
     return new Promise((resolve, reject) => {
       if (player === Game.Player.computer) {
-        computerPlay(computerAI());
+          if (Game.Components.gameboard.user) {
+            computerPlay(computerAI(Game.Player.computer.getHand(), Game.Components.deck.getTrump(), Game.Components.gameboard.user));
+            resolve(`${Game.Player.computer.getName()} played a card.`);
+        } else {
+            computerPlay(computerAI(Game.Player.computer.getHand(), Game.Components.deck.getTrump())); 
+            resolve(`${Game.Player.computer.getName()} played a card.`);
+        }
       } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
@@ -1050,13 +1058,13 @@ function humanPlay() {
     });
 }
 
-function computerAI() {
+/* function computerAI() {
     // play a random card
     let compHand = Game.Player.computer.hand;
     let i = Math.floor(Math.random() * compHand.length);
     console.log("Computer chooses " + i + "th card.");
     return i;
-}
+} */
 
 /**
  * 
@@ -1936,7 +1944,7 @@ export function gameLoop() {
         }   else {
             /*  announce winner!    */
             let text = `YOU WON!!!`;
-            Game.Engine.Stop();
+            Game.Engine.stop();
             console.log(`Engine Stopped!`);
             Game.Components.msgboard.init().message(text).makeVisible();
 

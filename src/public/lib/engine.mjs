@@ -11,7 +11,7 @@
 import { gameLoop } from "../allfours.js";
 
 /*   Game Engine    */
-export const Engine = function(time_step, render,gameLoop) {
+export const Engine = function(time_step, render, gameLoop) {
 //  this.update         = update;                   // update function
     this.time_interval  = time_step;                // related to the games frame rate
     this.render         = render;                   // render function (undefined)

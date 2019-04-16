@@ -15,3 +15,11 @@ ___
 
 
 
+#### Known Bugs
+- AI
+- Scoring - not yet accounting for 'low' & 'hang-jack'
+- NO Hang-Jack!!!
+- NO Sound
+- Arrow keys and Number keys input not working correctly
+- no display while counting for game
+- under trump, reneed, stil legal
