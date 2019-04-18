@@ -22,7 +22,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <H1><span class="primary-text">All</span> Fours</H1>
+                    <H1><span class="primary-text">TWO-MAN</span> All Fours</H1>
                 </div>
                 <div class="col-12">
                     <nav id="navbar">                        
@@ -37,7 +37,11 @@
             </div>
         </div>
     </header>
-    <div>
+    <div>   
+    <!--    TICKER      -->
+    
+        <div class="container" id="ticker"></div>
+  
         <!-- Game Board -->
         <div class="container" id="game_container">
                 <!--  <canvas id="game_board" width="700" height="450"></canvas> would go here -->
@@ -46,12 +50,12 @@
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
-                    <h3>Unit Test Console</h3>
+                    <h3>Console</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="testFirstJackDeal()">Test</button>
-                    <button class="w3-btn" onclick="displayCardCache()">Cache</button>
+                    <button class="w3-btn" onclick="Game.Components.Sound.sndEffect[1].play()">Mute</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
                 <div class="user_input">
@@ -66,11 +70,12 @@
                     <input class="w3-button w3-round-xlarge w3-border-blue" type="submit">
                     </form>
                 </div>
-                <!-- Display of Player 1's hand -->
+                <!-- Display of Player 1's hand 
                 <div class="hand" id="tophand"></div>
                 <div class="hand" id="bottomhand"></div>
                 <div class="hand" id="beg1"></div> 
-                <div class="hand" id="beg2"></div>            
+                <div class="hand" id="beg2"></div>   
+                -->         
             </div>
         </div>       
     </div>

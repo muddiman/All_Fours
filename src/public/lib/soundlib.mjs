@@ -155,7 +155,8 @@ export function Sound(src) {
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
     this.sound.style.display = "none";
-    document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
+    document.getElementById("game_container").appendChild(this.sound);
+    // document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
     this.play           = function() {
                             this.sound.play();
                         };
@@ -187,6 +188,19 @@ export function playSoundInstance(src) {
     soundObj.play();
 }
 
+/************************************************************************************************ */
+
+/*  Sound Effects   */
+//  load effect list
+export var sndEffect = [];
+sndEffect[0] = new Sound(`./lib/snd/ui-sound3.oga`);
+sndEffect[1] = new Sound(`./lib/snd/ui-sound-20.oga`);
+
+
+
+/*  Background Music    */
+export var bkgndMusic = [];
+bkgndMusic[0] = new Sound(`./lib/snd/ui-sound-19.oga`);
 
 /** **************************************************************************************************************************************************************
  * 
@@ -194,7 +208,7 @@ export function playSoundInstance(src) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.6.5
+ *  @version   0.6.6
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

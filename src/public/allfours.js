@@ -10,14 +10,14 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.6.5
+ *  @version   0.6.6
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
  *  @See:      http://www.roger-clarke.com/allfours/license.html
  *             Free to use and/or distribute for personal or academic purposes.
  *             Must site the source code using the following format at beginning or end of source code file where it was used:
- *             "Clarke, Roger A. (2018) All Fours Game (ver. 0.6.3) [Source Code]. New York, 
+ *             "Clarke, Roger A. (2018) All Fours Game (ver. 0.6.6) [Source Code]. New York, 
  *             NY. http://www.roger-clarke.com, https://www.github.com/muddiman". 
  */
 
@@ -62,6 +62,9 @@ import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }       from "./lib/engine.mjs";
 import { gCanvasLayer } from "./lib/screen.mjs";
 import { computerAI }   from "./lib/ai.mjs";
+import { sndEffect, bkgndMusic }    from "./lib/soundlib.mjs";
+import { tickertape }               from "./lib/tickertape.mjs";
+
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -84,11 +87,11 @@ const OPAQUE = 1.0;
 
 /* Players */
 const PLAYER1_NAME = "Computer";
-const PLAYER2_NAME = "Roger";
+const PLAYER2_NAME = "You";
 
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET = 15;
-const TOPOFFSET = 110;
+const TOPOFFSET = 160;
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -209,7 +212,10 @@ Game.Background.scoreboard = {
                         }
 };
 /*  Sound Elements  */
-
+Game.Components.Sound = {
+    sndEffect:  sndEffect,
+    bkgndMusic: bkgndMusic,
+};
 // cardSlideSnd.play();Game.Components.Sound.cardSlideSnd
 
 /* Deck of cards objects   */
@@ -441,6 +447,7 @@ Game.Controller = {
         'Enter'     : 'confirmSelection',
         ' '         : 'confirmSelection',
         'p'         : 'pause',
+        'm'         : 'mute'
     },
     actions: {
         'showMenuScreen': false,
@@ -457,6 +464,7 @@ Game.Controller = {
         'selectPrevious': false,
         'confirmSelection': false,
         'pause'         : false,
+        'mute'          : false,
     },
     isMyTurn:   false,
     clickState: [],
@@ -605,7 +613,7 @@ function clickConfirmation() {
     // Pass;
 }
 
-function arrowKeySelect() {
+function arrowKeySelectCard() {
     // Pass;
     if (Game.Controller.keyState[KEY_RA]) {
         Game.Components.gameboard.select = hand[i];
@@ -615,12 +623,13 @@ function arrowKeySelect() {
     }
 }
 
-function enterConfirm() {
+function enterConfirmCard() {
 
 }
 
 function onMouseDown(event) {
-    // document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);
+    // document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);.
+    Game.Components.Sound.sndEffect[1].play();
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
     console.log("Click location: (", locX, ", ", locY, ")");
@@ -677,6 +686,7 @@ function clickEventHandler() {
 
 async function onKeyDown(event) {
     let key = event.key;
+    Game.Components.Sound.sndEffect[1].play();
     window.removeEventListener('keydown', onKeyDown); // keyboard
     // await gWaitState(1);
     if (key) {
@@ -740,10 +750,18 @@ function toggleMenuScreen() {
         }
     }
 }
+/*  toggle mute */
+function toggleMute() {
+    if (Game.Controller.actions['mute']) {           // toggle menu screen
+        Game.Components.Sound.sndEffect[0].muteAudio();
+        Game.Controller.actions['mute'] = false;
+    }
+}
 
 function inputUpdate() {
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     clickEventHandler();
+    toggleMute();
     /*  take specific game 'action' once the action is set to 'true'  */ 
     for (let i=0; i<6; i++) {
       let play = `playCard_${i+1}`;
@@ -843,6 +861,7 @@ function dealHandFcn(dealer) {
         console.log(`${dealer.getName()} deals.`);
         // Game.Components.deck.init();
         Game.Components.deck.init().shuffle().deal();
+        // Game.Components.Sound.sndEffect[0].play();
         let kick_points = kickPoints(Game.Components.deck.getTrump());
         dealer.addPoints(kick_points);
         // Game.Background.scoreboard.update();
@@ -893,6 +912,7 @@ function didUserPlayCard() {
 
 function play(player) {
     return new Promise((resolve, reject) => {
+        // Game.Components.Sound.sndEffect[1].play();
       if (player === Game.Player.computer) {
           if (Game.Components.gameboard.user) {
             computerPlay(computerAI(Game.Player.computer.getHand(), Game.Components.deck.getTrump(), Game.Components.gameboard.user));
@@ -1555,8 +1575,9 @@ var asset6 = new Promise(function (resolve, reject) {
     resolve(`6`);
 });
 /* var asset7 = new Promise(function (resolve, reject) {
+    Game.Sound.init();
     resolve(`7`);
-    var cardSlideSnd = new Sound("./lib/snd/ui-sound3.oga");
+    // var cardSlideSnd = new Sound("./lib/snd/ui-sound3.oga");
 
 }); */
 /* var asset7 = new Promise(function (resolve, reject) {
@@ -2019,6 +2040,7 @@ function restartGame() {
     //  quit game
     //  mainGameLoop();
 }
+tickertape(`Play Two-Man All Fours by Roger Clarke`);
 mainGameLoop();
 
 //------------------------------------------------------------------------------------------------------------------
