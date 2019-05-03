@@ -42,10 +42,11 @@ export function Card(rank, face, suit) {               // Card object constructo
     this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
     this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
+    this.isLoaded = false;
     this.getCardName = function () {
         return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
     };
-    //  this.callback = callback;
+    //  this.callback = callback;   
     this.init = function () {
         if (gCardImageCacheObj[this.getCardName()]) {
             this.image = gCardImageCacheObj[this.getCardName()];
@@ -58,6 +59,7 @@ export function Card(rank, face, suit) {               // Card object constructo
             this.image.onload = () => {
                // let card = this.getCardName();
                if (gCardImageCacheObj[this.getCardName()] === this.image) {
+                   this.isLoaded = true;
                 //  console.log(`${this.getCardName()} image has been successfully loaded into cache object.`);
                }
             };

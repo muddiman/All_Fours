@@ -157,14 +157,16 @@ export function Sound(src) {
     this.sound.style.display = "none";
     document.getElementById("game_container").appendChild(this.sound);
     // document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
-    this.play           = function() {
-                            this.sound.play();
-                        };
-    this.stop           = function(){
-                            this.sound.pause();
-                        };
 }
 Sound.prototype.mute        = false;
+Sound.prototype.play        = function() {
+                                if (!this.mute) {
+                                    this.sound.play();  
+                                }
+                            };
+Sound.prototype.stop        = function() {
+                                this.sound.pause();
+                            };
 Sound.prototype.loopAudio   = function () {
                             if (!this.sound.loop) {
                                 this.sound.setAttribute("loop", "loop");
@@ -174,10 +176,10 @@ Sound.prototype.loopAudio   = function () {
                         };
 Sound.prototype.muteAudio   = function () {                 //  toggle the mute function
                             if (this.mute === false) {
-                                this.sound.setAttribute("muted", "muted");
+                                // this.sound.setAttribute("muted", "muted");
                                 this.mute = true;
                             } else {
-                                this.sound.removeAttribute("muted", "muted");
+                                // this.sound.removeAttribute("muted", "muted");
                                 this.mute = false;
                             }
                         };
@@ -199,6 +201,7 @@ sndEffect[1] = new Sound(`./lib/snd/ui-sound-20.oga`);
 
 
 /*  Background Music    */
+//  load background music streams
 export var bkgndMusic = [];
 bkgndMusic[0] = new Sound(`./lib/snd/ui-sound-19.oga`);
 

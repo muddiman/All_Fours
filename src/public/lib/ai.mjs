@@ -8,7 +8,20 @@
                      Programmer: .muddicode 
                      Code: Computer AI Subroutines                             
 */
+/*    FLAGS    */
+//    Go for Jack
+//    Go for Game 
+//    State Machines
+//    behaviour tree
 
+/*
+         GoForHangJack --> GoForGame
+         two cards rank > j, call Trump, 
+         one card rank > j, play low, allowing the opponent to play first each time until jack passes
+
+*/
+
+/*    STRATEGY    */
 
 export function computerAI(hand, trump, calledCard) {
    /* save jack   */

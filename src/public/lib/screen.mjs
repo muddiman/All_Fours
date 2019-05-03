@@ -25,7 +25,6 @@ export function gCanvasLayer(ID, _LEFTOFFSET, _TOPOFFSET, _WIDTH, _HEIGHT, _OPAC
         document.getElementById(ID).style = `position: absolute; left: ${_LEFTOFFSET}px; top: ${_TOPOFFSET}px; z-index: ${Z}; background-color: rgba(${red}, ${green}, ${blue}, ${_OPACITY});`;
         console.log(`New ${this.canvas.id} canvas initialized.`);
         // this.canvas.style="background-color: rgba(255, 255, 255," + OPAQUE + ");";     // in rgba format
-        // this.refresh = setInterval(drawScreenFcn(), period);
     };
 }
 //  Prototypes

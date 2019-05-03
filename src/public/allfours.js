@@ -64,12 +64,17 @@ import { gCanvasLayer } from "./lib/screen.mjs";
 import { computerAI }   from "./lib/ai.mjs";
 import { sndEffect, bkgndMusic }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
-
+import { debug }                    from "./lib/debugging.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
 
-/* the globals */
+/***************************************     the globals *  ********************************************************/
+
+/*  Flags   */
+const DEBUG_MODE_ON = false;
+const SOUND_ON      = false;
+
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
 const HEIGHT  = 450; //use window.innerHeight; for fullscreen gaming
@@ -123,7 +128,8 @@ const TOPOFFSET = 160;
 /*  Main Game Object (parent object)    */
 var Game = {
     //  Display : Display,
-    // Sound      : gSM,
+    //  Sound   : gSM,  
+    GamePlay   : {},
     Components : {},
     Background : {},                // OPAQUE Canvas scoreboard, labels, trump
     Screens    : {},                // Transparent canvas cardLayer, menulayer, msgLayer --> msgBoard, gameMenu, gameBoard 
@@ -131,6 +137,22 @@ var Game = {
     Controller : {},
     State      : {},
     Engine     : new Engine(1000/24, _renderAllScreens, gameLoop),
+    debug      : debug,
+};
+
+Game.GamePlay = {
+    HI:     null,
+    LOW:    null,
+    whoPlayedJack:  null,
+    whoPlayedHi:    null,
+    whoPlayedLow:   null,
+    init:   function ()  {
+                this.HI = null;
+                this.LOW = null;
+                this.whoPlayedHi = null;
+                this.whoPlayedLow = null;
+                this.whoPlayedJack = null;
+            },
 };
 
 /*  Prototypes  */
@@ -155,9 +177,10 @@ Game.Background = {
 
 Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
-    gameScreen  : null, //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
-    menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, OPAQUE,      3,   0,   0,   0),
-    msgScreen   : new gCanvasLayer("msg_layer", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255)
+    gameScreen  : null,         //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
+    menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,      3, 204, 204, 204),
+    msgScreen   : new gCanvasLayer("msg_layer", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
+    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,      4, 204, 204, 204),
 };
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
@@ -230,17 +253,18 @@ Game.Components.deck = {
         // var SUITS = ['c', 'd', 'h', 's'];
         // var FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
         // return new Promise(() => {
-            let n = 0;
+            let n = 0; 
             for (let y = 0; y < SUITS.length; y++) {
                 var rank = 1;
                 for (let x = 0; x < FACES.length; x++) {
                     this.cards[n] = new Card(rank, FACES[x], SUITS[y]);
                     this.cards[n].init(); //  get card images from image files or image cache object
+                    //  if (this.cards[n].isLoaded === true) {}
                     n++;
                     rank++;
                 }
             }
-        // });
+        // });-
         return this;
     },
     shuffle: function () {
@@ -700,7 +724,7 @@ async function onKeyDown(event) {
    /*  if (key === 'p') {
         Game.Controller.actions[action] = true;
     } */
-    if (Game.Controller.isMyTurn===true){
+    if (Game.Controller.isMyTurn===true) {
         if (Game.Controller.actions[action] === false) {
             Game.Controller.actions[action] = true;
         }
@@ -714,47 +738,37 @@ function onKeyUp(event) {
     window.addEventListener('keydown', onKeyDown); // keyboard
 }
 
-/* function togglePause() {
-    //  probe all game keys
-    if (Game.Controller.actions['pause']) {           // toggle game pause
-        if (document.getElementById('msg_layer').style.visibility === 'visible') {
-            document.getElementById('msg_layer').style.visibility = 'hidden';
-                unPauseGame();
-
-        } else {
-            document.getElementById('msg_layer').style.visibility = 'visible';
-            pauseGame();
-            setAttribute("", "");
-        }
-    }
-} */
 function togglePause() {
     //  probe all game keys
     if (Game.Controller.actions['pause']) {           // toggle menu screen
-        if (document.getElementById('menu_layer').style.visibility == 'visible') {
-            document.getElementById('menu_layer').style.visibility = 'hidden';
-            unPauseGame();
-        } else {
-            document.getElementById('menu_layer').style.visibility = 'visible';
+        if (document.getElementById('pause_screen').style.visibility === 'visible') {
+        // if (Game.Screens.pauseScreen.style.visibility === 'hidden') {
             pauseGame();
+        } else {
+            // document.getElementById('pause-screen').style.visibility = 'visible';
+            unPauseGame();
         }
+        Game.Controller.init();
     }
 }
+
 function toggleMenuScreen() {
     //  probe all game keys
     if (Game.Controller.actions['showMenuScreen']) {           // toggle menu screen
-        if (document.getElementById('menu_layer').style.visibility == 'visible') {
+        if (document.getElementById('menu_layer').style.visibility === 'visible') {
             document.getElementById('menu_layer').style.visibility = 'hidden';
         } else {
             document.getElementById('menu_layer').style.visibility = 'visible';
         }
+        Game.Controller.init();
     }
 }
 /*  toggle mute */
 function toggleMute() {
     if (Game.Controller.actions['mute']) {           // toggle menu screen
         Game.Components.Sound.sndEffect[0].muteAudio();
-        Game.Controller.actions['mute'] = false;
+        Game.Components.Sound.sndEffect[1].muteAudio();
+        Game.Controller.init();
     }
 }
 
@@ -762,6 +776,7 @@ function inputUpdate() {
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     clickEventHandler();
     toggleMute();
+    togglePause();
     /*  take specific game 'action' once the action is set to 'true'  */ 
     for (let i=0; i<6; i++) {
       let play = `playCard_${i+1}`;
@@ -886,16 +901,29 @@ function allocatePoints() {
         Game.Player.human.addPoints(GAME);      //   += GAME;
     }
     /*  high  */
-    let playedHigh = whoPlayedHigh();
-    playedHigh.addPoints(HIGH);
+    if (Game.GamePlay.whoPlayedHi) {
+        Game.GamePlay.whoPlayedHi.addPoints(HIGH);
+        console.log(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
+    }
     /*  low */
+    if (Game.GamePlay.whoPlayedLow) {
+        Game.GamePlay.whoPlayedLow.addPoints(LOW);
+        console.log(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
+    }
     /*  jack  */
+    if (Game.GamePlay.whoPlayedJack) {
+        Game.GamePlay.whoPlayedJack.addPoints(JACK);
+        console.log(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
+    }
+    Game.GamePlay.init();
+/* 
     if (didPlayerPlayedJack(Game.Player.computer) === true) {
         Game.Player.computer.addPoints(JACK);
     } 
     if (didPlayerPlayedJack(Game.Player.human) === true) {
         Game.Player.human.addPoints(JACK); // += JACK;
-    }
+    } 
+*/
 }
 
 
@@ -921,7 +949,12 @@ function play(player) {
             computerPlay(computerAI(Game.Player.computer.getHand(), Game.Components.deck.getTrump())); 
             resolve(`${Game.Player.computer.getName()} played a card.`);
         }
-      } else {
+        //  check the card for trump if its lower than existing
+        //  computer gets low, high, jack
+        if (Game.Components.gameboard.computer.suit === Game.Components.deck.trump.suit) {
+             trackCards(Game.Player.computer, Game.Components.gameboard.computer);
+        }
+    } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
         Game.Components.gameboard.listenForUserCard(() => {
@@ -934,10 +967,40 @@ function play(player) {
             } */
         } );  
         if (Game.Components.gameboard.user) {
+            if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
+                trackCards(Game.Player.human, Game.Components.gameboard.user);
+            };    
             resolve(`${Game.Player.human.getName()} picked a card.`);
         }
+        //  check the card for trump if its lower than existing
+
+        //  human gets low, high, jack        
       }
     }); 
+}
+
+
+
+function trackCards(player, cardPlayed) {
+    if (!Game.GamePlay.HI) {
+        Game.GamePlay.HI = cardPlayed;
+        Game.GamePlay.whoPlayedHi = player;
+        console.log(player.getName());
+        Game.GamePlay.LOW = cardPlayed;
+        Game.GamePlay.whoPlayedLow = player;                
+    }
+    if (cardPlayed.rank > Game.GamePlay.HI.rank) {
+        Game.GamePlay.HI = cardPlayed;
+        Game.GamePlay.whoPlayedHi = player;
+        console.log(player.getName());
+    }
+    if (cardPlayed.rank < Game.GamePlay.LOW.rank) {
+        Game.GamePlay.LOW = cardPlayed;
+        Game.GamePlay.whoPlayedLow = player;
+    }    
+    if (cardPlayed.face === 'j') {
+        Game.GamePlay.whoPlayedJack = player;
+    }
 }
 
 async function playGameRound(whoPlaysFirst) {
@@ -1650,6 +1713,9 @@ function loadScreenCache() {
     screens[1] = cardsLayer;
     screens[2] = msgLayer;
     screens[3] = menuLayer;
+    if (DEBUG_MODE_ON === true) {
+        screen[4] = debug_screen;
+    }
     return screens;             // screens array
 }
 
@@ -1667,6 +1733,15 @@ function updateGameScreen() {
     Game.Background.isUpdated = true;
 }
  */
+function displayDebugScreen() {
+    //  Game.debug
+    let c = Game.debug.screen.canvas;
+    let x = Game.debug.screen.ctx;
+     Game.debug.msg("TEST");
+    // x.fillStyle = "#ffffff"; // white
+    // x.font = "30px Consolas";
+    // x.fillText(Game.Player.computer.name, 0, 0);            //  test
+}
 
 function displayBackground() {
     // if (Game.Background.isUpdated === true) {
@@ -1753,6 +1828,7 @@ function _drawGameScreen() {
     Game.Screens.gameScreen.clear();
     displayGameScreen();
 }
+
 function updateMsgboard() {
     Game.Components.msgboard. isUpdated = true;
 }
@@ -1779,6 +1855,12 @@ function _drawBackground() {
     Game.Background.display.clear();
     displayBackground(); 
 }
+function _drawDebugScreen() {
+    if (Game.debug.isUpdated === true) {
+        Game.debug.screen.clear();
+        displayDebugScreen();
+    }
+}
 
 
 
@@ -1803,6 +1885,9 @@ function _renderAllScreens() {
     _drawGameScreen();
     _drawMsgScreen();
     _drawMenuScreen();
+    if (DEBUG_MODE_ON === true) {
+        _drawDebugScreen();
+    }
 }
     // _drawBackground()
     // _drawGameScreen();      // displayscore();    displayTrump(); //     displayPlayerHand();    displayOtherHands();
@@ -1995,6 +2080,12 @@ function mainGameLoop() {
     /*  PRE-GAME    */
     Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
     .then(() => {
+        if (DEBUG_MODE_ON === true) {
+            Game.debug.console("DEBUG MODE ON!");
+            Game.debug.screen.init();
+            Game.debug.msg("DEBUG MODE ON!");
+            // Game.debug.loadScreen();
+        }
         console.log(Game.Player.human.hand);
         Game.Screens.menuScreen.clear();
         removeGameMenu();
@@ -2030,11 +2121,11 @@ function quitGame() {
 }
 function pauseGame() {
     Game.Engine.stop();
-    document.getElementById('menu_layer').style.backgroundColor = "rgba(255, 0, 0, 0.8)";  
+    document.getElementById('pause_screen').style.visibility = "hidden";  
 }
 function unPauseGame() {
     Game.Engine.start();
-    document.getElementById('menu_layer').style.backgroundColor = "rgba(0, 0, 0, 0.0)";  
+    document.getElementById('pause_screen').style.visibility = "visible";  
 }
 function restartGame() {
     //  quit game
@@ -2120,5 +2211,5 @@ FrontEnd:
 
 /*  call the main program   */
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
+/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
 /********************************************************************************************** */
