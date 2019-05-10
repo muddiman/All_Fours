@@ -27,5 +27,9 @@ export const debug = {
     console:    (msg) => {
                     console.log(msg);
                 },
-
+    showComputerHand:    (computerHand) => {
+                            computerHand.forEach(card => {
+                                console.log(card.getCardName());
+                            });
+                        },
 };

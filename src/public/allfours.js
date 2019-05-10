@@ -57,11 +57,11 @@
 */
 
 /*  imports */
-import { Player }       from "./lib/player.mjs";
+import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
-import { Engine }       from "./lib/engine.mjs";
-import { gCanvasLayer } from "./lib/screen.mjs";
-import { computerAI }   from "./lib/ai.mjs";
+import { Engine }                   from "./lib/engine.mjs";
+import { gCanvasLayer }             from "./lib/screen.mjs";
+import { computerAI }               from "./lib/ai.mjs";
 import { sndEffect, bkgndMusic }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
 import { debug }                    from "./lib/debugging.mjs";
@@ -87,7 +87,7 @@ const FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
 
 /* Clear/Opaque */
 const TRANSPARENT = 0;
-const OPAQUE = 1.0;
+const OPAQUE      = 1.0;
 
 
 /* Players */
@@ -95,8 +95,8 @@ const PLAYER1_NAME = "Computer";
 const PLAYER2_NAME = "You";
 
 /* Canvas top-left corner coords (in px) */
-const LEFTOFFSET = 15;
-const TOPOFFSET = 160;
+const LEFTOFFSET =  15;
+const TOPOFFSET  = 160;
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
