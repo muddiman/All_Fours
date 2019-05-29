@@ -11,6 +11,7 @@
 
 */
 
+const DEBUG_MODE=true;
 
 import { gCanvasLayer } from "./screen.mjs";
 
@@ -18,18 +19,24 @@ export const debug = {
     isUpdated:  false, 
     screen:     new gCanvasLayer("debug_screen", 400, 450, 300, 150, 0.2, 4, 0, 0, 0),
     msg:        (text) => {
-                    let x = this.screen.ctx;
-                    x.fillStyle = "#ffffff";
-                    x.font = `30px Consolas`;                // white
-                    // this.screen.setFont("30px Consolas");
-                    x.fillText(text, 430, 480);            //  test
+                    if (DEBUG_MODE === true) {
+                        let x = this.screen.ctx;
+                        x.fillStyle = "#ffffff";
+                        x.font = `30px Consolas`;                // white
+                        // this.screen.setFont("30px Consolas");
+                        x.fillText(text, 430, 480);            //  test
+                    }
                 },    
     console:    (msg) => {
-                    console.log(msg);
+                    if (DEBUG_MODE === true) {
+                        console.log(msg);
+                    }
                 },
     showComputerHand:    (computerHand) => {
-                            computerHand.forEach(card => {
-                                console.log(card.getCardName());
-                            });
+                            if (DEBUG_MODE === true) {
+                                computerHand.forEach(card => {
+                                    console.log(`${card.getCardName()}`);
+                                });
+                            }
                         },
 };

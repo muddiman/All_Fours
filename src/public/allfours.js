@@ -1,5 +1,5 @@
 /*
-                Title:  ALL FOURS GAME
+                Title:  TWO-MAN ALL FOURS GAME
                 Language: Javascript
                 Programmer: .muddicode 
                 Code: Main Program                            
@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.6.6
+ *  @version   0.7.0
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -1490,7 +1490,9 @@ function displayTrump(trump) {
     let topCornerX = 5; // 5 pixels in
     let topCornerY = 5;
     let gbx = Game.Background.display.ctx;
-    gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
+    if (trump) {
+        gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
+    }
 }
 
 function acquireImage() {
@@ -1508,19 +1510,25 @@ function message() {
     document.getElementById("msg_layer").style.visibility = "visible";
     var m = Game.Screens.msgScreen.canvas;
     var c = Game.Screens.msgScreen.ctx;
+    let boxWidth  = 400;
+    let boxHeight = 200;
+    let posX      = 170;
+    let posY      = 100;
     c.beginPath();
     c.lineWidth = 2;
     c.strokeStyle = "rgba(0,0,0,0.0)";
-    c.rect(170, 100, 400, 200);
+    c.rect(posX, posY, boxWidth, boxHeight);
     c.stroke();
     //c.globalAlpha=0.4;
     c.fillStyle = "rgba(0,0,0, 0.0)"; // black, transparent
-    c.fillRect(170, 100, 400, 200);
+    c.fillRect(posX, posY, boxWidth, boxHeight);
     // c.globalAlpha=0.1;
-    c.font = "40px Consolas";
+    c.font      = "30px Consolas";
     c.fillStyle = "rgba(102,0,102,1.0)"; // white
     // let msgText = msgboard.text;
-    c.fillText(Game.Components.msgboard.text, 200, 200);
+    c.textAlign    = "center";
+    c.textBaseline = "middle";
+    c.fillText(Game.Components.msgboard.text, WIDTH/2, HEIGHT/2);
     document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
     let pause = setTimeout(clearMsgBoard, 3000);
 /*     Game.Sound.loadAsync("./lib/snd/ui-sound3.oga", () => {
@@ -1953,27 +1961,28 @@ function firstJackDeal(player1, player2) {
 };
  */
 export function gameLoop() {
+    /*  A series of 'game states'   */
     if (Game.State.startOfGame === true) {
         Game.State.startOfGame = false;
         console.log(`Start of game is true. Set it to false.`);
-        if (Game.State.dealer === Game.Player.computer) {               //  switch/toggle dealer
-            Game.State.dealer   = Game.Player.human;  
-        } 
-        if (Game.State.dealer === Game.Player.human) {
-            Game.State.dealer   = Game.Player.computer;   
-        }
         if (!Game.State.dealer) {
             Game.State.dealer = firstJackDeal();
+        } else {
+            if (Game.State.dealer === Game.Player.computer) {               //  switch/toggle dealer
+                Game.State.dealer   = Game.Player.human;  
+            } else {
+                Game.State.dealer   = Game.Player.computer;   
+            }
         }
         Game.State.deal = true; 
     }
     
     if (Game.State.deal === true) {
-        Game.State.deal  = false;
+        Game.State.deal   = false;
         Game.State.playFirst = dealHandFcn(Game.State.dealer);                  //      TODO: refactor deal function
     }
     if (Game.State.playFirst === Game.Player.computer) {
-        Game.State.playFirst = null;
+        Game.State.playFirst   = null;
         Game.State.whoPlayedCallCard = Game.Player.computer;
         Game.State.computerTurn = true;
     } 
@@ -1987,7 +1996,7 @@ export function gameLoop() {
         play(Game.Player.human);
     } 
     if (Game.State.computerTurn === true) {
-        Game.State.computerTurn = false;
+        Game.State.computerTurn   = false;
         play(Game.Player.computer);
     }
     if (Game.Components.gameboard.computer) {
@@ -2006,7 +2015,7 @@ export function gameLoop() {
     if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
         Game.Engine.stop();
         console.log(`Engine Stopped!`);
-        Game.State.userPlayed   = false;
+        Game.State.userPlayed     = false;
         Game.State.computerPlayed = false;
         //  pause game engine
         /*  End of Round Logic  */
@@ -2091,7 +2100,7 @@ function mainGameLoop() {
         removeGameMenu();
         gControllerListeners();
         Game.State.startOfGame = true;
-        Game.Player.playFirst = dealHandFcn();
+        // Game.Player.playFirst = dealHandFcn();
         Game.Engine.start();  
     })  
     .then(() => { 
