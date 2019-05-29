@@ -72,8 +72,8 @@ import { debug }                    from "./lib/debugging.mjs";
 /***************************************     the globals *  ********************************************************/
 
 /*  Flags   */
-const DEBUG_MODE_ON = false;
-const SOUND_ON      = false;
+const DEBUG_MODE = false;
+// export const SOUND_ON   = false;
 
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
@@ -1584,7 +1584,7 @@ function displayScore(scoreboard) {
     x.shadowOffsetX = 10;
     x.shadowOffsetY = 10;
     x.shadowColor = "black";
-    x.fillStyle = "#ff0000"; // red
+    x.fillStyle = "rgb(57, 38, 19)"; // red
     x.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
     // text
     x.fillStyle = "#ffffff"; // white
@@ -1592,6 +1592,7 @@ function displayScore(scoreboard) {
     x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
     x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
     // score tiles (numbers)
+    // x.font = "30px Monaco";
     x.fillText(Game.Player.computer.score, upperLeftCornerX + 215, 40);
     x.fillText(Game.Player.human.score, upperLeftCornerX + 215, 105);
 }
@@ -1721,7 +1722,7 @@ function loadScreenCache() {
     screens[1] = cardsLayer;
     screens[2] = msgLayer;
     screens[3] = menuLayer;
-    if (DEBUG_MODE_ON === true) {
+    if (DEBUG_MODE === true) {
         screen[4] = debug_screen;
     }
     return screens;             // screens array
@@ -1893,7 +1894,7 @@ function _renderAllScreens() {
     _drawGameScreen();
     _drawMsgScreen();
     _drawMenuScreen();
-    if (DEBUG_MODE_ON === true) {
+    if (DEBUG_MODE === true) {
         _drawDebugScreen();
     }
 }
@@ -2089,7 +2090,7 @@ function mainGameLoop() {
     /*  PRE-GAME    */
     Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
     .then(() => {
-        if (DEBUG_MODE_ON === true) {
+        if (DEBUG_MODE === true) {
             Game.debug.console("DEBUG MODE ON!");
             Game.debug.screen.init();
             Game.debug.msg("DEBUG MODE ON!");

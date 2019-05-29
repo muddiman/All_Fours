@@ -50,7 +50,7 @@ var strategy = {
                               if (numberOfFaceTrump(hand, trump) > 0) {
                                  this.goForHangJack = true;
                                  // console.log("Strategy: Go For Hang Jack");
-                                 debug.console("Strategy: Go For Hang Jack");
+                                 debug.console("Strategy: Going For Hang Jack");
                                  this.goForGame = false;
                               }
                            } 
@@ -325,7 +325,7 @@ function isHangJackInPlay(hand, kickCard) {
  *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.6.5
+ *  @version   0.7.1
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html

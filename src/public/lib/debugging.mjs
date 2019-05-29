@@ -13,6 +13,7 @@
 
 const DEBUG_MODE=true;
 
+// import { DEBUG_MODE } from "../allfours";
 import { gCanvasLayer } from "./screen.mjs";
 
 export const debug = {
