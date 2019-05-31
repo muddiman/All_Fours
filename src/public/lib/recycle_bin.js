@@ -859,4 +859,52 @@ function Player() { // Add a "Team" constructor when coding the 4-player version
             postPlay(winner); */
         
 
-            
+            if (calledCard.suit != trump.suit) {
+                for (let eachCard in hand) {           // play jack
+                  if (hand[eachCard].face === 'j' && hand[eachCard].suit === trump.suit) {
+                    return eachCard;
+                  }
+                  /*  if no jack play ten of trump  */
+                  if (hand[eachCard].face === 't' && hand[eachCard].suit === trump.suit) {
+                   return eachCard;
+                 }
+                 /*   play 10 if  10 is higher in called suit   */
+                }
+                /* if non of the preceding conditions are met, play random card   */
+                return selectRandomCard(hand); 
+             } else {
+                if (calledCard.rank < 11) {
+                   for (let eachCard in hand) {
+                      if (hand[eachCard].rank === 'j' && hand[eachCard].suit === trump.suit) {
+                         return eachCard;
+                      }
+                      if (hand[eachCard].rank === 't' && hand[eachCard].suit === trump.suit) {
+                         return eachCard;
+                      }
+                      if (hand[eachCard].rank > calledCard.rank && hand[eachCard].suit === trump.suit) {
+                         return eachCard;
+                      }
+                   }
+                   for (let eachCard in hand) {
+                      if (hand[eachCard].rank < calledCard.rank && hand[eachCard].suit === trump.suit) {
+                         return eachCard;
+                      }
+                   }
+                   /* no trump: play any bush card  */
+                   for (let eachCard in hand) {
+                      if (hand[eachCard].rank < 9) {
+                         return eachCard;
+                      }
+                   }
+                   /* no trump: play any high card except 10 */
+                   for (let eachCard in hand) {
+                      if (hand[eachCard].face != 't') {
+                         return eachCard;
+                      }
+                   }
+                   /* else: play any random card  */
+                   for (let eachCard in hand) {
+                      return selectRandomCard();
+                   }
+                }
+             }

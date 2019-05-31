@@ -29,15 +29,21 @@ import { debug } from "./debugging.mjs";
 
 /*    STRATEGY    */
 var strategy = {
-   goForGame:         false,
+   goForGame:         true,        // must always be the Default strategy
    goForHangJack:     false,
    defendJack:        false,
-   decideStrategy:    function (hand, trump) {
+   init:              function () {
+                        debug.console("Strategy initialized.");
                         this.goForGame = true;
+                        this.defendJack = false;
+                        this.goForHangJack = true;
+                     },
+   decideStrategy:    function (hand, trump) {
+                        // this.goForGame = true;
                         // console.log("Default Strategy: Go For Game");
                         debug.console("Default Strategy: Go For Game");
-                        this.goForHangJack = false;
-                        this.defendJack = false;
+                       /*  this.goForHangJack = false;
+                        this.defendJack = false; */
                            let jackInHand = isJackInUserHand(hand, trump);
                            if (jackInHand === true) {
                               this.defendJack = true;
@@ -53,24 +59,33 @@ var strategy = {
                                  debug.console("Strategy: Going For Hang Jack");
                                  this.goForGame = false;
                               }
-                           } 
-                        
-                        /* either-or   */
-/*                         if (this.defendJack === true) {
-                           this.goForHangJack = false;
-                        }
+                           }
+                        }, 
+   changeStrategyToGame:   function () {
                         if (this.goForHangJack === true) {
+                           this.goForHangJack = false;
+                           this.goForGame = true;
+                        }
+                        if (this.defendJack === true) {
                            this.defendJack = false;
-                        } */
-                        /* if have no face trump, play for    */
-                     },
+                           this.goForGame = true;
+                        }
+                     }                     
 };
+
+/* Search for specific card   */
+function searchHandForCard(cardName, hand) {
+   for (let index = 0; index < hand.length; index++) {
+      if (hand[index].getCardName() === cardName) {
+         return index;
+      }
+   }
+}
 
 /*    Play First  */
 function callJackOut(hand, trump) {
    // console.log("Calling Jack Out!");
-   debug.console("Calling Jack Out!")
-;   /* play highest face card in trump  */
+   debug.console("Calling Jack Out!");   /* play highest face card in trump  */
    let highestFaceCard = null;
    for (let index = 0; index < hand.length; index++) {
       const card = hand[index];                                            
@@ -83,20 +98,25 @@ function callJackOut(hand, trump) {
       }
    }
    if (highestFaceCard === null) {
-         strategy.goForHangJack = false;
+         strategy.changeStrategyToGame();
    }
    return highestFaceCard;
 }
+
+
+
 /*    Play Last   */
 
 
 export function computerAI(hand, trump, calledCard=null) {
    /* Set Strategy before first play  */
    if (hand.length === 6) {
+      strategy.init();
       strategy.decideStrategy(hand, trump);
    }
    /* if playing second */
-   if (calledCard) {                         
+   if (calledCard) { 
+      // strategy.defendJack:                         
       if (strategy.defendJack === true) {
          if (calledCard.suit != trump.suit || calledCard.rank < 9) {              // pass jack
             for (let eachCard in hand) {           // play jack
@@ -110,13 +130,15 @@ export function computerAI(hand, trump, calledCard=null) {
          if (selectLowerCard(hand, trump, calledCard) != null) {
             return selectLowerCard(hand, trump, calledCard);
          }
-         return selectRandomCard(hand, trump);         //  change to above                                //   keep off strike   
+         return selectRandomCard(hand, trump);                                       //  change to above                                //   keep off strike   
       }
+      // strategy.goForHangJack: 
       if (strategy.goForHangJack === true) {
-         if (calledCard.face === 'j' && calledCard.suit === trump.suit) {            //   if jack is thrown in face
-            strategy.goForHangJack = false;
-            strategy.goForGame = true; 
-            return callJackOut(hand, trump);                                         // play face trump & hang it
+         if (calledCard.getCardName() === `j${trump.suit}`) {            //   if jack is thrown in face
+            strategy.changeStrategyToGame(); 
+            if (callJackOut(hand, trump)) {
+               return callJackOut(hand, trump);                                         // play face trump & hang it
+            }
          }
          if (selectLowerCard(hand, trump, calledCard) != null) {
             return selectLowerCard(hand, trump, calledCard);
@@ -124,89 +146,91 @@ export function computerAI(hand, trump, calledCard=null) {
          /* play ten of suit
          play ten of trump
          play highest face card in suit  */
-         return selectRandomCard(hand, trump);         //  change to above                                //   keep off strike   
+         return selectLowestCard(hand, trump);         //  change to above      //   keep off strike   //   ie play lower bush card
       }
       // strategy.goForGame:  play ten, take ten, take face cards
+      if (strategy.goForGame === true) {
+         if (calledCard.face === "t") {                                         // play higher card 
+            for (let index = 0; index < hand.length; index++) {
+               if (hand[index].suit === calledCard.suit && hand[index].rank > 8 ) {
+                  return index;
+               }               
+            }
+            if (calledCard.suit != trump.suit) {
+               for (let index = 0; index < hand.length; index++) {
+                  if (hand[index].suit === trump.suit) {
+                     return index;
+                  }               
+               }
+            }
+         }
+         if (calledCard.rank > 8) {
+            // play higher card or trump 
+            for (let index = 0; index < hand.length; index++) {
+               if (hand[index].suit === calledCard.suit && hand[index].rank > calledCard.rank ) {
+                  return index;
+               }               
+            }
+            if (calledCard.suit != trump.suit) {
+               for (let index = 0; index < hand.length; index++) {
+                  if (hand[index].suit === trump.suit) {
+                     return index;
+                  }               
+               }
+            }
+         }
+         if (calledCard.rank < 8) {                                          // play ten if you have it
+            let tenOfSuit = searchHandForCard(`t${calledCard.suit}`, hand);
+            if (tenOfSuit) {
+               return tenOfSuit;
+            }
+            let tenOfTrump = searchHandForCard(`t${trump.suit}`, hand);
+            if (tenOfTrump) {
+               return tenOfTrump;
+            }
+         }
+         return selectLowestCard(hand, trump);                     // else play lowest bush card
+      }
    }
 
    
    /* if playing First  */
-   if (!calledCard) {         
+   if (!calledCard) { 
+      // strategy.defendJack:                                 
       if (strategy.defendJack === true) {
          return selectLowestCard(hand, trump);                   //  play low to get off strike
-      } else if (strategy.goForHangJack === true) {          
+      } 
+      // strategy.goForHangJack:  
+      if (strategy.goForHangJack === true) {          
          if (callJackOut(hand, trump) != null) {
             return callJackOut(hand, trump);                      // call high trump to hang jack
+         } else {
+            strategy.changeStrategyToGame();
          }
       }
-      return selectRandomCard(hand);                        // play high and save tens etc (jacks and queens)    
-   }
-   /* save jack   */
-
-   if (calledCard.suit != trump.suit) {
-      for (let eachCard in hand) {           // play jack
-        if (hand[eachCard].face === 'j' && hand[eachCard].suit === trump.suit) {
-          return eachCard;
-        }
-        /*  if no jack play ten of trump  */
-        if (hand[eachCard].face === 't' && hand[eachCard].suit === trump.suit) {
-         return eachCard;
-       }
-       /*   play 10 if  10 is higher in called suit   */
+      // return selectRandomCard(hand);                        // play high and save tens etc (jacks and queens)    
+      // strategy.goForGame:  play face cards
+/*       let lowestFaceCard = null;
+      for (let i = 0; i < hand.length; i++) {
+         if (hand[i].rank > 8 && hand[i].rank < lowestFaceCard.rank) {
+            lowestFaceCard = i;                                                                                   // TODO: this section
+         }         
       }
-      /* if non of the preceding conditions are met, play random card   */
-      return selectRandomCard(hand); 
-   } else {
-      if (calledCard.rank < 11) {
-         for (let eachCard in hand) {
-            if (hand[eachCard].rank === 'j' && hand[eachCard].suit === trump.suit) {
-               return eachCard;
-            }
-            if (hand[eachCard].rank === 't' && hand[eachCard].suit === trump.suit) {
-               return eachCard;
-            }
-            if (hand[eachCard].rank > calledCard.rank && hand[eachCard].suit === trump.suit) {
-               return eachCard;
-            }
-         }
-         for (let eachCard in hand) {
-            if (hand[eachCard].rank < calledCard.rank && hand[eachCard].suit === trump.suit) {
-               return eachCard;
-            }
-         }
-         /* no trump: play any bush card  */
-         for (let eachCard in hand) {
-            if (hand[eachCard].rank < 9) {
-               return eachCard;
-            }
-         }
-         /* no trump: play any high card except 10 */
-         for (let eachCard in hand) {
-            if (hand[eachCard].face != 't') {
-               return eachCard;
-            }
-         }
-         /* else: play any random card  */
-         for (let eachCard in hand) {
-            return selectRandomCard();
-         }
-      }
+      if (lowestFaceCard) {
+         return lowestFaceCard;
+      } */
+      return selectLowestCard(hand, trump);
    }
 
+}
    
 function selectRandomCard(remainingHand) {                            // select a random card
    // let compHand = Game.Player.computer.hand;
    let i = Math.floor(Math.random() * remainingHand.length);
    console.log("Computer chooses " + i + "th card.");
    return i;
-   }
-   /* play high card */
-   for (let eachCard in hand) {
-      if (hand[eachCard].rank > 8 && hand[eachCard].suit != trump.suit) {
-         return eachCard;
-      }
-   }
 }
+
 
 
 
@@ -224,7 +248,7 @@ function isJackInUserHand(hand, trump) {
 }
 
 function selectLowestCard(hand, trump) {
-   let lowestCardIndex = hand[0];
+   let lowestCardIndex = 0;
    for (let n=0; n < hand.length; n++) {
       if (hand[n].rank < hand[lowestCardIndex].rank && hand[n].suit != trump.suit) {
          lowestCardIndex = n;
