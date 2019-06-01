@@ -82,9 +82,8 @@ function searchHandForCard(cardName, hand) {
    }
 }
 
-/*    Play First  */
+/*    Playing Face Trump to hang jack or get ten trump  */
 function callJackOut(hand, trump) {
-   // console.log("Calling Jack Out!");
    debug.console("Calling Jack Out!");   /* play highest face card in trump  */
    let highestFaceCard = null;
    for (let index = 0; index < hand.length; index++) {
@@ -127,10 +126,15 @@ export function computerAI(hand, trump, calledCard=null) {
                }
             }                                                    
          }
-         if (selectLowerCard(hand, trump, calledCard) != null) {
+         if (selectLowerCard(hand, trump, calledCard) != null) {      //   keep off strike 
             return selectLowerCard(hand, trump, calledCard);
          }
-         return selectRandomCard(hand, trump);                                       //  change to above                                //   keep off strike   
+         if (searchHandForCard(`t${trump.suit}`, hand) != null) {     //   if not, pass a ten o' trump
+            return searchHandForCard(`t${trump.suit}`, hand);
+         }         
+         if (searchHandForCard(`t${calledCard.suit}`, hand) != null) {  // or a ten 
+            return searchHandForCard(`t${calledCard.suit}`, hand);
+         }                                       //  change to above                                 
       }
       // strategy.goForHangJack: 
       if (strategy.goForHangJack === true) {
@@ -207,6 +211,25 @@ export function computerAI(hand, trump, calledCard=null) {
          } else {
             strategy.changeStrategyToGame();
          }
+      }
+      // strategy.goForGame:
+      if (strategy.goForGame === true) {
+         for (let i = 0; i < hand.length; i++) {
+            if (hand[i].rank > 8 && hand[i].suit != trump.suit) {
+               return i;
+            }
+         }
+         for (let i = 0; i < hand.length; i++) {
+            if (hand[i].rank > 8 && hand[i].suit === trump.suit) {
+               return i;
+            }
+         }
+         for (let i = 0; i < hand.length; i++) {
+            if (hand[i].rank != 8 && hand[i].suit === trump.suit) {
+               return i;
+            }
+         }
+         return selectLowestCard(hand, trump);                                   
       }
       // return selectRandomCard(hand);                        // play high and save tens etc (jacks and queens)    
       // strategy.goForGame:  play face cards
