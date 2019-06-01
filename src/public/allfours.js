@@ -1190,6 +1190,17 @@ function determineWinner(called, played) {
     }
 }
 
+function determineHangJack(called, played) {
+    // determines the higher rank card
+    // parameters: called and played card objects
+    // return: player (who won)
+    // let hangJack = null;
+    if (called.getCardName() === `j${trump.suit}` || played.getCardName() === `j${trump.suit}`) {
+        if (called.rank < 9 || played.rank < 9) {
+            return HANG_JACK;                               // replace console.log with msgboard text
+        }
+    }
+}
 //  Points associated with KickCard
 function kickPoints(card) {
     switch (card.face) {
@@ -2023,10 +2034,14 @@ export function gameLoop() {
         if (Game.State.whoPlayedCallCard === Game.Player.computer) {
             Game.State.whoPlayedCallCard   = null;
             var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
+            winner.addPoints(determineHangJack(Game.Components.gameboard.computer, Game.Components.gameboard.user));
+                    //  check for hang-jack
         }
         if (Game.State.whoPlayedCallCard === Game.Player.human) {
             Game.State.whoPlayedCallCard   = null;
             winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
+            winner.addPoints(determineHangJack(Game.Components.gameboard.user, Game.Components.gameboard.computer));
+                    //  check for hang-jack
         }
         console.log(`${winner.getName()}!`);
         console.log(Game.Components.gameboard.user.getCardName()); 
