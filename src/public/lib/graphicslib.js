@@ -11,7 +11,7 @@
  *  @copyright (c) 2018 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.6.3
+ *  @version   0.6.6
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
@@ -37,6 +37,7 @@
   *    Game Board object:
   *    Size - depending on the device on which it's being played 
   *    Only one "instance of the gameBoard object" is used for the entire duration of game play because of the nature of the platform (HTML Canvas)
+  *    Contains the barebones Classes (& functions) that actually interacts with the canvas, eg the Screens etc.
   */
 
   //-----------------------------------------------------------------------------------------------------
@@ -159,8 +160,8 @@ export function __drawSpriteInternal(spt, sheet, posX, posY) {
 
 /**
 * draws scoreboard on the gameboard
-* @param {*} a Team A's current score - int
-* @param {*} b Team B's current score - int
+* @param {int} a Team A's current score - int
+* @param {int} b Team B's current score - int
 * @returns void
 */
 export function displayScoreboard(a, b) {

@@ -8,10 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
-    <script type="module" src="/lib/graphicslib.js"></script>   
-    <script src="allfours.js"></script>
-    <!-- <script type="module" src="/lib/testing/unittest_functions.mjs"></script> -->    
-    <script type="module" src="allfours.test.mjs"></script>
+   <!-- <script type="module" src="/lib/graphicslib.js"></script> 
+    <script src="/lib/player.js"></script>
+    <script src="/lib/card.js"></script>  
+    <script type="module" src="/lib/testing/unittest_functions.mjs"></script>    
+    <script type="module" src="allfours.test.mjs"></script> -->
    
 </head>
 
@@ -21,7 +22,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <H1><span class="primary-text">All</span> Fours</H1>
+                    <H1><span class="primary-text">TWO-MAN</span> All Fours</H1>
                 </div>
                 <div class="col-12">
                     <nav id="navbar">                        
@@ -29,14 +30,18 @@
                         <a href="#">About</a>
                         <a href="#">Documentation</a>
                         <a href="#">Contact</a>
-                        <a href="/lib/title-screen.html">Title Screen</a>
-                        <a href="/lib/graphics.html">Graphics</a>
+                        <a href="../public/lib/title-screen.html">Title Screen</a>
+                        <!-- <a href="../public/lib/graphics.html">Graphics</a> -->
                     </nav>
                 </div>
             </div>
         </div>
     </header>
-    <div>
+    <div>   
+    <!--    TICKER      -->
+    
+        <div class="container" id="ticker"></div>
+  
         <!-- Game Board -->
         <div class="container" id="game_container">
                 <!--  <canvas id="game_board" width="700" height="450"></canvas> would go here -->
@@ -45,42 +50,53 @@
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
-                    <h3>Unit Test Console</h3>
+                    <h3>Console</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="testFirstJackDeal()">Test</button>
-                    <button class="w3-btn" onclick="displayCardCache()">Cache</button>
-                    <button class="w3-btn" id="quitBtn" onclick="mainGameLoop()">Start</button>
+                    <button class="w3-btn" onclick="displayCutScene()">Video Clip</button>
+                    <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
+                    <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
                 <div class="user_input">
-                    <div><h4>Enter your name:</h4></div>
-                    <div><h4>Enter your team name:</h4></div>
+                    
+                    <form>
+                      <div><h4>Enter your name:</h4>
+                      <input id="player_name" name="name" type="text"><br> 
+                    </div>
+<!--                     <div><h4>Enter the name of your team :</h4>
+                    <input name="team" type="text"><br><br>
+                    </div> -->
+                    <button class="w3-button w3-round-xlarge w3-border-blue" type="button" onclick="setPlayerName()">ENTER</button>
+                    </form>
                 </div>
-                <!-- Display of Player 1's hand -->
+                <div id="debug_section"></div>
+                <!-- Display of Player 1's hand 
                 <div class="hand" id="tophand"></div>
                 <div class="hand" id="bottomhand"></div>
                 <div class="hand" id="beg1"></div> 
-                <div class="hand" id="beg2"></div>            
+                <div class="hand" id="beg2"></div>   
+                -->         
             </div>
         </div>       
     </div>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <p>Copyright &copy; 2018 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
+        <div class="container" id="copyright">
+            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
         </div>
     </footer>
 
-    <script>
+    <script type="module" src="allfours.js">
         window.onload = function () {
-            loadGameAssets();
+           // loadGameAssets();
             /*
             setTimeout(() => {
                mainGameLoop();
             }, 3000);
            */
+           mainGameLoop();
         }
     </script>     
 </body>
@@ -99,7 +115,7 @@
 
 
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2018 Roger A. Clarke. All Rights Reserved                 */
+/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
 /********************************************************************************************** */
 
 -->

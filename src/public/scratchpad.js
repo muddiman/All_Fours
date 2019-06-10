@@ -57,10 +57,12 @@ var gameObj = {
         document.createAttribute("id") = "game_board"
         document.getElementById("game_board").width = this.gameWidth;
         document.getElementById("game_board").height = this.gameHeight;
-    }
-    
-    
-    
+    }   
+};
+
+hand = [];
+function cardLocation(i, arrayLength) {
+    card[i].x = xCenter - Math.ceil(arrayLength / 2) + i * CARD_W / 2;
 }
 
 
