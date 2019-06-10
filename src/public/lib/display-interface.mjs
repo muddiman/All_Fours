@@ -14,6 +14,100 @@ import { gCanvasLayer } from "./lib/screen.mjs";
 
 /*  CLASSES */
 /*  OJECTS  */
+var Game = {
+    Background: {},
+    Screens:    {}
+};
+
+export var Display = {
+    labels:      function () {
+                    // let c=Game.Background.canvas;
+                    let bgx = Game.Background.ctx;
+                    bgx.setFont("15px Arial");
+                    // bgx.font = "15px Arial";
+                    bgx.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
+                    //  Game.Background.display.setFillStyle("rgba(255,255,255,1.0");
+                    let labelUserCards = "1     2       3       4       5       6";
+                    bgx.fillText("TRUMP", 15, 30 + CARD_H); // user keyboard play labels
+                    bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); // trump label
+                },
+    
+    userCard:   function () {
+                    playCard('bottom', Game.Components.gameboard.user);
+                },
+    computerCard:   function () {
+                    playCard('top', Game.Components.gameboard.computer);
+                },
+    trump:      function (trump) {
+                    let topCornerX = 5; // 5 pixels in
+                    let topCornerY = 5;
+                    let gbx = Game.Background.ctx;
+                    gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
+                },
+    playerHand: function (player) {
+                    return new Promise(function (resolve) {
+                        let c = Game.Screens.gameScreen.canvas;
+                        let x = Game.Screens.gameScreen.ctx;
+                        let xCenter = c.width / 2;
+                        // let coordX = xCenter - Math.ceil(player.hand.length / 2) + i * CARD_W / 2;
+                        let coordY = 340;
+                        for (let i = 0; i < player.hand.length; i++) {
+                            //x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board 
+                            let coordX = xCenter - Math.ceil(player.hand.length / 2) + i * CARD_W / 2;       // playCard('left', player.hand[i]);
+                            x.drawImage(player.hand[i].image, coordX, coordY, CARD_W, CARD_H);
+                        }
+                    });
+                },
+    score:      function (scoreboard) {
+                    var c = Game.Background.canvas;
+                    var x = Game.Background.ctx;
+                    var upperLeftCornerX = c.width - 265; //   (LxB: 260 x 120 box; x,y => 400,5)
+                    var upperLeftCornerY = 5;
+                    var width = 260;
+                    var height = 120;
+                    x.beginPath();
+                    x.lineWidth = 4;
+                    x.strokeStyle = "black";
+                    x.rect(upperLeftCornerX, upperLeftCornerY, width, height);
+                    x.stroke();
+                    // fill rectangle
+                    x.shadowBlur = 40;
+                    x.shadowOffsetX = 10;
+                    x.shadowOffsetY = 10;
+                    x.shadowColor = "black";
+                    x.fillStyle = "#ff0000"; // red
+                    x.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
+                    // text
+                    x.fillStyle = "#ffffff"; // white
+                    x.font = "30px Arial";
+                    x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
+                    x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
+                    // score tiles (numbers)
+                    x.fillText(Game.Player.computer.score, upperLeftCornerX + 215, 40);
+                    x.fillText(Game.Player.human.score, upperLeftCornerX + 215, 105);
+                },
+    message:    function () {
+                    document.getElementById("msg_layer").style.visibility = "visible";
+                    var m = Game.Screens.msgScreen.canvas;
+                    var c = Game.Screens.msgScreen.ctx;
+                    c.beginPath();
+                    c.lineWidth = 2;
+                    c.strokeStyle = "black";
+                    c.rect(170, 100, 400, 200);
+                    c.stroke();
+                    //c.globalAlpha=0.4;
+                    c.fillStyle = "rgba(0,0,0, 0.0)"; // black, transparent
+                    c.fillRect(170, 100, 400, 200);
+                    // c.globalAlpha=0.1;
+                    c.font = "60px Monaco";
+                    c.fillStyle = "rgba(255,255,0,1.0)"; // white
+                    // let msgText = msgboard.text;
+                    c.fillText(Game.Components.msgboard.text, 200, 200);
+                    document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
+                    let pause = setTimeout(clearMsgBoard, 3000);
+                }
+};
+
 
 function displayCardCache() {
     for (card in gCardImageCacheObj) {
@@ -22,19 +116,8 @@ function displayCardCache() {
 }
 
 //  labels on game objects in the Background                                                         
-function displayLabels() {
-    //  let c=Game.Background.display.canvas;
-    let bgx = Game.Background.display.ctx;
-    Game.Background.display.setFont("15px Arial");
-    // bgx.font = "15px Arial";
-    bgx.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
-    //  Game.Background.display.setFillStyle("rgba(255,255,255,1.0");
-    let labelUserCards = "1     2       3       4       5       6";
-    bgx.fillText("TRUMP", 15, 30 + CARD_H); // user keyboard play labels
-    bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); // trump label
-}
 
-
+/* 
 function displayUserCard() {
     playCard('bottom', Game.Components.gameboard.user);
 }
@@ -42,7 +125,7 @@ function displayUserCard() {
 function displayComputerCard() {
     playCard('top', Game.Components.gameboard.computer);
 }
-
+ */
 function displayShowcaseCard() {
     // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
     let bigCard = Game.Components.gameboard.select;
@@ -86,7 +169,7 @@ function playCard(playPosition, card) {
             break;
         default:
             x.drawImage(card.image, xCenter - 60, yCenter - 30);
-    };
+    }
     // Game.Components.Sound.cardSlideSnd.play();
 }
 
@@ -163,32 +246,20 @@ function mouseOver(e) {
  * 
  * @param {object} player object
  */
-function displayPlayerHand(player) {
-    return new Promise(function (resolve) {
-        let c = Game.Screens.gameScreen.canvas;
-        let x = Game.Screens.gameScreen.ctx;
-        let xCenter = c.width / 2;
-        let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
-        let coordY = 340;
-        for (let i = 0; i < player.hand.length; i++) {
-            //x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
-            x.drawImage(player.hand[i].image, coordX + i * CARD_W / 2, coordY, CARD_W, CARD_H);
-        }
-    });
-}
+
 
 /**
  * Displays the kickcard/trump in the top left corner of the gameboard
  * @param {*} trump -Card
  * @returns void 
  */
-function displayTrump(trump) {
+/* function displayTrump(trump) {
     let topCornerX = 5; // 5 pixels in
     let topCornerY = 5;
     let gbx = Game.Background.display.ctx;
     gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
 }
-
+ */
 function acquireImage() {
     let x = Game.Screens.gameScreen.ctx;
     let imgData = x.getImageData(5, 5, CARD_W, CARD_H); // capture image from gameboard
@@ -200,32 +271,7 @@ function acquireImage() {
     }
 }
 
-function message() {
-    document.getElementById("msg_layer").style.visibility = "visible";
-    var m = Game.Screens.msgScreen.canvas;
-    var c = Game.Screens.msgScreen.ctx;
-    c.beginPath();
-    c.lineWidth = 2;
-    c.strokeStyle = "black";
-    c.rect(170, 100, 400, 200);
-    c.stroke();
-    //c.globalAlpha=0.4;
-    c.fillStyle = "rgba(0,0,0, 0.0)"; // black, transparent
-    c.fillRect(170, 100, 400, 200);
-    // c.globalAlpha=0.1;
-    c.font = "60px Monaco";
-    c.fillStyle = "rgba(255,255,0,1.0)"; // white
-    // let msgText = msgboard.text;
-    c.fillText(Game.Components.msgboard.text, 200, 200);
-    document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
-    let pause = setTimeout(clearMsgBoard, 3000);
-/*     Game.Sound.loadAsync("./lib/snd/ui-sound3.oga", () => {
-        console.log(`Sound loaded.`);
-    });
-    // Game.Sound.playSound("./lib/snd/ui-sound3.oga", settings);
-    playSoundInstance("./lib/snd/ui-sound3.oga"); */
-    // clearTimeout(pause);    //  garbage collection
-}
+
  
 function clearMsgBoard() { // garbage collection
     // Game.Components.Sound.cardSlideSnd.play();
@@ -244,8 +290,8 @@ function removeGameMenu() {
 }
 
 function cleanBoard() {
-    var c = Game.Background.display.ctx;
-    Game.Background.display.clear();
+    var c = Game.Background.ctx;
+    Game.Background.clear();
     // c.clearRect(170, 100, 400, 200);
 }
 
@@ -255,35 +301,32 @@ function cleanBoard() {
  * @param {object} b Team B's current score - int
  * @returns void
  */
-function displayScore(scoreboard) {
-    var c = Game.Background.display.canvas;
-    var x = Game.Background.display.ctx;
-    var upperLeftCornerX = c.width - 265; //   (LxB: 260 x 120 box; x,y => 400,5)
-    var upperLeftCornerY = 5;
-    var width = 260;
-    var height = 120;
-    x.beginPath();
-    x.lineWidth = 4;
-    x.strokeStyle = "black";
-    x.rect(upperLeftCornerX, upperLeftCornerY, width, height);
-    x.stroke();
-    // fill rectangle
-    x.shadowBlur = 40;
-    x.shadowOffsetX = 10;
-    x.shadowOffsetY = 10;
-    x.shadowColor = "black";
-    x.fillStyle = "#ff0000"; // red
-    x.fillRect(upperLeftCornerX, upperLeftCornerY, width, height);
-    // text
-    x.fillStyle = "#ffffff"; // white
-    x.font = "30px Arial";
-    x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
-    x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
-    // score tiles (numbers)
-    x.fillText(Game.Player.computer.score, upperLeftCornerX + 215, 40);
-    x.fillText(Game.Player.human.score, upperLeftCornerX + 215, 105);
-}
 
+
+Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
+Game.Screens = {
+    gameScreen  : null,         //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
+    menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
+    msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
+    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,         4, 204, 204, 204),
+    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5,   0,   0,   0),  
+};
+
+Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
+    canvas: document.createElement("canvas"),
+    init: function () {
+        this.canvas.width  = WIDTH;
+        this.canvas.height = HEIGHT;
+        this.canvas.id = "card_layer";
+        this.ctx = this.canvas.getContext("2d");
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
+        console.log(`New ${this.canvas.id} canvas initialized.`);
+    },
+    clear: function () {                                                        // wipes the entire card screen clean
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    },
+};
 
 /** **************************************************************************************************************************************************************
  * 
@@ -291,7 +334,7 @@ function displayScore(scoreboard) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.6.5
+ *  @version   0.7.1
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
