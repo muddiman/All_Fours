@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.7.0
+ *  @version   0.7.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -62,9 +62,9 @@ import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
 import { gCanvasLayer }             from "./lib/screen.mjs";
 import { computerAI }               from "./lib/ai.mjs";
-import { sndEffect, bkgndMusic }    from "./lib/soundlib.mjs";
+import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
-import { debug }                    from "./lib/debugging.mjs";
+import { debug, DEBUG_MODE }                    from "./lib/debugging.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -72,8 +72,8 @@ import { debug }                    from "./lib/debugging.mjs";
 /***************************************     the globals *  ********************************************************/
 
 /*  Flags   */
-const DEBUG_MODE = false;
-// export const SOUND_ON   = false;
+/* DEBUG_MODE = false;
+SOUND_ON = false; */
 
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
@@ -146,12 +146,14 @@ Game.GamePlay = {
     whoPlayedJack:  null,
     whoPlayedHi:    null,
     whoPlayedLow:   null,
+    whoHangedJack:  null,
     init:   function ()  {
                 this.HI = null;
                 this.LOW = null;
                 this.whoPlayedHi = null;
                 this.whoPlayedLow = null;
                 this.whoPlayedJack = null;
+                this.whoHangedJack = null;
             },
 };
 
@@ -181,11 +183,17 @@ Game.Screens = {
     menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,      3, 204, 204, 204),
     msgScreen   : new gCanvasLayer("msg_layer", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
     pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,      4, 204, 204, 204),
+    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5, 0, 0, 0),  
 };
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
     human       : new Player(PLAYER2_NAME, "A-Team")
 };
+/* function setPlayerName() {
+    let playerName = document.getElementById("player_name").value;
+    Game.Player.human.changeName(playerName);
+    debug.console(Game.Player.human.getName());
+} */
 
 /* Card layer object */
 Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
@@ -198,6 +206,7 @@ Game.Screens.gameScreen = {                                                     
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
         // this.refresh = setInterval(_drawCardScreen, FPS_30);
+        console.log(`New ${this.canvas.id} canvas initialized.`);
     },
     clear: function () {                                                        // wipes the entire card screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -236,11 +245,11 @@ Game.Background.scoreboard = {
 };
 /*  Sound Elements  */
 Game.Components.Sound = {
-    sndEffect:  sndEffect,
+    sndFx:  sndFx,
     bkgndMusic: bkgndMusic,
 };
 // cardSlideSnd.play();Game.Components.Sound.cardSlideSnd
-
+Game.Components.cutScenes = [];
 /* Deck of cards objects   */
 Game.Components.deck = {
     cards: [],
@@ -614,24 +623,39 @@ function onKeystroke(keyboardEvent) {
     // }
 }
 
+/*
+function cardLocation(locX, locY) {
+    let upperLeftCornerX;
+    let upperLeftCornerY;
+    locX > upperLeftCornerX && locX < upperLeftCornerX + CARD_W / 2;
+    locY > upperLeftCornerY && locY < upperLeftCornerY + CARD_H;
+}
+*/
+
 function gControllerListeners() {
     document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
+    document.getElementById("card_layer").addEventListener("mousemove", onMouseOver, true);   
  //   document.getElementById("card_layer").addEventListener("mouseup", onMouseUp, true);   
     window.addEventListener('keydown', onKeyDown);       // keyboard
     window.addEventListener("keyup", onKeyUp);
     console.log("All listeners loaded");
 }
-
+ 
 function onMouseOver(event) {
-    let posx = event.clientX; // x,y position of the mouse pointer on canvas when event occurs
-    let posy = event.clientY;
-    console.log("(", posx, ", ", posy, ")");
+    let posX = event.clientX - Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
+    let posY = event.clientY - Game.Screens.gameScreen.canvas.offsetTop;
+    // let text = `(${posX}, ${posY})`;
+    debug.console("(", posX, ", ", posY, ")");
+    //  mouseOverSelect(posX, posY);
+    debug.screen;
+    debug.display(`(${posX}, ${posY})`);
 }
-
-function mouseOverSelect() {
+/*
+function mouseOverSelect(x, y) {
     // pass;
     // select
-}
+
+} */
 
 function clickConfirmation() {
     // Pass;
@@ -656,7 +680,7 @@ function onMouseDown(event) {
     Game.Components.Sound.sndEffect[1].play();
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
-    console.log("Click location: (", locX, ", ", locY, ")");
+    debug.console("Click location: (", locX, ", ", locY, ")");
     Game.Controller.clickPosition[1] = locX;
     Game.Controller.clickPosition[2] = locY;
 }
@@ -668,6 +692,19 @@ function onMouseUp(event) {
         }
     }
     document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
+}
+
+function isMouseOverCard(cardNumber, x, y) {
+    let XOFFSET=134;
+    let YOFFSET=340;
+    let upperLeftCornerX = cardNumber * CARD_W / 2 + XOFFSET;
+    let upperLeftCornerY = YOFFSET;
+    if (upperLeftCornerX < x && x < upperLeftCornerX + (cardNumber + 1) * CARD_W / 2) {
+        if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function clickEventHandler() {
@@ -766,8 +803,8 @@ function toggleMenuScreen() {
 /*  toggle mute */
 function toggleMute() {
     if (Game.Controller.actions['mute']) {           // toggle menu screen
-        Game.Components.Sound.sndEffect[0].muteAudio();
-        Game.Components.Sound.sndEffect[1].muteAudio();
+        Game.Components.Sound.sndFx[0].muteAudio();
+        Game.Components.Sound.sndFx[1].muteAudio();
         Game.Controller.init();
     }
 }
@@ -893,27 +930,38 @@ function allocatePoints() {
     /*  game  */
     let computerPoints = countForGame(Game.Player.computer);
     let humanPoints    = countForGame(Game.Player.human);
-    console.log(`${Game.Player.computer.getName()} Game Points: ${computerPoints}`);
-    console.log(`${Game.Player.human.getName()} Game Points: ${humanPoints}`);
+    debug.display(`${Game.Player.computer.getName()} Game Points: ${computerPoints}`);
+    debug.display(`${Game.Player.human.getName()} Game Points: ${humanPoints}`);
     if (computerPoints > humanPoints) {
         Game.Player.computer.addPoints(GAME);
+        debug.console(`${Game.Player.computer.getName()} won GAME.`);
     } else {
         Game.Player.human.addPoints(GAME);      //   += GAME;
+        debug.console(`${Game.Player.human.getName()} won GAME.`);
     }
     /*  high  */
     if (Game.GamePlay.whoPlayedHi) {
         Game.GamePlay.whoPlayedHi.addPoints(HIGH);
-        console.log(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
+        debug.console(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
+        debug.display(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
     }
     /*  low */
     if (Game.GamePlay.whoPlayedLow) {
         Game.GamePlay.whoPlayedLow.addPoints(LOW);
-        console.log(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
+        debug.console(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
+        debug.display(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
     }
-    /*  jack  */
+    /*  jack  */ 
     if (Game.GamePlay.whoPlayedJack) {
         Game.GamePlay.whoPlayedJack.addPoints(JACK);
-        console.log(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
+        debug.console(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
+        debug.display(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
+    }
+    /*  hang jack  */
+    if (Game.GamePlay.whoHangedJack) {
+        Game.GamePlay.whoHangedJack.addPoints(HANG_JACK);
+        debug.console(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
+        debug.display(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
     }
     Game.GamePlay.init();
 /* 
@@ -962,9 +1010,7 @@ function play(player) {
                 Game.Components.gameboard.stopListening();
                 Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
-            } /* else {
-                throw new Error(`Didn't wait for user to pick a card.`);
-            } */
+            } 
         } );  
         if (Game.Components.gameboard.user) {
             if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
@@ -972,9 +1018,6 @@ function play(player) {
             };    
             resolve(`${Game.Player.human.getName()} picked a card.`);
         }
-        //  check the card for trump if its lower than existing
-
-        //  human gets low, high, jack        
       }
     }); 
 }
@@ -985,23 +1028,31 @@ function trackCards(player, cardPlayed) {
     if (!Game.GamePlay.HI) {
         Game.GamePlay.HI = cardPlayed;
         Game.GamePlay.whoPlayedHi = player;
-        console.log(player.getName());
+        debug.console(`${player.getName()} played ${cardPlayed.getCardName()} for HI.`);
         Game.GamePlay.LOW = cardPlayed;
-        Game.GamePlay.whoPlayedLow = player;                
+        Game.GamePlay.whoPlayedLow = player;
+        debug.console(`${player.getName()} played ${cardPlayed.getCardName()} for LOW.`);                
     }
     if (cardPlayed.rank > Game.GamePlay.HI.rank) {
         Game.GamePlay.HI = cardPlayed;
         Game.GamePlay.whoPlayedHi = player;
-        console.log(player.getName());
+        debug.console(`${player.getName()} played ${cardPlayed.getCardName()} for HI.`);
     }
     if (cardPlayed.rank < Game.GamePlay.LOW.rank) {
         Game.GamePlay.LOW = cardPlayed;
         Game.GamePlay.whoPlayedLow = player;
+        debug.console(`${player.getName()} played ${cardPlayed.getCardName()} for LOW.`);                
     }    
     if (cardPlayed.face === 'j') {
         Game.GamePlay.whoPlayedJack = player;
+        debug.console(`${player.getName()} is trying pass for JACK!.`);                
+    }
+    if (Game.GamePlay.whoHangedJack) {
+        Game.GamePlay.whoPlayedJack = null;
+        debug.console(`${player.getName()} Jack get string-up!!!`);                
     }
 }
+
 
 async function playGameRound(whoPlaysFirst) {
     let otherPlayer = null;
@@ -1066,8 +1117,9 @@ async function playGameRound(whoPlaysFirst) {
 
 async function  postPlay(winner) {
     let time=2;
-    Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
-    Game.Components.msgboard.makeVisible();             //  = true;
+/*     Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
+    Game.Components.msgboard.makeVisible();             //  = true; */
+    debug.console(`${winner.name} won!`);                         // announce winner
     await gWaitState(time);
     console.log(`Wait ${time} seconds.`);
     winner.lift.push(Game.Components.gameboard.user);
@@ -1156,8 +1208,8 @@ function humanPlay() {
 function computerPlay(i) {                          // run the 'thinking animation'
     let card = Game.Player.computer.hand[i];
     Game.Components.gameboard.computer = card;
-    let cardName = card.getCardName();
-    console.log(cardName);
+    // let cardName = card.getCardName();
+    debug.console(card.getCardName());
     Game.Player.computer.hand.splice(i, 1);
 }
 
@@ -1191,13 +1243,15 @@ function determineWinner(called, played) {
 }
 
 function determineHangJack(called, played) {
-    // determines the higher rank card
+    // determines ij hang jack occurred
     // parameters: called and played card objects
-    // return: player (who won)
-    // let hangJack = null;
+    // return: boolean
+    let trump = Game.Components.deck.getTrump();
     if (called.getCardName() === `j${trump.suit}` || played.getCardName() === `j${trump.suit}`) {
-        if (called.rank < 9 || played.rank < 9) {
-            return HANG_JACK;                               // replace console.log with msgboard text
+        if (called.rank > 9 || played.rank > 9) {
+            return true;                               // replace console.log with msgboard text
+        } else {
+            return false;
         }
     }
 }
@@ -1249,6 +1303,8 @@ function countForGame(player) {
                 points += 0;
         }
     }
+    let text = `${player.getName()} has ${points} points`;
+    debug.display(text);
     return points;
 }
 
@@ -1313,16 +1369,19 @@ function isHangJack(playedCard, calledCard) {
     if (playedCard.suit === Game.Components.deck.trump.suit && calledCard.suit === Game.Components.deck.trump.suit) {
         if (playedCard.face === 'j' || calledCard.face === 'j') {
             if (playedCard.rank > 9 || calledCard.rank > 9) { // rank of jack = 9, (check)
+                Game.Components.msgboard.message("HANG JACK!!!");
+                Game.Components.msgboard.makeVisible();
+                /*  play video  */
+                let twoSecPause = setTimeout(() => {
+                    Game.Components.msgboard.init();
+                    clearTimeout(twoSecPause);
+                    displayCutScene();      //  video            
+                }, 2500);
                 return true;
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
-    } else {
-        return false;
     }
+    return false;
 }
 
 
@@ -1342,11 +1401,11 @@ function displayLabels() {
     let bgx = Game.Background.display.ctx;
     Game.Background.display.setFont("15px Arial");
     // bgx.font = "15px Arial";
-    bgx.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
+    bgx.fillStyle = "rgba(255,255,255,1.0)"; // white, opaque
     //  Game.Background.display.setFillStyle("rgba(255,255,255,1.0");
-    let labelUserCards = "1     2       3       4       5       6";
-    bgx.fillText("TRUMP", 15, 30 + CARD_H); // user keyboard play labels
-    bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); // trump label
+    let labelUserCards = "1     2       3       4       5       6";         // user keyboard play labels
+    bgx.fillText("TRUMP", 15, 30 + CARD_H);                                 // trump label      
+    bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); 
 }
 
 
@@ -1367,12 +1426,16 @@ function displayShowcaseCard() {
 }
 
 function emphasizeTrump() {
-    // displays an oversize trumpcard for two secs
-    let bigCard = Game.Components.deck.trump;
+    // displays an oversize trumpcard for three and a half secs
+    let kickCard = Game.Components.deck.trump;
     let gsx = Game.Screens.gameScreen.ctx;
     let posX = 5;
     let posY = 5;
-    gsx.drawImage(bigCard.image, posX, posY, 1.5 * CARD_W, 1.5 * CARD_H);
+    gsx.drawImage(kickCard.image, posX, posY, 1.5 * CARD_W, 1.5 * CARD_H);
+    let threeSecPause = setTimeout(() => {
+        gsx.drawImage(bigCard.image, posX, posY, CARD_W, CARD_H);
+        clearTimeout(threeSecPause);
+    }, 3500);
 }
 
 /**  
@@ -1483,12 +1546,17 @@ function displayPlayerHand(player) {
         let c = Game.Screens.gameScreen.canvas;
         let x = Game.Screens.gameScreen.ctx;
         let xCenter = c.width / 2;
+        // let coordX = xCenter - (Math.floor(player.hand.length / 2) * CARD_W);   
         let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
         let coordY = 340;
         for (let i = 0; i < player.hand.length; i++) {
             //x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
             x.drawImage(player.hand[i].image, coordX + i * CARD_W / 2, coordY, CARD_W, CARD_H);
         }
+        /* 
+            coordY = c.height - CARD_H - 20;
+            Let coordX = xCenter - (player.hand.length/2 * CARD_W);   
+        */
     });
 }
 
@@ -1657,6 +1725,10 @@ var asset6 = new Promise(function (resolve, reject) {
     Game.State.init();
     resolve(`6`);
 });
+var asset7 = new Promise(function (resolve, reject) {
+    loadCutScenes();
+    resolve(`7`);
+});
 /* var asset7 = new Promise(function (resolve, reject) {
     Game.Sound.init();
     resolve(`7`);
@@ -1716,7 +1788,9 @@ function _initializeScreens() {
     s[1] = Promise.resolve(Game.Screens.gameScreen.init()); // screens[1] = cardsLayer;
     s[2] = Promise.resolve(Game.Screens.msgScreen.init());  // screens[2] = msgLayer;
     s[3] = Promise.resolve(Game.Screens.menuScreen.init()); // screens[3] = menuLayer;
-    Promise.all([s[0], s[1], s[2], s[3]]).then((s) => {
+    s[4] = Promise.resolve(Game.Screens.videoScreen.init());// screens[4] = videoClipsLayer;
+    // s[5] = Promise.resolve(Game.debug.screen.init());       // screens[5] = debug_screen;
+    Promise.all([s[0], s[1], s[2], s[3], s[4], s[5]]).then((s) => {
         console.log("Screens initialized");
         return(s);
     });
@@ -1727,14 +1801,25 @@ function _initializeScreens() {
     // return s;
 }
 
+function loadCutScenes() {
+    Game.Components.cutScenes[0] = document.createElement("video");
+    Game.Components.cutScenes[0].setAttribute("id", "hangjack_video");
+    let videoSource = document.createElement("source");
+    videoSource.setAttribute("src", "/vid/hangjack_Small.mp4");
+    videoSource.setAttribute("type", "video/mp4");
+    Game.Components.cutScenes[0].appendChild(videoSource);
+    Game.Screens.videoScreen.canvas.style.visibility = "hidden";    
+}
+
 function loadScreenCache() {
     let screens = [];
     screens[0] = gameBoard;     // and scoreLayer 
     screens[1] = cardsLayer;
     screens[2] = msgLayer;
     screens[3] = menuLayer;
+    screens[4] = videoScreen;
     if (DEBUG_MODE === true) {
-        screen[4] = debug_screen;
+        screen[5] = debug_screen;
     }
     return screens;             // screens array
 }
@@ -1753,6 +1838,8 @@ function updateGameScreen() {
     Game.Background.isUpdated = true;
 }
  */
+
+
 function displayDebugScreen() {
     //  Game.debug
     let c = Game.debug.screen.canvas;
@@ -1762,6 +1849,8 @@ function displayDebugScreen() {
     // x.font = "30px Consolas";
     // x.fillText(Game.Player.computer.name, 0, 0);            //  test
 }
+
+
 
 function displayBackground() {
     // if (Game.Background.isUpdated === true) {
@@ -1793,6 +1882,39 @@ function displayGameScreen() {
     }
 }
 
+function displayCutScene() {
+    let vWidth = 960/3;                     //  size(33%)
+    let vHeight = 540/3;                    //  position
+    let posX = WIDTH/2 - vWidth/2;          //  center of board
+    let posY = HEIGHT/2 - vHeight/2;
+    Game.Components.cutScenes[0].addEventListener("play", ()=>{
+        var $this = this;
+        var runVideo = setInterval(() => {
+            if (Game.Components.cutScenes[0].ended) {
+                removeVideo();
+            }       
+            Game.Screens.videoScreen.clear();
+            Game.Screens.videoScreen.ctx.shadowBlur = 10;           //  styling 
+            Game.Screens.videoScreen.ctx.shadowOffsetY = 15;
+            Game.Screens.videoScreen.ctx.shadowOffsetX = 10;
+            Game.Screens.videoScreen.ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+            Game.Screens.videoScreen.ctx.drawImage(Game.Components.cutScenes[0], posX, posY, vWidth, vHeight);      
+        }, 1000/30);
+    });
+    Game.Screens.videoScreen.canvas.style.visibility = "visible";    
+    Game.Components.cutScenes[0].play();
+    
+    
+    Game.Screens.videoScreen.canvas.addEventListener('click', removeVideo);
+
+    function removeVideo() {
+        Game.Components.cutScenes[0].pause();
+        clearInterval(runVideo);
+        Game.Screens.videoScreen.clear();
+        Game.Screens.videoScreen.canvas.removeEventListener('click', removeVideo);
+        Game.Screens.videoScreen.canvas.style.visibility = "hidden";    
+    }
+}
 
     //  Game.Background.isUpdated = true;
     // emphasizeTrump();
@@ -1879,6 +2001,8 @@ function _drawDebugScreen() {
     if (Game.debug.isUpdated === true) {
         Game.debug.screen.clear();
         displayDebugScreen();
+    } else {
+        document.getElementById("debug_screen").style.visibility = "hidden";
     }
 }
 
@@ -1905,9 +2029,9 @@ function _renderAllScreens() {
     _drawGameScreen();
     _drawMsgScreen();
     _drawMenuScreen();
-    if (DEBUG_MODE === true) {
+    /* if (DEBUG_MODE === true) {
         _drawDebugScreen();
-    }
+    } */
 }
     // _drawBackground()
     // _drawGameScreen();      // displayscore();    displayTrump(); //     displayPlayerHand();    displayOtherHands();
@@ -2013,10 +2137,16 @@ export function gameLoop() {
     }
     if (Game.Components.gameboard.computer) {
         Game.State.computerPlayed = true;
+        if (Game.Components.gameboard.computer.suit === Game.Components.deck.trump.suit) {
+            trackCards(Game.Player.computer, Game.Components.gameboard.computer);
+        }
     }
     if (Game.Components.gameboard.user) {
         Game.State.userPlayed = true;
         Game.Controller.isMyTurn = false;
+        if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
+            trackCards(Game.Player.human, Game.Components.gameboard.user);
+        }
     }
     if (Game.State.userPlayed === false && Game.State.computerPlayed === true) {
         Game.State.userTurn = true;
@@ -2034,14 +2164,16 @@ export function gameLoop() {
         if (Game.State.whoPlayedCallCard === Game.Player.computer) {
             Game.State.whoPlayedCallCard   = null;
             var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
-            winner.addPoints(determineHangJack(Game.Components.gameboard.computer, Game.Components.gameboard.user));
-                    //  check for hang-jack
+            if (isHangJack(Game.Components.gameboard.computer, Game.Components.gameboard.user  &&  Game.GamePlay.whoHangedJack === null)) {
+                Game.GamePlay.whoHangedJack = winner;
+            };
         }
         if (Game.State.whoPlayedCallCard === Game.Player.human) {
             Game.State.whoPlayedCallCard   = null;
             winner = determineWinner(Game.Components.gameboard.user, Game.Components.gameboard.computer);
-            winner.addPoints(determineHangJack(Game.Components.gameboard.user, Game.Components.gameboard.computer));
-                    //  check for hang-jack
+                if (isHangJack(Game.Components.gameboard.user, Game.Components.gameboard.computer)) {
+                    Game.GamePlay.whoHangedJack = winner;
+                }
         }
         console.log(`${winner.getName()}!`);
         console.log(Game.Components.gameboard.user.getCardName()); 
@@ -2074,9 +2206,15 @@ export function gameLoop() {
             Game.State.startOfGame = true;          //  restart game
         }   else {
             /*  announce winner!    */
-            let text = `YOU WON!!!`;
+            let gameWinner = null;
+            if (Game.Player.human.getPoints() >= 14) {
+                gameWinner = Game.Player.human;
+            } else {
+                gameWinner = Game.Player.computer;
+            }
+            let text = `${gameWinner} WON!!!`;
             Game.Engine.stop();
-            console.log(`Engine Stopped!`);
+            debug.console(`Engine Stopped!`);
             Game.Components.msgboard.init().message(text).makeVisible();
 
         }   
@@ -2108,7 +2246,8 @@ function mainGameLoop() {
         if (DEBUG_MODE === true) {
             Game.debug.console("DEBUG MODE ON!");
             Game.debug.screen.init();
-            Game.debug.msg("DEBUG MODE ON!");
+            // Game.debug.msg("DEBUG MODE ON!");
+            Game.debug.display("DEBUG MODE ON!");
             // Game.debug.loadScreen();
         }
         console.log(Game.Player.human.hand);
@@ -2203,13 +2342,12 @@ function postRoundFcn() {
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //                                                                               TODO: 
-// }
-// DISTRIBUTE POINTS: hi, low, jack, game, hangjack
-//    }
-/*
-        // assessPoints()       // hi, low, jack, game 
-    } 
-        */
+//      ***KNOWN BUGS***
+//      AI needs over-hauling
+//      Video clips not working 
+//      
+//
+
 
 /*
 Libs:
@@ -2221,20 +2359,10 @@ FrontEnd:
     Display Library
     Testing Library
     Sound Library
+    Game Library --> components etc... objects & classes
 */
 
-/* 
-          break up the "mainGameLoop" into separate modules (functions)
-          and call each one separately, and sequentially... noting its
-          completion on the console. 
-*/
 
-/*
-              Create animation layer, 
-              hang jack animation shows video clip of mute-rapper dis 
-*/
-
-/*  call the main program   */
 /********************************************************************************************** */
 /*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
 /********************************************************************************************** */

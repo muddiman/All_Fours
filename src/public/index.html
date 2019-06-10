@@ -54,22 +54,23 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="testFirstJackDeal()">Test</button>
-                    <button class="w3-btn" onclick="Game.Components.Sound.sndEffect[1].play()">Mute</button>
+                    <button class="w3-btn" onclick="displayCutScene()">Video Clip</button>
+                    <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
                 <div class="user_input">
                     
                     <form>
                       <div><h4>Enter your name:</h4>
-                      <input name="name" type="text"><br> 
+                      <input id="player_name" name="name" type="text"><br> 
                     </div>
-                    <div><h4>Enter the name of your team :</h4>
+<!--                     <div><h4>Enter the name of your team :</h4>
                     <input name="team" type="text"><br><br>
-                    </div>
-                    <input class="w3-button w3-round-xlarge w3-border-blue" type="submit">
+                    </div> -->
+                    <button class="w3-button w3-round-xlarge w3-border-blue" type="button" onclick="setPlayerName()">ENTER</button>
                     </form>
                 </div>
+                <div id="debug_section"></div>
                 <!-- Display of Player 1's hand 
                 <div class="hand" id="tophand"></div>
                 <div class="hand" id="bottomhand"></div>

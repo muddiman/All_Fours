@@ -50,6 +50,11 @@ Player.prototype.getHand        = function () {
                                 };
 Player.prototype.getName        = function () {
                                     return this.name;
+                                };
+Player.prototype.changeName        = function (name) {
+                                    /*  Triggered by function setPlayerName   */
+                                    this.name = name;    //  
+                                    // return this.name;
                                 };                                
 Player.prototype.getLift        = function () {
                                     return this.lift;

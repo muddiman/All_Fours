@@ -149,7 +149,7 @@ function Sound() {
 */
 
 // import { SOUND_ON } from "../allfours";
-const SOUND_ON=true;
+export var SOUND_ON=true;
 
 /*  sound constructor/class */
 export function Sound(src) {
@@ -177,7 +177,7 @@ Sound.prototype.loopAudio   = function () {
                                 this.sound.removeAttribute("loop", "loop");
                             }
                         };
-Sound.prototype.muteAudio   = function () {                 //  toggle the mute function
+Sound.prototype.muteTrack   = function () {                 //  toggle the mute function
                             if (this.mute === false) {
                                 // this.sound.setAttribute("muted", "muted");
                                 this.mute = true;
@@ -197,9 +197,9 @@ export function playSoundInstance(src) {
 
 /*  Sound Effects   */
 //  load effect list
-export var sndEffect = [];
-sndEffect[0] = new Sound(`./lib/snd/ui-sound3.oga`);
-sndEffect[1] = new Sound(`./lib/snd/ui-sound-20.oga`);
+export var sndFx = [];
+// sndFx[0] = new Sound(`./lib/snd/ui-sound3.oga`);
+// sndFX[1] = new Sound(`./lib/snd/ui-sound-20.oga`);
 
 
 

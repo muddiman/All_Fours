@@ -11,7 +11,8 @@
 
 */
 
-const DEBUG_MODE=true;
+export var DEBUG_MODE=false;
+// document.getElementById("msg_layer").style.visibility = "hidden";
 
 // import { DEBUG_MODE } from "../allfours";
 import { gCanvasLayer } from "./screen.mjs";
@@ -21,9 +22,10 @@ export const debug = {
     screen:     new gCanvasLayer("debug_screen", 400, 450, 300, 150, 0.2, 4, 0, 0, 0),
     msg:        (text) => {
                     if (DEBUG_MODE === true) {
+
                         let x = this.screen.ctx;
                         x.fillStyle = "#ffffff";
-                        x.font = `30px Consolas`;                // white
+                        x.font = `20px Consolas`;                // white
                         // this.screen.setFont("30px Consolas");
                         x.fillText(text, 430, 480);            //  test
                     }
@@ -33,6 +35,16 @@ export const debug = {
                         console.log(msg);
                     }
                 },
+    display:    (msg) => {
+                    if (DEBUG_MODE === true) {
+                        let d = document.getElementById("debug_section");
+                        // d.innerHTML = msg;
+                        document.getElementById("debug_section").style.backgroundColor = "rgb(217, 217, 217)";
+                        let p = document.createElement("p");
+                        p.innerHTML = msg;
+                        d.appendChild(p);
+                    }
+                },         
     showComputerHand:    (computerHand) => {
                             if (DEBUG_MODE === true) {
                                 computerHand.forEach(card => {

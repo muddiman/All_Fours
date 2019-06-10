@@ -47,7 +47,6 @@ var strategy = {
                            let jackInHand = isJackInUserHand(hand, trump);
                            if (jackInHand === true) {
                               this.defendJack = true;
-                              // console.log("Strategy: Defend Jack");
                               debug.console("Strategy: Defend Jack");
                               this.goForGame = false;
                            } 
@@ -80,6 +79,26 @@ function searchHandForCard(cardName, hand) {
          return index;
       }
    }
+}
+
+/*    Playing Face Trump to hang jack or get ten trump  */
+function highTrump(hand, trump) {
+   debug.console("Playing face trump cards!");   /* play highest face card in trump  */
+   let highestFaceCard = null;
+   for (let index = 0; index < hand.length; index++) {
+      const card = hand[index];                                            
+      if (card.suit === trump.suit) {                                //   if card is trump
+         if (highestFaceCard === null && card.rank > 9) {                    //  if card is higher than jack and highest face card does NOT exist
+            highestFaceCard = index;
+         } else if (highestFaceCard != null && card.rank > hand[highestFaceCard].rank) {  // if highest face card exist and is higher than the current highest face card
+            highestFaceCard = index;
+         } 
+      }
+   }
+   if (highestFaceCard === null) {
+         strategy.changeStrategyToGame();
+   }
+   return highestFaceCard;
 }
 
 /*    Playing Face Trump to hang jack or get ten trump  */
@@ -118,38 +137,50 @@ export function computerAI(hand, trump, calledCard=null) {
       // strategy.defendJack:                         
       if (strategy.defendJack === true) {
          if (calledCard.suit != trump.suit || calledCard.rank < 9) {              // pass jack
+            return searchHandForCard(`j${trump.suit}`, hand);                                                   
+         } else {
             for (let eachCard in hand) {           // play jack
-               if (hand[eachCard].face === 'j' && hand[eachCard].suit === trump.suit) {
-                  strategy.defendJack = false;               
-                  strategy.goForGame = true; 
+               if (hand[eachCard].face != 'j' && hand[eachCard].suit === trump.suit) {
                   return eachCard;
                }
-            }                                                    
+            }
+            if (searchHandForCard(`j${trump.suit}`, hand)) {
+               return searchHandForCard(`j${trump.suit}`, hand);
+            }
          }
-         if (selectLowerCard(hand, trump, calledCard) != null) {      //   keep off strike 
+      }
+        /*  if (selectLowerCard(hand, trump, calledCard) != null) {      //   keep off strike 
             return selectLowerCard(hand, trump, calledCard);
          }
          if (searchHandForCard(`t${trump.suit}`, hand) != null) {     //   if not, pass a ten o' trump
             return searchHandForCard(`t${trump.suit}`, hand);
          }         
-         if (searchHandForCard(`t${calledCard.suit}`, hand) != null) {  // or a ten 
+         if (searchHandForCard(`t${calledCard.suit}`, hand) != null) {  // or a ten                                                                         
             return searchHandForCard(`t${calledCard.suit}`, hand);
          }                                       //  change to above                                 
-      }
+      } */
       // strategy.goForHangJack: 
       if (strategy.goForHangJack === true) {
          if (calledCard.getCardName() === `j${trump.suit}`) {            //   if jack is thrown in face
             strategy.changeStrategyToGame(); 
-            if (callJackOut(hand, trump)) {
-               return callJackOut(hand, trump);                                         // play face trump & hang it
+            if (highTrump(hand, trump)) {
+               return highTrump(hand, trump);                                         // play face trump & hang it
             }
          }
-         if (selectLowerCard(hand, trump, calledCard) != null) {
+         if (selectLowerCard(hand, trump, calledCard) != null) {              // lower card in suit
             return selectLowerCard(hand, trump, calledCard);
+         }
+         if (calledCard.rank < 8 || calledCard.suit != trump.suit) {          // ten of suit (if present)
+            if (searchHandForCard(`t${calledCard.suit}`, hand)) {
+               return searchHandForCard(`t${calledCard.suit}`, hand);
+            }
+         }
+         if (calledCard.rank < 8 || calledCard.suit != trump.suit) {          // ten of trump (if present)
+            if (searchHandForCard(`t${trump.suit}`, hand)) {
+               return searchHandForCard(`t${trump.suit}`, hand);
+            }  
          } 
-         /* play ten of suit
-         play ten of trump
-         play highest face card in suit  */
+         /*  play highest face card in suit  */
          return selectLowestCard(hand, trump);         //  change to above      //   keep off strike   //   ie play lower bush card
       }
       // strategy.goForGame:  play ten, take ten, take face cards
@@ -191,6 +222,9 @@ export function computerAI(hand, trump, calledCard=null) {
             let tenOfTrump = searchHandForCard(`t${trump.suit}`, hand);
             if (tenOfTrump) {
                return tenOfTrump;
+            }
+            if (selectLowerCard(hand, trump, calledCard)) {
+               return selectLowerCard(hand, trump, calledCard);
             }
          }
          return selectLowestCard(hand, trump);                     // else play lowest bush card
@@ -246,6 +280,7 @@ export function computerAI(hand, trump, calledCard=null) {
    }
 
 }
+
    
 function selectRandomCard(remainingHand) {                            // select a random card
    // let compHand = Game.Player.computer.hand;
@@ -257,7 +292,7 @@ function selectRandomCard(remainingHand) {                            // select 
 
 
 
-
+         
 function isJackInUserHand(hand, trump) {
    let jackInHand = false;
    for (let n=0; n < hand.length; n++) {
@@ -354,8 +389,8 @@ function isHangJackInPlay(hand, kickCard) {
    if (kickCard.face === 'j') {        // jack was kicked
       return false;                    // jack not in play
    }
-   /* check if jack in user hand */
-   if (isJackInUserHand(hand, kickCard)) {
+   /*  check if jack in user hand */
+   if (isJackInUserHand(hand, kickCard)) { 
       return false;
    }
    /* check if jack played already  */
@@ -392,4 +427,4 @@ function isHangJackInPlay(hand, kickCard) {
     // play higher called suit if called card is face card
     // play trump if called face in king or ace
    //  return card;
-   //  }
+   //  

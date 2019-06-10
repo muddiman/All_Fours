@@ -22,11 +22,62 @@
  *          ie: keystrokes, mouse clicks or touch.
  */
 
+function onMouseOver(event) {
+    let posX = event.clientX; // x,y position of the mouse pointer on canvas when event occurs
+    let posY = event.clientY;
+    console.log("(", posx, ", ", posy, ")");
+    mouseOverSelect(posX, posY);
+}
+
+function mouseOverSelect(x, y) {
+    // pass;
+    // select
+    
+}
+
+function cardLocation(i, arrayLength) {
+    card[i].x = xCenter - Math.ceil(arrayLength / 2) + i * CARD_W / 2;
+}
+
+function isMouseOverCard(cardNumber, arrayLength, x, y) {
+    // let upperLeftCornerX = cardNumber * CARD_W / 2 + XOFFSET;
+    // let upperLeftCornerY = YOFFSET;
+    let upperLeftCornerX = cardLocation(cardNumber, arrayLength);
+    if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W / 2) {
+        if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+            return true;
+        }
+    }
+    if (i === arrayLength - 1) {
+        if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W) {
+            if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+                return true;
+            }
+        }    
+    }
+    return false;
+}
+
+//  cycle through cards in hand
+for (let index = 0; index < hand.length; index++) {
+    const element = hand[index];
+    if (isMouseOverCard(index, hand.length, clickX, clickY) === true) {
+        // playcard
+        let key = index.toString();
+        let action = Game.Controller.bindings[key];
+        if (Game.Controller.isMyTurn === true) {
+            if (Game.Controller.actions[action] === false) {
+                Game.Controller.actions[action] = true;
+            }
+        }
+    }   
+}
+
 /**
  *      captures clicks, convert into user's choice and store that choice in the userInput object
  */
  function mouseEventHandler() {
-    document.getElementById('game_board').addEventListener('click', function (e) {
+    document.getElementById('card_layer').addEventListener('click', function (e) {
         var x = e.clientX;      // click location
         var y = e.clientY;
         var posArr = [x,y];     // position array
