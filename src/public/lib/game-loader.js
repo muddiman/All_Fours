@@ -194,6 +194,38 @@ function loadAllAssets(assetObjects) {
     }
 }
 
+/*  Assets  */
+/*
+*       var Assets = {
+*           Images: { cards: cards[52], Decals: null, backgroundObjects: null, },
+*           Sounds: { backgroundMusic: null, eventMusic: null, soundEffects: null }
+*       };       
+*/
+
+//  Assets --> Images --> Cards
+import { Card, gCardImageCacheObj } from "./lib/card.mjs";
+
+//  Card methods
+function createDeck() {
+    let cards = [];
+    const SUITS= [];
+    const FACES= [];
+    let n = 0;
+    for (let y = 0; y < SUITS.length; y++) {
+        var rank = 1;
+        for (let x = 0; x < FACES.length; x++) {
+            cards[n] = new Card(rank, FACES[x], SUITS[y]);
+            cards[n].init(); //  load images into cache object
+            n++;
+            rank++;
+        }
+    }
+    return gCardImageCacheObj;
+}
+function percent(amount, total) {
+    let percentage = (amount / total) * 100; 
+    return Math.floor(percentage);
+}
 
 /*  function calls to load everything   */
 function main() {
@@ -201,6 +233,7 @@ function main() {
     console.time("loadTime");
     console.log(loadAllScripts(scripts));
     console.log(loadAllAssets(assets));
+    //  console.log(loadAllModules);
     console.log('GAME LOADED!');
     console.timeEnd("loadTime");
 }

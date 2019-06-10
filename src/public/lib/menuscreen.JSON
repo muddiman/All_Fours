@@ -1,0 +1,13 @@
+{
+    "ID"        : "menu_screen",
+    "OPACITY"   : "OPAQUE",
+    "Z"         : "3",
+    "_WIDTH"    : "700",
+    "_HEIGHT"   : "480",
+    "drawFcn"   : "drawMenuScreen",
+    "period"    : "FPS_30",
+    "red"       : "255",
+    "green"     : "255",
+    "blue"      : "255",
+    "alpha"     : "0"
+}
