@@ -180,9 +180,9 @@ Game.Background = {
 Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
     gameScreen  : null,         //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
-    menuScreen  : new gCanvasLayer("menu_layer",LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,      3, 204, 204, 204),
-    msgScreen   : new gCanvasLayer("msg_layer", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
-    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,      4, 204, 204, 204),
+    msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
+    menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
+    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,         4, 204, 204, 204),
     videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5, 0, 0, 0),  
 };
 Game.Player = {
@@ -226,8 +226,8 @@ Game.Background.scoreboard = {
                             Game.Background.update(true);
                         },
     update         :   function () {
-                            // this.playerAname = Game.Player.computer.getName();
-                            // this.playerBname = Game.Player.human.getName();
+                            this.playerAname = Game.Player.computer.getName();
+                            this.playerBname = Game.Player.human.getName();
                             this.playerAscore = Game.Player.computer.getPoints();
                             this.playerBscore = Game.Player.human.getPoints();
                             Game.Background.update(true);
@@ -245,7 +245,7 @@ Game.Background.scoreboard = {
 };
 /*  Sound Elements  */
 Game.Components.Sound = {
-    sndFx:  sndFx,
+    sndFx:      sndFx,
     bkgndMusic: bkgndMusic,
 };
 // cardSlideSnd.play();Game.Components.Sound.cardSlideSnd
@@ -677,7 +677,7 @@ function enterConfirmCard() {
 
 function onMouseDown(event) {
     // document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);.
-    Game.Components.Sound.sndEffect[1].play();
+    // Game.Components.Sound.sndFx[1].play();
     let locX = event.clientX - LEFTOFFSET;
     let locY = event.clientY - TOPOFFSET;
     debug.console("Click location: (", locX, ", ", locY, ")");
