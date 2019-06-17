@@ -64,7 +64,7 @@ import { gCanvasLayer }             from "./lib/screen.mjs";
 import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
-import { debug, DEBUG_MODE }                    from "./lib/debugging.mjs";
+import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -189,11 +189,11 @@ Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
     human       : new Player(PLAYER2_NAME, "A-Team")
 };
-/* function setPlayerName() {
+function setPlayerName() {
     let playerName = document.getElementById("player_name").value;
     Game.Player.human.changeName(playerName);
     debug.console(Game.Player.human.getName());
-} */
+}
 
 /* Card layer object */
 Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
@@ -694,7 +694,7 @@ function onMouseUp(event) {
     document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
 }
 
-function isMouseOverCard(cardNumber, x, y) {
+function didMouseClickOnCard(cardNumber, x, y) {
     let XOFFSET=134;
     let YOFFSET=340;
     let upperLeftCornerX = cardNumber * CARD_W / 2 + XOFFSET;
@@ -706,12 +706,48 @@ function isMouseOverCard(cardNumber, x, y) {
     }
     return false;
 }
+function cardLocation(i, arrayLength) {
+    let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W / 2 + i * CARD_W / 2;
+    return xLocation;
+}
+
+function didMouseClickOnCard(cardNumber, arrayLength, x, y) {
+    // let upperLeftCornerX = cardNumber * CARD_W / 2 + XOFFSET;
+    // let upperLeftCornerY = YOFFSET;
+    let upperLeftCornerX = cardLocation(cardNumber, arrayLength);
+    if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W / 2) {
+        if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+            return true;
+        }
+    }
+    if (i === arrayLength - 1) {
+        if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W) {
+            if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+                return true;
+            }
+        }    
+    }
+    return false;
+}
 
 function clickEventHandler() {
-    let myHand = Game.Player.human.hand;
-    let handPosX = 134;
-    let handPosY = 340;
-    let locX = Game.Controller.clickPosition[1];
+    let hand = Game.Player.human.hand;
+/*     let handPosX = 134;
+    let handPosY = 340; */
+    for (let index = 0; index < hand.length; index++) {
+        const element = hand[index];
+        if (didMouseClickOnCard(index, hand.length, clickX, clickY) === true) {
+            // playcard
+            let key = index.toString();
+            let action = Game.Controller.bindings[key];
+            if (Game.Controller.isMyTurn === true) {
+                if (Game.Controller.actions[action] === false) {
+                    Game.Controller.actions[action] = true;
+                }
+            }
+        }   
+    }
+/*     let locX = Game.Controller.clickPosition[1];
     // console.log("X --> ", locX);
     let locY = Game.Controller.clickPosition[2];
     // console.log("Y --> ", locY);
@@ -742,7 +778,7 @@ function clickEventHandler() {
                 break;
             }
         }
-    }
+    } */
 }
 
 async function onKeyDown(event) {
@@ -1546,11 +1582,11 @@ function displayPlayerHand(player) {
         let c = Game.Screens.gameScreen.canvas;
         let x = Game.Screens.gameScreen.ctx;
         let xCenter = c.width / 2;
-        // let coordX = xCenter - (Math.floor(player.hand.length / 2) * CARD_W);   
-        let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
+        let coordX = xCenter - (Math.ceil(player.hand.length / 2) * CARD_W/2);   
+        // let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
         let coordY = 340;
         for (let i = 0; i < player.hand.length; i++) {
-            //x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
+            // x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
             x.drawImage(player.hand[i].image, coordX + i * CARD_W / 2, coordY, CARD_W, CARD_H);
         }
         /* 

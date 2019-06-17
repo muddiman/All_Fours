@@ -36,7 +36,8 @@ function mouseOverSelect(x, y) {
 }
 
 function cardLocation(i, arrayLength) {
-    card[i].x = xCenter - Math.ceil(arrayLength / 2) + i * CARD_W / 2;
+    let location = xCenter - Math.ceil(arrayLength / 2) * CARD_W / 2 + i * CARD_W / 2;
+    return location;
 }
 
 function isMouseOverCard(cardNumber, arrayLength, x, y) {
