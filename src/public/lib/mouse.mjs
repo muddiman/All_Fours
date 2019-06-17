@@ -33,7 +33,7 @@ export var Mouse = {
                                         Game.Controller.actions[action] = false;
                                     }
                                 }
-                                document.getElementById("card_layer").addEventListener("mousedown", this.onMouseDown, true);     
+                                // document.getElementById("card_layer").addEventListener("mousedown", this.onMouseDown, true);     
                             }, 
     onMouseOver:            function (event) {
                                 let posX = event.clientX - Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
