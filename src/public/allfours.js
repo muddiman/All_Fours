@@ -65,6 +65,7 @@ import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
 import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
+import { eventHandlers } from "./lib/controller.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -765,35 +766,21 @@ function didMouseClickOnCard(cardNumber, arrayLength, x, y) {
 
 function clickEventHandler() {
     let hand = Game.Player.human.hand;
-/*     let handPosX = 134;
-    let handPosY = 340; */
-    for (let index = 0; index < hand.length; index++) {
-        const element = hand[index];
-        if (didMouseClickOnCard(index, hand.length, clickX, clickY) === true) {
-            // playcard
-    // let handPosX = 134; ckPosition.X;
     let clickX = Game.Controller.clickPosition.X;
     let clickY = Game.Controller.clickPosition.Y;
-    //  cycle through cards in hand
-    for (let index = 0; index < hand.length; index++) {
-        // const element = hand[index];
+    for (let index = 0; index < hand.length; index++) {         //  cycle through cards in hand
         if (didMouseClickOnCard(index, hand.length, clickX, clickY) === true) {
-            // playcard
             index++;
             let key = index.toString();
             let action = Game.Controller.bindings[key];
             if (Game.Controller.isMyTurn === true) {
                 if (Game.Controller.actions[action] === false) {
-                    Game.Controller.actions[action] = true;
                     Game.Controller.actions[action] =   true;
+                    // Game.Controller.actions[action] =   true;
                 }
             }
         }   
     }
-/*     let locX = Game.Controller.clickPosition[1];
-    // console.log("X --> ", locX);
-    let locY = Game.Controller.clickPosition[2];
-    // console.log("Y --> ", locY);
 }
 
 /* function clickEventHandler() {
@@ -830,9 +817,6 @@ function clickEventHandler() {
             }
         }
     } */
-}
-    }
-} 
 
 async function onKeyDown(event) {
     let key = event.key;
@@ -898,6 +882,7 @@ function toggleMute() {
 }
 
 function inputUpdate() {
+    // eventHandlers();
     clickEventHandler();
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     toggleMute();

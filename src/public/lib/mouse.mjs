@@ -71,7 +71,6 @@ function mouseOverSelect(x, y) {
 
 function clickEvents() {
     let hand = Game.Player.human.hand;
-    // let handPosX = 134; ckPosition.X;
     let clickX = Game.Controller.clickPosition.X;
     let clickY = Game.Controller.clickPosition.Y;
     for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
