@@ -10,8 +10,9 @@
     PURPOSE:    debug object, generates new screens to display any parameter needed to be tracked
 
 */
-
-export var DEBUG_MODE=false;
+const ON=true;
+const OFF=false;
+export var DEBUG_MODE=OFF;
 // document.getElementById("msg_layer").style.visibility = "hidden";
 
 // import { DEBUG_MODE } from "../allfours";
@@ -19,10 +20,22 @@ import { gCanvasLayer } from "./screen.mjs";
 
 export const debug = {
     isUpdated:  false, 
-    screen:     new gCanvasLayer("debug_screen", 400, 450, 300, 150, 0.2, 4, 0, 0, 0),
-    msg:        (text) => {
+    screen:     new gCanvasLayer("debug_screen", 400 + 72, 450, 300 - 72, 150, 0.2, 4, 0, 0, 0),
+    init:       () => {
                     if (DEBUG_MODE === true) {
-
+                        let debugDiv = document.getElementById("debug_section");
+                        let dbgHeading = document.createElement("H2");
+                        dbgHeading.innerHTML = "DEBUGGING";
+                        debugDiv.appendChild(dbgHeading);
+                        let dbg = document.createElement("p");
+                        dbg.id = "debug_p";
+                        dbg.style.height = "200px";
+                        dbg.innerHTML = "Testing...";
+                        debugDiv.appendChild(dbg);
+                    }
+                },
+    msg:        (text) => { 
+                    if (DEBUG_MODE === true) {
                         let x = this.screen.ctx;
                         x.fillStyle = "#ffffff";
                         x.font = `20px Consolas`;                // white
@@ -37,12 +50,13 @@ export const debug = {
                 },
     display:    (msg) => {
                     if (DEBUG_MODE === true) {
-                        let d = document.getElementById("debug_section");
+                        // let d = document.getElementById("debug_section");
                         // d.innerHTML = msg;
                         document.getElementById("debug_section").style.backgroundColor = "rgb(217, 217, 217)";
-                        let p = document.createElement("p");
+                        let p = document.getElementById("debug_p");
+                        // let p = document.createElement("p");
                         p.innerHTML = msg;
-                        d.appendChild(p);
+                        // d.appendChild(p);
                     }
                 },         
     showComputerHand:    (computerHand) => {
