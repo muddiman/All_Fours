@@ -765,14 +765,12 @@ function didMouseClickOnCard(cardNumber, arrayLength, x, y) {
 
 function clickEventHandler() {
     let hand = Game.Player.human.hand;
-<<<<<<< HEAD
 /*     let handPosX = 134;
     let handPosY = 340; */
     for (let index = 0; index < hand.length; index++) {
         const element = hand[index];
         if (didMouseClickOnCard(index, hand.length, clickX, clickY) === true) {
             // playcard
-=======
     // let handPosX = 134; ckPosition.X;
     let clickX = Game.Controller.clickPosition.X;
     let clickY = Game.Controller.clickPosition.Y;
@@ -782,26 +780,20 @@ function clickEventHandler() {
         if (didMouseClickOnCard(index, hand.length, clickX, clickY) === true) {
             // playcard
             index++;
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
             let key = index.toString();
             let action = Game.Controller.bindings[key];
             if (Game.Controller.isMyTurn === true) {
                 if (Game.Controller.actions[action] === false) {
-<<<<<<< HEAD
                     Game.Controller.actions[action] = true;
-=======
                     Game.Controller.actions[action] =   true;
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
                 }
             }
         }   
     }
-<<<<<<< HEAD
 /*     let locX = Game.Controller.clickPosition[1];
     // console.log("X --> ", locX);
     let locY = Game.Controller.clickPosition[2];
     // console.log("Y --> ", locY);
-=======
 }
 
 /* function clickEventHandler() {
@@ -810,7 +802,6 @@ function clickEventHandler() {
     let handPosY = 340;
     let locX = Game.Controller.clickPosition.X;
     let locY = Game.Controller.clickPosition.Y;
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
     if (locY > handPosY && locY < handPosY + CARD_H) {
         for (let i = 1; i <= myHand.length; i++) {
             if (locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2) {
@@ -838,13 +829,10 @@ function clickEventHandler() {
                 break;
             }
         }
-<<<<<<< HEAD
     } */
 }
-=======
     }
-} */
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
+} 
 
 async function onKeyDown(event) {
     let key = event.key;
@@ -1619,21 +1607,12 @@ function displayPlayerHand(player) {
         let c = Game.Screens.gameScreen.canvas;
         let x = Game.Screens.gameScreen.ctx;
         let xCenter = c.width / 2;
-<<<<<<< HEAD
-        let coordX = xCenter - (Math.ceil(player.hand.length / 2) * CARD_W/2);   
-        // let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
-        let coordY = 340;
-        for (let i = 0; i < player.hand.length; i++) {
-            // x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
-            x.drawImage(player.hand[i].image, coordX + i * CARD_W / 2, coordY, CARD_W, CARD_H);
-=======
         let coordX;
         let coordY = 340;
         for (let i = 0; i < player.hand.length; i++) {
             coordX = cardLocation(i, player.hand.length);
             // x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
             x.drawImage(player.hand[i].image, coordX, coordY, CARD_W, CARD_H);
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
         }
     });
 }

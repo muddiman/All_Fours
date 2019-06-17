@@ -19,16 +19,13 @@ import { Mouse     } from "./mouse.mjs";
 import { Touch     } from "./touch.mjs";
 import { Keyboard  } from "./keyboard.mjs";
 
-<<<<<<< HEAD
 function cardLocation(i, arrayLength) {
     let location = xCenter - Math.ceil(arrayLength / 2) * CARD_W / 2 + i * CARD_W / 2;
     return location;
-=======
 export function eventHandlers() {
     Mouse.eventsHandler();
     Touch.eventsHandler();
     Keyboard.eventsHandler();
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
 }
 
 export function gameInputListeners() {
