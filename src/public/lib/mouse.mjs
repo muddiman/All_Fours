@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-/* 
-
-*/
-
-// click event handler, onClick
-
-=======
 //      /src/public/lib/mouse.mjs
 
 /*
@@ -148,4 +140,3 @@ function cardLocation(i, arrayLength) {
  *  @See:      http://www.roger-clarke.com/allfours/license.html
  *             http://www.roger-clarke.com/allfours/copyright.html
  */
->>>>>>> 4ee4f70d8ff2d6ca7475cc53d83468f851964e13
