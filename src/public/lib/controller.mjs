@@ -1,8 +1,10 @@
+//      /src/public/lib/controller.mjs
+
 /*
                      Title:  ALL FOURS GAME
                      Language: Javascript
                      Programmer: .muddicode 
-                     Code: USER INPUT LIBRARY MODULE - 'UserInput.js'                            
+                     Code: Controller LIBRARY MODULE - 'controller.mjs'                            
 */
 
 
