@@ -16,17 +16,17 @@
 </script> -->                           
 
 </HEAD>
-<BODY onload="setTimeout(homeScreen, 1000)">
+<BODY onload="setTimeout(homeScreen, 500)">
 <!-- Game Menu -->
 
     <!--        Home/Title Screen               -->
     <div class="modal" id="home_screen" style="display: none;"> 
-        <form class="modal-content animate" method="POST">
-         <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa">
+        <!-- <form class="modal-content animate" method="POST"> -->
+         <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
           <div class="imgcontainer">
             <span title="Close Modal" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
             <!--    Game Logo Here -->
-            <H2>ALL FOURS</H2>
+            <H3>TWO-MAN ALL FOURS</H2>
           </div>
       
           <div class="container">
@@ -34,10 +34,10 @@
             <button type="submit" class="disabled" id="PlayGame" onclick="mainGameLoop()">Play Game</button>
             <button type="submit">Settings</button>
             <button type="submit" onclick="move()">Login/Animate</button>
-            <button type="submit">Register</button>
+            <button onclick="animateLoading()">Quit</button>
             
           </div>
-          <div class="container" id="lower_card_div" style="background-color:#f1f1f1">
+          <div class="container" id="lower_card_div">
           <p id="loading">Loading...</p>
             <div id="progress">
               <div id="progress-bar">1%</div>
@@ -50,7 +50,7 @@
             <a href="#"><i class="fas fa-home" title="Home"     onclick="mainGameLoop()"></i></a>
           </div>
           <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
-        </form>
+        <!-- </form> -->
     </div>  
 
     <!--        Login Screen                    -->
@@ -103,7 +103,7 @@
 |                                                                |
 |                       ALL FOURS                                |
 |                     BY: .muddicode                             |
-|                       VER. 0.6.3                               |
+|                       VER. 0.7.2                               |
 |                                                                |
 ==================================================================
 

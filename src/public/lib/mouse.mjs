@@ -9,6 +9,8 @@
     DESCRIPTION:    mouse module for All Fours Game
     PURPOSE:        mouse class, handles mouse input for all fours game
 */
+import { debug     } from "./debugging.mjs";
+// import { Game      } from "/allfours.js";
 
 /*  globals  */
 export var Mouse = {
@@ -124,7 +126,7 @@ function didMouseClickOnCard(cardNumber, arrayLength, x, y) {
 }
 
 function cardLocation(i, arrayLength) {
-    let xCenter = Game.Screens.gameScreen.canvas.width/2;
+    let xCenter = document.getElementById("card_layer").width /2;      //    Game.Screens.gameScreen.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
     return xLocation; 
 }

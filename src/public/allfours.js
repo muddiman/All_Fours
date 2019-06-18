@@ -6,7 +6,7 @@
 */
 
 /**
- *  @copyright (c) 2018 Roger Clarke. All rights reserved.
+ *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
@@ -65,7 +65,7 @@ import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
 import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
-import { eventHandlers } from "./lib/controller.mjs";
+import { Controller }               from "./lib/controller.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -255,7 +255,11 @@ Game.Components.cutScenes = [];
 Game.Components.deck = {
     cards: [],
     trump: null,
-    init: function () {
+    counter: 0,
+    cardsLoadedCounter:     function () {
+        this.counter++;
+    },
+    init: function (cardsLoadedCounter) {
         /** creates deck (array of all 52 cards)
          *  @param: null
          *  @returns: deck
@@ -263,12 +267,13 @@ Game.Components.deck = {
         // var SUITS = ['c', 'd', 'h', 's'];
         // var FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
         // return new Promise(() => {
+            this.counter = 0;
             let n = 0; 
             for (let y = 0; y < SUITS.length; y++) {
                 var rank = 1;
                 for (let x = 0; x < FACES.length; x++) {
                     this.cards[n] = new Card(rank, FACES[x], SUITS[y]);
-                    this.cards[n].init(); //  get card images from image files or image cache object
+                    this.cards[n].init(cardsLoadedCounter); //  get card images from image files or image cache object
                     //  if (this.cards[n].isLoaded === true) {}
                     n++;
                     rank++;
@@ -465,6 +470,10 @@ Game.Controller = {
     clickPosition: {
         X:  null,
         Y:  null,
+    },    
+    touchPosition: {
+        X:  null,
+        Y:  null,
     },
     cardSelection: null,
     keys: {},
@@ -637,13 +646,15 @@ function cardLocation(locX, locY) {
 */
 
 function gControllerListeners() {
-    document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
+/*     document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
     document.getElementById("card_layer").addEventListener("mousemove", onMouseOver, true);   
  //   document.getElementById("card_layer").addEventListener("mouseup", onMouseUp, true);   
     window.addEventListener('keydown', onKeyDown);       // keyboard
     window.addEventListener("keyup", onKeyUp);
-    console.log("All listeners loaded");
+    console.log("All listeners loaded"); */
+    Controller.listeners();
 }
+
  
 function onMouseOver(event) {
     let posX = event.clientX - Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
@@ -822,14 +833,13 @@ async function onKeyDown(event) {
     let key = event.key;
     // Game.Components.Sound.sndFx[1].play();
     window.removeEventListener('keydown', onKeyDown); // keyboard
-    // await gWaitState(1);
     if (key) {
         debug.console("ID: ", key);                 // ASCII id of key thats was pressed
     }
     let action = Game.Controller.bindings[key];
-    if (key === 'Escape' || key === 'p') {
+  /*   if (key === 'Escape' || key === 'p') {
         Game.Controller.actions[action] = true;
-    }
+    } */
     if (Game.Controller.isMyTurn===true) {
         if (Game.Controller.actions[action] === false) {
             Game.Controller.actions[action] = true;
@@ -840,7 +850,6 @@ async function onKeyDown(event) {
 function onKeyUp(event) {
     let key = event.key;
     let action = Game.Controller.bindings[key];
-    // Game.Controller.actions[action] = false;
     if (Game.Controller.actions[action] === true) {
         Game.Controller.actions[action] = false;
     }

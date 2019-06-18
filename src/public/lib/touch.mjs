@@ -10,7 +10,12 @@
     PURPOSE:        Touch class, handles mouse input for all fours game
 */
 
+/*  imports  */
+import { debug } from "./debugging.mjs";
 /*  globals  */
+
+
+/*  objects  */
 export var Touch = {
     eventsHandler:     function (X, Y) {
                                 let hand = Game.Player.human.hand;
@@ -32,12 +37,12 @@ export var Touch = {
                                 }    
                             },
     onTouchStart:           function (touchEvent) {
-                                document.getElementById('game_board').removeEventListener('touch', this.onTouchStart(e));
+                                document.getElementById('game_board').removeEventListener('touchstart', this.onTouchStart, true);
                                 let locX = touchEvent.clientX - Game.Screens.gameScreen.canvas.offsetLeft;   // LEFTOFFSET;
                                 let locY = touchEvent.clientY - Game.Screens.gameScreen.canvas.offsetTop; //  TOPOFFSET;
                                 debug.console("Click location: (", locX, ", ", locY, ")");
-                                Game.Controller.clickPosition.X = locX;
-                                Game.Controller.clickPosition.Y = locY;
+                                Game.Controller.touchPosition.X = locX;
+                                Game.Controller.touchPosition.Y = locY;
                                 // touchEventHandler(locX, locY); 
                             },
     onTouchEnd:             function (e) {
@@ -64,7 +69,7 @@ export var Touch = {
                             },
 };
  
-
+/*  functions */
 function wasCardTouched(cardNumber, arrayLength, x, y) {
     let upperLeftCornerX = cardLocation(cardNumber, arrayLength);
     let upperLeftCornerY = 340;
@@ -84,7 +89,8 @@ function wasCardTouched(cardNumber, arrayLength, x, y) {
 }
 
 function cardLocation(i, arrayLength) {
-    let xCenter = Game.Screens.gameScreen.canvas.width/2;
+    let xCenter = document.getElementById("card_layer").width /2;      //    Game.Screens.gameScreen.canvas.width/2;
+    // let xCenter = Game.Screens.gameScreen.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
     return xLocation; 
 }
