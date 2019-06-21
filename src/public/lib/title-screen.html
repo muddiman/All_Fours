@@ -10,7 +10,7 @@
 <TITLE>All Fours Game Title Screen</TITLE>
 
 <SCRIPT src="title-script.js"></SCRIPT>
-<SCRIPT src="/lib/exp2.js"></SCRIPT>
+<!-- <SCRIPT src="/lib/exp2.js"></SCRIPT> -->
 <!--  <script src="game-loader.js">
       window.onload = main();   
 </script> -->                           
@@ -21,21 +21,20 @@
 
     <!--        Home/Title Screen               -->
     <div class="modal" id="home_screen" style="display: none;"> 
+        <span title="Close Title Screen" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
+      <div class="animate" id="content">
         <!-- <form class="modal-content animate" method="POST"> -->
          <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
           <div class="imgcontainer">
-            <span title="Close Modal" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
             <!--    Game Logo Here -->
-            <H3>TWO-MAN ALL FOURS</H2>
+            <H1>TWO-MAN ALL FOURS</H1>
           </div>
       
-          <div class="container">
-                      
-            <button type="submit" class="disabled" id="PlayGame" onclick="mainGameLoop()">Play Game</button>
-            <button type="submit">Settings</button>
-            <button type="submit" onclick="move()">Login/Animate</button>
-            <button onclick="animateLoading()">Quit</button>
-            
+          <div class="btn container">            
+            <button type="submit" class="disabled" id="PlayGame" onmousedown="pressBtn('PlayGame')">Play Game</button>
+            <button type="submit" id="settings" onmousedown="pressBtn('settings')" >Settings</button>
+            <button type="submit" id="animate" onmousedown="pressBtn('animate')">Login/Animate</button>
+            <button id="quit" onmousedown="pressBtn('quit')">Quit</button>
           </div>
           <div class="container" id="lower_card_div">
           <p id="loading">Loading...</p>
@@ -45,13 +44,14 @@
             <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button>
             <!--    Home Icon & Settings Icon (bottom left corner)      -->
           </div>
-          <div class="footnote-icons">
-            <a href="#"><i class="fas fa-cog"  title="Settings" onclick="move()"></i></a>  
-            <a href="#"><i class="fas fa-home" title="Home"     onclick="mainGameLoop()"></i></a>
-          </div>
+
           <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
-        <!-- </form> -->
-    </div>  
+        </div>  <!-- </form> -->
+        <div class="footnote-icons">
+          <a href="#"><i class="fas fa-cog"  title="Settings" onclick="move()"></i></a>  
+          <a href="#"><i class="fas fa-home" title="Home"     onclick="progressBar()"></i></a>
+        </div> <!--   end of footnote-icons   -->
+    </div> <!-- end of home_screen  --> 
 
     <!--        Login Screen                    -->
     <div class="modal" id="loginform" style="display: none;"> 

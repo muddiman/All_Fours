@@ -9,6 +9,9 @@
 */
 
 import { gameLoop } from "../allfours.js";
+// import { debug } from "../debugging.mjs";
+/*  flags   */
+var METHODOLOGY="setInterval";      // or "requestAnimationFrame"
 
 /*   Game Engine    */
 export const Engine = function(time_step, render, gameLoop) {
@@ -31,20 +34,18 @@ export const Engine = function(time_step, render, gameLoop) {
                             requestAnimationFrame(this.animate);
                         }; 
     this.start          = function () {
-                            // requestAnimationFrame(this.animate);
+                            //  debug.console(`using ${METHODOLOGY}.`);
                             this.init();
                             var n=0;                // for debugging
                             var r=0;
                             this.running = setInterval(() => {
-                                // console.log(`engine`);
-
                             // render();
                                let time_stamp = Date.now();
                                 if (this.time === 0) {
                                     this.time = time_stamp;
                                 } 
                                 this.accumulated_time += time_stamp - this.time;
-                                // console.log(this.accumulated_time);                     // debugging
+                                // debug.console(this.accumulated_time);                     // debugging
                                 this.time = time_stamp;
                                 //  this.update();
                                 this.render();
@@ -58,7 +59,7 @@ export const Engine = function(time_step, render, gameLoop) {
                                 this.accumulated_time = this.time_interval;
                                 //  debug
                                 n++;
-                                // console.log(`A lot behind ${n}`);
+                                // debug.console(`A lot behind ${n}`);
                             }
                             /*  keeps the engine updated if cycle time lapses for more than a cycle     */
                             while (this.accumulated_time >= this.time_interval) {
@@ -69,8 +70,8 @@ export const Engine = function(time_step, render, gameLoop) {
                             if (this.isUpdated) {       //  screen is drawn only when when the matrix is updated
                                 this.render();
                                 r++;                    //   debugging
-/*                                 console.log(`one behind ${r}`);  */
-                                // console.log(this.accumulated_time); 
+/*                                 debug.console(`one behind ${r}`);  */
+                                // debug.console(this.accumulated_time); 
                                 this.isUpdated = false;
                             }
                           }, this.time_interval);

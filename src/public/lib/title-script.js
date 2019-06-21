@@ -16,24 +16,19 @@ function clickOutsideForm() {
         }
     };
 }
-/* 
-function loginForm() {
-    var modal = document.getElementById('loginform');
-    modal.style.display = 'block';
-    clickOutsideForm();
+
+function pressBtn(id) {
+    let btn = document.getElementById(id);
+    btn.setAttribute("class", "pressed");
+
+    btn.addEventListener("mouseup", () => {
+        btn.removeAttribute("class");
+    }, true);
 }
- */
-/*     function clickOutsideForm() {
-    var modal = document.getElementById('loginform');
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    };
-} */
 
 /*  progress bar    */
 function progressBar() {
+    // function progressBar(counter) {
     var elem = document.getElementById("progress-bar"); 
     var width = 1;
     var id = setInterval(() => {
@@ -41,8 +36,10 @@ function progressBar() {
             clearInterval(id);
         } else {
             width++; 
-            elem.style.width = width + '%';
-            elem.innerHTML = width * 1 + '%'; 
+            // width = Game.Components.deck.counter;
+            //  width = counter;
+            elem.style.width = `${width}%`;
+            elem.innerHTML = `${width}%`; 
         }
 
         if (width >= 100) {
@@ -52,8 +49,6 @@ function progressBar() {
         }
     }, 20);
 }
-/*     function frame() {        
-    } */
 
 
 /*  word loading    */

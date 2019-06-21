@@ -20,6 +20,11 @@ var Game = {
 };
 
 export var Display = {
+    onBackground:     new gCanvasLayer(),
+    onCardScreen:   new gCanvasLayer(),
+    onMsgScreen:   new gCanvasLayer(),
+    onMenuScreen:   new gCanvasLayer(),
+    onVideoScreen:   new gCanvasLayer(),
     labels:      function () {
                     // let c=Game.Background.canvas;
                     let bgx = Game.Background.ctx;

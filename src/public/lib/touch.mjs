@@ -12,57 +12,69 @@
 
 /*  imports  */
 import { debug } from "./debugging.mjs";
-/*  globals  */
 
+/*  globals  */
+const CARD_W=72;
+const CARD_H=96;
+const LEFTOFFSET =  15;
+const TOPOFFSET  = 160;
 
 /*  objects  */
 export var Touch = {
-    eventsHandler:     function (X, Y) {
-                                let hand = Game.Player.human.hand;
-                            /*     let touchX = Game.Controller.clickPosition.X;
-                                let touchY = Game.Controller.clickPosition.Y; */
-                                let touchX = X;
-                                let touchY = Y;
+    eventsHandler:     function (Controller, hand) {
+                                // let hand = Game.Player.human.hand;
+                                let touchX = Controller.clickPosition.X;
+                                let touchY = Controller.clickPosition.Y;
+                                // let touchX = X;
+                                // let touchY = Y;
                                 for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
                                     if (wasCardTouched(index, hand.length, touchX, touchY) === true) {
                                         index++;
                                         let key = index.toString();
-                                        let action = Game.Controller.bindings[key];
-                                        if (Game.Controller.isMyTurn === true) {
-                                            if (Game.Controller.actions[action] === false) {
-                                                Game.Controller.actions[action] =   true;
+                                        let action = Controller.bindings[key];
+                                        if (Controller.isMyTurn === true) {
+                                            if (Controller.actions[action] === false) {
+                                                Controller.actions[action] =   true;
                                             }
                                         }
                                     }   
                                 }    
                             },
-    onTouchStart:           function (touchEvent) {
-                                document.getElementById('game_board').removeEventListener('touchstart', this.onTouchStart, true);
-                                let locX = touchEvent.clientX - Game.Screens.gameScreen.canvas.offsetLeft;   // LEFTOFFSET;
-                                let locY = touchEvent.clientY - Game.Screens.gameScreen.canvas.offsetTop; //  TOPOFFSET;
+    onTouchStart:           function (touchEvent, Controller) {
+                                document.getElementById('game_board').removeEventListener('touchstart', (e) => {
+                                                                                                            this.onTouchStart(e, Controller);
+                                                                                                        }, true);
+                                document.getElementById("card_layer").addEventListener("touchend", () => {
+                                                                                                        this.onTouchEnd(Controller);
+                                                                                                    }, true);
+                                let locX = touchEvent.clientX - LEFTOFFSET;     //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                                let locY = touchEvent.clientY - TOPOFFSET;  //   Game.Screens.gameScreen.canvas.offsetTop; //  
                                 debug.console("Click location: (", locX, ", ", locY, ")");
-                                Game.Controller.touchPosition.X = locX;
-                                Game.Controller.touchPosition.Y = locY;
+                                Controller.touchPosition.X = locX;
+                                Controller.touchPosition.Y = locY;
                                 // touchEventHandler(locX, locY); 
                             },
-    onTouchEnd:             function (e) {
-                                document.getElementById("card_layer").removeEventListener("touchend", this.onTouchEnd, true);  
-                                document.getElementById("card_layer").addEventListener("touchstart", this.onTouchStart, true);   
-                                for (action in Game.Controller.actions) {
-                                    if (Game.Controller.actions[action] === true) {
-                                        Game.Controller.actions[action] = false;
+    onTouchEnd:             function (Controller) {
+                                document.getElementById("card_layer").removeEventListener("touchend", () => {
+                                                                                                            this.onTouchEnd(Controller);
+                                                                                                        }, true);  
+                                document.getElementById("card_layer").addEventListener("touchstart", (e) => {
+                                                                                                            this.onTouchStart(e, Controller);
+                                                                                                        }, true);   
+                                for (action in Controller.actions) {
+                                    if (Controller.actions[action] === true) {
+                                        Controller.actions[action] = false;
                                     }
                                 }
                                 document.getElementById("card_layer").addEventListener("touchstart", this.onTouchStart, true);     
                             },
-    onTouchMove:            function (e) {
-                                let posX = e.clientX - Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
-                                let posY = e.clientY - Game.Screens.gameScreen.canvas.offsetTop;
+    onTouchMove:            function (e, hand) {
+                                let posX = e.clientX - LEFTOFFSET;   //  Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
+                                let posY = e.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop;
                                 debug.console("(", posX, ", ", posY, ")");
-                                //  mouseOverSelect(posX, posY);
                                 debug.display(`(${posX}, ${posY})`);
-                                for (let index = 0; index < Game.Player.human.hand.length; index++) {
-                                    if (wasCardTouched(index, Game.Player.human.hand.length, posX, posY) === true) {
+                                for (let index = 0; index < hand.length; index++) {
+                                    if (wasCardTouched(index, hand.length, posX, posY) === true) {
                                         enlargeCard(index);                 // enlarge Card      
                                     }
                                 }    

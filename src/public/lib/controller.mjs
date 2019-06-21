@@ -20,30 +20,30 @@ import { Touch     } from "./touch.mjs";
 import { Keyboard  } from "./keyboard.mjs";
 import { debug     } from "./debugging.mjs";
 
-/* function cardLocation(i, arrayLength) {
-    let location = xCenter - Math.ceil(arrayLength / 2) * CARD_W / 2 + i * CARD_W / 2;
-    return location;
-} */
-
 export var Controller = {       //};
-    eventHandlers:          function () {
-                                Mouse.eventsHandler();
-                                Touch.eventsHandler();
-                                Keyboard.eventsHandler();
+    eventHandlers:          function (Controller, hand) {
+                                Mouse.eventsHandler(Controller, hand);
+                                Touch.eventsHandler(Controller, hand);
+                                Keyboard.eventsHandler(Controller);
                             },
-
-    listeners:              function () {
-                                document.getElementById("card_layer").addEventListener("mousedown", Mouse.onMouseDown, true);   
-                                document.getElementById("card_layer").addEventListener("mousemove", Mouse.onMouseOver, true);   
-                                //   document.getElementById("card_layer").addEventListener("mouseup", onMouseUp, true);   
+    listeners:              function (Controller, hand) {
+                                document.getElementById("card_layer").addEventListener("mousedown", (e)=> {
+                                                                                                        Mouse.onMouseDown(e, Controller);
+                                                                                                    }, true);   
+                                document.getElementById("card_layer").addEventListener("mousemove",  (e)=> {
+                                                                                                        Mouse.onMouseMove(e, hand);
+                                                                                                    }, true);   
+                                document.getElementById("card_layer").addEventListener("touchstart", (e)=> {
+                                                                                                        Touch.onTouchStart(e, Controller);
+                                                                                                    }, true);   
+                                document.getElementById("card_layer").addEventListener("touchmove",  (e)=> {
+                                                                                                        Touch.onTouchMove(e, hand);
+                                                                                                    }, true);   
+                                // document.getElementById("card_layer").addEventListener("touchend", onTouchEnd, true);
                                 window.addEventListener('keydown', Keyboard.onKeyDown);       // keyboard
-                                // window.addEventListener("keyup", onKeyUp);
-                                document.getElementById("card_layer").addEventListener("touchstart", Touch.onTouchStart, true);   
-                                document.getElementById("card_layer").addEventListener("touchmove",  Touch.onTouchMove, true);   
-                                // document.getElementById("card_layer").addEventListener("touchend", onTouchEnd, true);   
+                                // window.addEventListener("keyup", onKeyUp);   
                                 debug.console("All listeners started.");
                             },
- 
 };
 
 /**

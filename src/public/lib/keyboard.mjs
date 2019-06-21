@@ -11,37 +11,48 @@
 */
 
 /*  globals  */
+import { debug } from "./debugging.mjs";
 
 export var Keyboard = {
-    eventsHandler:  function () {
-    
+    eventsHandler:  function (Controller) {
+                        // keyEvents(Game);
                     },
-    onKeyDown:  function (event) {
+    onKeyDown:  function (event, Controller) {
                     let key = event.key;
-                    window.removeEventListener('keydown', onKeyDown);           // keyboard
-                    window.addEventListener('keyup', onKeyUp);                      // keyboard
+                    window.removeEventListener('keydown', this.onKeyDown);           // keyboard
+                    window.addEventListener('keyup', this.onKeyUp);                      // keyboard
                     if (key) {
                         debug.console("ID: ", key);                             // ASCII id of key thats was pressed
                     }
-                    let action = Game.Controller.bindings[key];
-                    if (Game.Controller.isMyTurn===true) {
-                        if (Game.Controller.actions[action] === false) {
-                            Game.Controller.actions[action] = true;
+                    let action = Controller.bindings[key];
+                    if (Controller.isMyTurn===true) {
+                        if (Controller.actions[action] === false) {
+                            Controller.actions[action] = true;
                         }
                     }
                 },
-    onKeyUp:    function (event) {
+    onKeyUp:    function (event, Controller) {
                     window.removeEventListener('keyup', this.onKeyUp);           // keyboard
                     let key = event.key;
-                    let action = Game.Controller.bindings[key];
-                    if (Game.Controller.actions[action] === true) {
-                        Game.Controller.actions[action] = false;
+                    let action = Controller.bindings[key];
+                    if (Controller.actions[action] === true) {
+                        Controller.actions[action] = false;
                     }
                     window.addEventListener('keydown', this.onKeyDown);                      // keyboard
                 },
 };
+/*
+function keyEvents(Game) {
+    let key = Controller.pressedKey;
+            let action = Controller.bindings[key];
+            if (Controller.isMyTurn === true) {
+                if (Controller.actions[action] === false) {
+                    Controller.actions[action] =   true;
+                }
+            }
+}
 
-
+*/
 
 
 
