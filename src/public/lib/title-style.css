@@ -1,13 +1,15 @@
             /*  ALL FOURS GAME Title Screen Stylesheet    */
-        body {
-        background-image: url('../img/hand_of_cards.jpg');
+            /* body {
+                background-image: url('../img/hand_of_cards.jpg');
+            } */
+        .gMenu {
         font-family: "Microsoft YaHei UI Light",'Times New Roman', Times, serif;
     }
     #loading {
-        font-size: 20px;
+        font-size: 15px;
         font-weight: bolder;
         text-align: left;
-        padding: 2px;
+        padding: 1px;
     }
     .copyright  {
         font-size: 11px;
@@ -46,30 +48,30 @@
     } */
 
     /* Set a style for all buttons */
-    button {
-        font-size: 20px;
+    .menuButtons {
+        font-size: 15px;
         font-weight: normal;
         background-color: #4CAF50;
         color: white;
-        padding: 14px 20px;
-        margin: 12px 0;
+        padding: 10px 15px;
+        margin: 8px 0;
         border: none;
         cursor: pointer;
         width: 100%;
         box-shadow: 10px 10px 8px 3px rgba(0, 0, 0, .7);
     }
-    button:hover {
+    .menuButtons:hover {
         background-color: chartreuse;
         /* font-size: 25px; */
-        font-weight: bolder;
+        font-weight: bold;
     }
     .pressed {
-        font-size: 20px;
+        font-size: 15px;
         font-weight: bold;
         background-color: #4CAF50;
         color: white;
-        padding: 14px 20px;
-        margin: 12px 0;
+        padding: 10px 15px;
+        margin: 8px 0;
         border: none;
         cursor: pointer;
         width: 100%;
@@ -93,7 +95,7 @@
     .imgcontainer {
         color: white;
         text-align: center;
-        margin: 20px 5px 0px 5px;
+        margin: 10px 5px 0px 5px;
         padding-bottom: 0px;
         position: relative;
     }
@@ -103,34 +105,34 @@
         border-radius: 50%;
     }
 
-    .container {
+    .menuContainer {
         padding: 5px;
     }
 
     span.psw {
         float: right;
-        padding-top: 16px;
+        padding-top: 10px;
     }
     #content {
         position: absolute;
         left: 175px;
-        width: 400px;
-        height: 600px;
+        width: 300x;
+        height: 440px;
     }
 
     /* The Modal (background) */
     .modal {
         display: none;              /* Hidden by default */
-        position: fixed;            /* Stay in place */
-        z-index: 1;                 /* Sit on top */
+        position: absolute;            /* Stay in place */
+        z-index: 5;                 /* Sit on top */
         /* left: 15px; */
         /* right: 15%; */
-        top: 160px;
+        top: 170px;
         width: 750px; /* Full width */
-        height: 600px; /* Full height */
+        height: 485px; /* Full height */
         overflow: auto; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+        background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
         padding-top: 30px;
         padding-bottom: 30px;
         padding-left: 10px;
@@ -143,8 +145,8 @@
         background-color: rgba(0,0,0,0);
         margin: 2% auto 2% auto; /* 5% from the top, 15% from the bottom and centered */
         border: 1px solid #888;
-        width: 280px; /* Could be more or less, depending on screen size */
-        height: 550px;
+        width: 230px; /* Could be more or less, depending on screen size */
+        height: 435px;
     }
     .modal-content p {
         text-align: center;
@@ -157,7 +159,7 @@
         right: 25px;
         top: 0px;
         color: white;
-        font-size: 75px;
+        font-size: 45px;
         font-weight: bolder;
     }
     label {
@@ -213,13 +215,17 @@
         background-color: rgba(0, 0, 0, 0);
         color: rgb(255, 255, 255);
         font-weight: bolder;
+        padding: 0 0 0 0;
+        margin: 0 0 0 0;
     }
     #progress-bar {
         width: 1%;
         height: 30px;
         background-color: rgb(144, 76, 175);
-        padding-right: 10px;
         text-align: right; /* To center it horizontally (if you want) */
         line-height: 30px; /* To center it vertically */
-        color: white; 
+        color: white;
+        padding: 0 10 0 0;
+        margin: 0 0 0 0;
+
     }

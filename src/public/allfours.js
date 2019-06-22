@@ -97,7 +97,7 @@ const PLAYER2_NAME = "You";
 
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET =  15;
-const TOPOFFSET  = 160;
+const TOPOFFSET  = 180;
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -2274,8 +2274,11 @@ function restartGame() {
     //  mainGameLoop();
 }
 tickertape(`Play Two-Man All Fours by Roger Clarke`);
-mainGameLoop();
-
+// mainGameLoop();
+            let pauseID = setTimeout(function () {
+               mainGameLoop();
+               clearTimeout(pauseID);
+            }, 3000);
 //------------------------------------------------------------------------------------------------------------------
 
 /*  Distribute points   */

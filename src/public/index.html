@@ -8,19 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
-   <!-- <script type="module" src="/lib/graphicslib.js"></script> 
+    <link rel="stylesheet" type="text/css" media="screen" href="/src/public/lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
-    <link rel="stylesheet" type="text/css" media="screen" href="title-style.css" />
-    <script type="text/javascript" src="/lib/title-script.js"></script>
-    <script src="/lib/card.js"></script>  
-    <script type="module" src="/lib/testing/unittest_functions.mjs"></script>    
-    <script type="module" src="allfours.test.mjs"></script> -->
 </head>
 
 <body>
     <!-- Heading -->
     <header id="heading">
-        <div class="container">
+        <div class="menuContainer">
             <div class="row">
                 <div class="col-12">
                     <H1><span class="primary-text">TWO-MAN</span> All Fours</H1>
@@ -39,14 +34,42 @@
         </div>
     </header>
     <div>   
-    <!--    TICKER      -->
-    
-        <div class="container" id="ticker"></div>
-  
+    <!--    TICKER      -->   
+        <div  id="ticker"></div>
+    <!--    HOMESCREEN      -->   
+        <div class="modal gMenu" id="home_screen" style="display: none;"> 
+                <span title="Close Title Screen" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
+              <div class="animate" id="content">
+                <!-- <form class="modal-content animate" method="POST"> -->
+                 <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
+                  <div class="imgcontainer">
+                    <!--    Game Logo Here -->
+                    <H4>TWO-MAN ALL FOURS</H4>
+                  </div>
+              
+                  <div class="btn menuContainer">            
+                    <button type="submit" class="disabled menuButtons" id="PlayGame" onmousedown="pressBtn('PlayGame')">Play Game</button>
+                    <button type="submit" class="menuButtons" id="settings"  onmousedown="pressBtn('settings')" >Settings</button>
+                    <button type="submit" class="menuButtons" id="animate" onmousedown="pressBtn('animate')">Login/Animate</button>
+                    <button id="quit" class="menuButtons" onmousedown="pressBtn('quit')">Quit</button>
+                  </div>
+                  <div class="container" id="lower_card_div">
+                  <p id="loading">Loading...</p>
+                    <div id="progress">
+                      <div id="progress-bar">1%</div>
+                    </div>
+                    <!-- <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button> -->
+                    <!--    Home Icon & Settings Icon (bottom left corner)      -->
+                  </div>
+        
+                  <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
+                </div>  <!-- </form> -->
+            </div> <!-- end of home_screen  --> 
         <!-- Game Board -->
         <div class="container" id="game_container">
                 <!--  <canvas id="game_board" width="700" height="450"></canvas> would go here -->
         </div>
+ 
         <!-- Game Control Panel -->
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
@@ -55,17 +78,16 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="displayCutScene()">Video Clip</button>
+                    <button class="w3-btn" onclick="homeScreen()">Menu</button>
                     <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
-                <div class="user_input">
-                    
+                <div class="user_input">                    
                     <form>
                       <div><h4>Enter your name:</h4>
-                      <input id="player_name" name="name" type="text"><br> 
-                    </div>
-                    <button class="w3-button w3-round-xlarge w3-border-blue" type="button" onclick="setPlayerName()">ENTER</button>
+                        <input id="player_name" name="name" type="text"><br> 
+                      </div>
+                      <button class="w3-button w3-round-xlarge w3-border-blue" type="button" onclick="setPlayerName()">ENTER</button>
                     </form>
                 </div>
                 <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
@@ -73,6 +95,7 @@
         </div>
         <!--    Menu Screen     -->       
     </div>
+<!--        Home/Title Screen               -->
 
     <!-- Footer -->
     <footer>
@@ -80,17 +103,21 @@
             <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
         </div>
     </footer>
-
+    <script type="text/javascript" src="/src/public/lib/title-script.js">
+    window.onload = function () {
+                    homeScreen();
+                }
+    </script>
     <script type="module" src="allfours.js">
         window.onload = function () {
-           // loadGameAssets();
-            /*
-            homeScreen();
-            setTimeout(() => {
+           // loadGame();
+            
+/*             let timeOutID = setTimeout(function () {
                mainGameLoop();
-            }, 3000);
-           */
-           mainGameLoop();
+               clearTimeout(timeOutID);
+            }, 3000); */
+          
+        //    mainGameLoop();
         }
     </script>     
 </body>
