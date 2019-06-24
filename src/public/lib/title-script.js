@@ -27,7 +27,7 @@ function pressBtn(id) {
     btn.addEventListener("mouseup", () => {
                                         btn.setAttribute("class", "menuButtons");
                                         document.getElementById('home_screen').style.display='none';
-                                        mainGameLoop(); 
+                                        // mainGameLoop(); 
                                     }, true);
 }
 

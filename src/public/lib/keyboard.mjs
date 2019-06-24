@@ -14,31 +14,40 @@
 import { debug } from "./debugging.mjs";
 
 export var Keyboard = {
+    pressedKey:     null,
     eventsHandler:  function (Controller) {
                         // keyEvents(Game);
                     },
     onKeyDown:  function (event, Controller) {
-                    let key = event.key;
-                    window.removeEventListener('keydown', this.onKeyDown);           // keyboard
-                    window.addEventListener('keyup', this.onKeyUp);                      // keyboard
-                    if (key) {
-                        debug.console("ID: ", key);                             // ASCII id of key thats was pressed
+                    this.pressedKey = event.key;
+                    window.removeEventListener('keydown', (e) => {
+                                                                this.onKeyDown(e, Controller);
+                                                            });           // keyboard
+                    window.addEventListener('keyup', () => {
+                                                        this.onKeyUp(Controller);
+                                                    });                      // keyboard
+                    if (this.pressedKey) {
+                        debug.console("ID: ", this.pressedKey);                             // ASCII id of key thats was pressed
                     }
-                    let action = Controller.bindings[key];
+                    let action = Controller.bindings[this.pressedKey];
                     if (Controller.isMyTurn===true) {
                         if (Controller.actions[action] === false) {
-                            Controller.actions[action] = true;
+                            Controller.actions[action] =   true;
+                            Controller.readAction();
                         }
                     }
                 },
-    onKeyUp:    function (event, Controller) {
-                    window.removeEventListener('keyup', this.onKeyUp);           // keyboard
-                    let key = event.key;
-                    let action = Controller.bindings[key];
+    onKeyUp:    function (Controller) {
+                    window.removeEventListener('keyup', () => {
+                                                            this.onKeyUp(Controller);
+                                                        });            // keyboard
+                    window.addEventListener('keydown', (e) =>{
+                                                            Keyboard.onKeyDown(e, Controller);
+                                                        });                    // let key = event.key;
+                    let action = Controller.bindings[this.pressedKey];
                     if (Controller.actions[action] === true) {
                         Controller.actions[action] = false;
                     }
-                    window.addEventListener('keydown', this.onKeyDown);                      // keyboard
                 },
 };
 /*

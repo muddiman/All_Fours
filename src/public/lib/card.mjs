@@ -29,16 +29,19 @@ export function Card(rank, face, suit) {               // Card object constructo
             this.image.src = `img/${this.getCardName()}.png`;
             gCardImageCacheObj[this.getCardName()] = this.image;
             this.image.onload = () => {
-               if (gCardImageCacheObj[this.getCardName()] === this.image) {
                    this.isLoaded = true;
                    counter++;
-               }
             };
         }
     };
 } 
+Card.prototype.CARD_W=72;
+Card.prototype.CARD_H=96;
 Card.prototype.getFace = function () {
                             return this.face;
+                        };
+Card.prototype.getSuit = function () {
+                            return this.suit;
                         };
 
 

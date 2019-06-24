@@ -14,11 +14,9 @@
 import { debug } from "./debugging.mjs";
 
 /*  globals  */
-const CARD_W=72;
-const CARD_H=96;
 const LEFTOFFSET =  15;
 const TOPOFFSET  = 160;
-
+/*  classes */
 /*  objects  */
 export var Touch = {
     eventsHandler:     function (Controller, hand) {
@@ -27,8 +25,9 @@ export var Touch = {
                                 let touchY = Controller.clickPosition.Y;
                                 // let touchX = X;
                                 // let touchY = Y;
-                                for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
-                                    if (wasCardTouched(index, hand.length, touchX, touchY) === true) {
+                                for (let index = 0; index < hand.length; index++) { //  cycle through cards in hand
+                                    const card = hand[index];                         
+                                    if (wasCardTouched(index, card, hand.length, touchX, touchY) === true) {
                                         index++;
                                         let key = index.toString();
                                         let action = Controller.bindings[key];
@@ -74,7 +73,8 @@ export var Touch = {
                                 debug.console("(", posX, ", ", posY, ")");
                                 debug.display(`(${posX}, ${posY})`);
                                 for (let index = 0; index < hand.length; index++) {
-                                    if (wasCardTouched(index, hand.length, posX, posY) === true) {
+                                    const card = hand[index];
+                                    if (wasCardTouched(index, card, hand.length, posX, posY) === true) {
                                         enlargeCard(index);                 // enlarge Card      
                                     }
                                 }    
@@ -82,17 +82,17 @@ export var Touch = {
 };
  
 /*  functions */
-function wasCardTouched(cardNumber, arrayLength, x, y) {
-    let upperLeftCornerX = cardLocation(cardNumber, arrayLength);
+function wasCardTouched(cardNumber, card, arrayLength, x, y) {
+    let upperLeftCornerX = cardLocation(cardNumber, card, arrayLength);
     let upperLeftCornerY = 340;
-    if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W / 2) {
-        if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+    if (upperLeftCornerX < x && x < upperLeftCornerX + card.CARD_W / 2) {
+        if (upperLeftCornerY < y && y < upperLeftCornerY + card.CARD_H) {
             return true;
         }
     }
     if (cardNumber === arrayLength - 1) {           //  LAST CARD
-        if (upperLeftCornerX < x && x < upperLeftCornerX + CARD_W) {
-            if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
+        if (upperLeftCornerX < x && x < upperLeftCornerX + card.CARD_W) {
+            if (upperLeftCornerY < y && y < upperLeftCornerY + card.CARD_H) {
                 return true;
             }
         }    
@@ -100,10 +100,10 @@ function wasCardTouched(cardNumber, arrayLength, x, y) {
     return false;
 }
 
-function cardLocation(i, arrayLength) {
+function cardLocation(i, card, arrayLength) {
     let xCenter = document.getElementById("card_layer").width /2;      //    Game.Screens.gameScreen.canvas.width/2;
     // let xCenter = Game.Screens.gameScreen.canvas.width/2;
-    let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
+    let xLocation = xCenter - Math.ceil(arrayLength / 2) * card.CARD_W/2 +  i * card.CARD_W/2 ;
     return xLocation; 
 }
 
@@ -114,7 +114,7 @@ function cardLocation(i, arrayLength) {
  *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.7.2
+ *  @version   0.8.0
  *  @since     2018-10-1
  *  @license   NON-Commercial
  *  @See:      http://www.roger-clarke.com/allfours/license.html

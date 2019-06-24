@@ -20,29 +20,48 @@ import { Touch     } from "./touch.mjs";
 import { Keyboard  } from "./keyboard.mjs";
 import { debug     } from "./debugging.mjs";
 
-export var Controller = {       //};
-    eventHandlers:          function (Controller, hand) {
-                                Mouse.eventsHandler(Controller, hand);
+export var inputDevices = {       //};
+/*     eventHandlers:          function (Controller, hand) {
+                                // Mouse.eventsHandler(Controller, hand);
                                 Touch.eventsHandler(Controller, hand);
                                 Keyboard.eventsHandler(Controller);
-                            },
-    listeners:              function (Controller, hand) {
+                            }, */
+    listeners:              function (Controller, hand, gameboard) {
                                 document.getElementById("card_layer").addEventListener("mousedown", (e)=> {
-                                                                                                        Mouse.onMouseDown(e, Controller);
+                                                                                                        Mouse.onMouseDown(e, Controller, hand);
                                                                                                     }, true);   
                                 document.getElementById("card_layer").addEventListener("mousemove",  (e)=> {
-                                                                                                        Mouse.onMouseMove(e, hand);
+                                                                                                        Mouse.onMouseMove(e, hand, gameboard);
                                                                                                     }, true);   
                                 document.getElementById("card_layer").addEventListener("touchstart", (e)=> {
-                                                                                                        Touch.onTouchStart(e, Controller);
+                                                                                                        Touch.onTouchStart(e, Controller, hand);
                                                                                                     }, true);   
                                 document.getElementById("card_layer").addEventListener("touchmove",  (e)=> {
-                                                                                                        Touch.onTouchMove(e, hand);
+                                                                                                        Touch.onTouchMove(e, hand, gameboard);
                                                                                                     }, true);   
                                 // document.getElementById("card_layer").addEventListener("touchend", onTouchEnd, true);
-                                window.addEventListener('keydown', Keyboard.onKeyDown);       // keyboard
+                                window.addEventListener('keydown', (e) =>{
+                                                                    Keyboard.onKeyDown(e, Controller);
+                                                                });       // keyboard
                                 // window.addEventListener("keyup", onKeyUp);   
                                 debug.console("All listeners started.");
+                            },
+    removeListeners:        function () {
+                                window.removeEventListener('keydown', (e) => {
+                                                                            this.onKeyDown(e, Controller);
+                                                                        });           // keyboard
+                                document.getElementById("card_layer").removeEventListener("mousedown", (e) => {
+                                                                                                            this.onMouseDown(e, Controller); 
+                                                                                                        }, true); 
+                                document.getElementById("card_layer").removeEventListener("mousemove",  (e)=> {
+                                                                                                            Mouse.onMouseMove(e, hand, gameboard);
+                                                                                                        }, true);                                         
+                                document.getElementById('game_board').removeEventListener('touchstart', (e) => {
+                                                                                                            this.onTouchStart(e, Controller);
+                                                                                                        }, true);
+                                document.getElementById("card_layer").removeEventListener("touchmove",  (e)=> {
+                                                                                                            Touch.onTouchMove(e, hand, gameboard);
+                                                                                                        }, true); 
                             },
 };
 
