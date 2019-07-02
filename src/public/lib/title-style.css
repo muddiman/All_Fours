@@ -2,8 +2,11 @@
             /* body {
                 background-image: url('../img/hand_of_cards.jpg');
             } */
-        .gMenu {
+    .gMenu {
         font-family: "Microsoft YaHei UI Light",'Times New Roman', Times, serif;
+    }
+    #controlPanel {
+        top: 180px;
     }
     #loading {
         font-size: 15px;
@@ -49,38 +52,45 @@
 
     /* Set a style for all buttons */
     .menuButtons {
-        font-size: 15px;
-        font-weight: normal;
-        background-color: #4CAF50;
+        font-size: 20px;
+        font-weight: bolder;
+        background-color: rgba(0, 0, 0, 0);
         color: white;
         padding: 10px 15px;
         margin: 8px 0;
-        border: none;
+        border: 2px solid rgba(0, 255, 0, 1.0);
         cursor: pointer;
         width: 100%;
-        box-shadow: 10px 10px 8px 3px rgba(0, 0, 0, .7);
+        border-radius: 30px;
+        box-shadow: 10px 10px 8px 3px rgba(0, 0, 0, 0.7);
     }
     .menuButtons:hover {
         background-color: chartreuse;
         /* font-size: 25px; */
         font-weight: bold;
+        color: rgba(255, 0, 0, 1.0);
     }
     .pressed {
-        font-size: 15px;
-        font-weight: bold;
+        font-size: 20px;
+        font-weight: bolder;
         background-color: #4CAF50;
         color: white;
         padding: 10px 15px;
         margin: 8px 0;
-        border: none;
+        border: 2px solid rgba(0, 255, 0, 1.0);
         cursor: pointer;
         width: 100%;
-        box-shadow: inset 7px 7px 8px 3px rgba(0, 0, 0, .7);
+        box-shadow: inset 7px 7px 8px 3px rgba(0, 0, 0, 0.7);
     }
     .disabled {
-        opacity:    0.5;
+        background-color: rgba(175, 175, 175, 0.2);
         cursor:     not-allowed;
-        background-color: #888;
+        border-color: rgba(230, 230, 230, 0.1);
+        color: rgba(230, 230, 230, 0.3);
+    }
+    .disabled:hover {
+        background-color: rgba(230, 230, 230, 0.2);
+        color: rgba(230, 230, 230, 0.8);
     }
 
     /* styling for login form */

@@ -1828,7 +1828,7 @@ function unPauseGame() {
     Game.Engine.start();
 }
 
-tickertape(`Play Two-Man All Fours by Roger Clarke`);
+tickertape(`Play Two-Man All Fours`);
 // mainGameLoop();
             let pauseID = setTimeout(function () {
                mainGameLoop();
