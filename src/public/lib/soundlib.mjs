@@ -149,8 +149,9 @@ function Sound() {
 */
 
 // import { SOUND_ON } from "../allfours";
-export var SOUND_ON=true;
-
+// export var SOUND_ON=true;
+import { SETTINGS } from "./settings.mjs";
+export const SOUND_ON = SETTINGS.SOUND_ON;
 /*  sound constructor/class */
 export function Sound(src) {
     this.sound          = document.createElement("audio");

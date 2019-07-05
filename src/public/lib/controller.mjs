@@ -26,6 +26,8 @@ export var inputDevices = {       //};
                                 Touch.eventsHandler(Controller, hand);
                                 Keyboard.eventsHandler(Controller);
                             }, */
+
+                            // ON INPUT DEVICE DOWN, RETURN AN ACTION
     listeners:              function (Controller, hand, gameboard) {
                                 document.getElementById("card_layer").addEventListener("mousedown", (e)=> {
                                                                                                         Mouse.onMouseDown(e, Controller, hand);

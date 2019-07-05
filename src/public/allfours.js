@@ -42,8 +42,8 @@
    III. Shut Down Game 
 
    MVC Model:
-     Display Module     ==> DispInt.mjs     --> screens.mjs, 
-     Controller Module  ==> controls.mjs    --> mouse.mjs, keyboard.mjs, touch.mjs, keymap.JSON
+     Display Module     ==> Display-Interface.mjs     --> screens.mjs, 
+     Controller Module  ==> controller.mjs    --> mouse.mjs, keyboard.mjs, touch.mjs, keymap.JSON
      Game Engine        ==> engine.mjs     --> 
      Main Game          ==> allfours.js
 */
@@ -62,7 +62,7 @@ import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
 import { gCanvasLayer }             from "./lib/screen.mjs";
 import { computerAI }               from "./lib/ai.mjs";
-import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
+import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
 import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
 import { inputDevices }             from "./lib/controller.mjs";
@@ -258,32 +258,40 @@ Game.Components.deck = {
     counter: 0,
     cardImagesLoaded:   function () {
         // this.counter++;
+
+
         let percent = Math.floor((this.counter / 52) * 100);
         console.log(`${this.counter} card images loaded: ${percent}%`);
         let delayID = setTimeout(() => {
             clearTimeout(delayID);
+            this.cards.forEach(element => {
+                if (element.imageLoaded === true) {
+                    this.counter++;
+                }
+             });
             percent = Math.floor((this.counter / 52) * 100);
             console.log(`${this.counter} card images loaded: ${percent}%`);          
-        }, 5000);
+        }, 3000);
     },
         /** creates deck (array of all 52 cards)
          *  @param: null
          *  @returns: deck
          */
-        init: function () {
+    init: function () {
             this.counter = 0;
             let n = 0; 
             for (let y = 0; y < SUITS.length; y++) {
                 var rank = 1;
                 for (let x = 0; x < FACES.length; x++) {
                     this.cards[n] = new Card(rank, FACES[x], SUITS[y]);
-                    this.cards[n].init(this.counter); //  get card images from image files or image cache object
+                    this.cards[n].init(); //  get card images from image files or image cache object
                     //  if (this.cards[n].isLoaded === true) {}
                     n++;
                     rank++;
                 }
             }
-        return this;
+            console.log(`card images loaded: ${this.counter}`);
+            return this;
     },
     shuffle: function () {
         /** randomly mixes up the cards in the deck
@@ -480,7 +488,7 @@ Game.Components.gameboard = {                       // the gameplay board
  *  Manages ALL user input (mouse, touch and keyboard) as an Object
  */
 Game.Controller = {
-// var Game.Controller = {
+// var Controller = {
    /*  clickPosition: {
         X:  null,
         Y:  null,
@@ -598,6 +606,7 @@ function toggleMute() {
 }
 
 function inputUpdate() {
+    debug.console(`interval - Action!`);
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     toggleMute();
     togglePause();
@@ -771,13 +780,14 @@ function play(player) {
     } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
-        Game.Components.gameboard.listenForUserCard(() => {
+        // Game.Components.gameboard.listenForUserCard(() => {
+            console.log(`Listening for card!`);
             if (Game.Components.gameboard.user) {
-                Game.Components.gameboard.stopListening();
+                // Game.Components.gameboard.stopListening();
                 Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
             } 
-        } );  
+        // } );  
         if (Game.Components.gameboard.user) {
             if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
                 trackCards(Game.Player.human, Game.Components.gameboard.user);
@@ -898,7 +908,8 @@ async function  postPlay(winner) {
  * 
  * @param {int} i integer [0 .. length of computer's hand]
  */
-function computerPlay(i) {                          // run the 'thinking animation'
+function computerPlay(i) {  
+    console.trace('comuterPlay(i):');                        // run the 'thinking animation'
     const card = Game.Player.computer.hand[i];
     Game.Components.gameboard.computer = card;
     debug.console(card.getCardName());
@@ -1604,7 +1615,7 @@ function _clearAllScreens() {
 export function gameLoop() {
     /*  A series of 'game states'   */
     // inputUpdate();
-    if (Game.State.startOfGame === true) {
+    if (Game.State.startOfGame === true) {   
         Game.State.startOfGame = false;
         console.log(`Start of game is true. Set it to false.`);
         if (!Game.State.dealer) {
@@ -1701,7 +1712,7 @@ export function gameLoop() {
             }
             Game.Components.gameboard.init();
             Game.Engine.start();
-            console.log(`Engine Restarted!`);
+            debug.console(`Engine Restarted!`);
             clearTimeout(tmOutID);
         }, 1500); 
     }   
@@ -1771,6 +1782,7 @@ function mainGameLoop() {
         };
         inputDevices.listeners(Game.Controller, Game.Player.human.hand, gBoard);
         debug.init();
+        playerNameChangeListener();
         Game.State.startOfGame = true;
         Game.Engine.start();
         // displayCutScene();  
@@ -1828,12 +1840,34 @@ function unPauseGame() {
     Game.Engine.start();
 }
 
+function playerNameChangeListener() {
+    clickEnterButton();
+    let nameInput = document.getElementById("player_name");
+    nameInput.addEventListener('input', changePlayerName);
+}
+
+function clickEnterButton() {
+    let entBtn = document.getElementById("enter_btn");
+    let nameInput = document.getElementById("player_name");
+    function stopBtnListener() {
+        nameInput.removeEventListener('input', changePlayerName);
+        entBtn.removeEventListener('click', stopBtnListener);
+    }
+    entBtn.addEventListener('click', stopBtnListener);
+}
+function changePlayerName() {
+    let nameInput = document.getElementById("player_name");
+    if (nameInput.value.length != 0) {
+        Game.Player.human.changeName(nameInput.value);
+    }
+}
+
 tickertape(`Play Two-Man All Fours`);
 // mainGameLoop();
-            let pauseID = setTimeout(function () {
-               mainGameLoop();
-               clearTimeout(pauseID);
-            }, 3000);
+let pauseID = setTimeout(function () {
+    mainGameLoop();
+    clearTimeout(pauseID);
+}, 3000);
 //------------------------------------------------------------------------------------------------------------------
 
     //          GARBAGE COLLECTION
@@ -1849,6 +1883,7 @@ tickertape(`Play Two-Man All Fours`);
 //      ***KNOWN BUGS***
 //      AI needs tweeking
 //      Game freezes in second round
+                // try to see what causing the free:  memory running out
 //      
 //
 

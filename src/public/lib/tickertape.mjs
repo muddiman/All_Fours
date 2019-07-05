@@ -30,14 +30,14 @@ export function tickertape(message) {
     //tbx.fillText(message, 690, 40);
     x=width;
     y=40;
-    setInterval(function () {       // anonymous function for handling the animation
+    let ID = setInterval(function () {       // anonymous function for handling the animation
         if (x<-400) {
             x=width;
         } 
         t.clear();
-        x--;
+        x-=2;
         tbx.fillText(message, x, y);
-    }, 5);
+    }, 1000/24);
 }
 
 

@@ -10,13 +10,15 @@
     PURPOSE:    debug object, generates new screens to display any parameter needed to be tracked
 
 */
-const ON=true;
-const OFF=false;
-export var DEBUG_MODE=OFF;
+/* const ON=true;
+const OFF=false; */
+// export var DEBUG_MODE=OFF;
 // document.getElementById("msg_layer").style.visibility = "hidden";
 
 // import { DEBUG_MODE } from "../allfours";
 import { gCanvasLayer } from "./screen.mjs";
+import { SETTINGS }   from "./settings.mjs";
+export const DEBUG_MODE = SETTINGS.DEBUG_MODE;
 
 export const debug = {
     isUpdated:  false, 

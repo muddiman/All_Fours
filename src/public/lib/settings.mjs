@@ -4,9 +4,14 @@
 *          OPTIONS
 *
 */
-var SETTINGS = {
-    SOUND       :   true,
-    SCREEN      :   [desktop, tablet, mobile],
-    MODE        :   [TWO_PLAYER, FOUR_PLAYER],
-    DIFFICULTY  :   [EASY, HARD, PRO],
-}
+
+const ON=true;
+const OFF=false;
+
+export var SETTINGS = {
+    SOUND_ON    :   OFF,
+    DEBUG_MODE  :   OFF,
+    SCREEN      :   ["desktop", "tablet", "mobile"],
+    MODE        :   ["TWO_PLAYER", "FOUR_PLAYER"],
+    DIFFICULTY  :   ["EASY", "HARD", "PRO"],
+};
