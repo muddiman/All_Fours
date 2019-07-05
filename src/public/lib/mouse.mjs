@@ -23,27 +23,33 @@ export var Mouse = {
     currentY:           null,
     clickX:             null,
     clickY:             null,
-    eventsHandler:     function (Controller, hand) {
+ /*    eventsHandler:     function (Controller, hand) {
                                 clickEvents(Controller, hand);              //  click, dbl click, mouse down, mouse up
                                 mouseMoveEvents(Controller, hand);          //  mousemove, mouseover
-                            }, 
-    onMouseDown:            function (event, Controller, hand) {
+                            },  */
+    onClick:            function (event, hand) {
                                 this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
-                                this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //  
-                                document.getElementById("card_layer").removeEventListener("mousedown", (e) => {
-                                                                                                        this.onMouseDown(e, Controller, hand); 
-                                                                                                    }, true);  
-                                document.getElementById("card_layer").addEventListener("mouseup", () => {
-                                                                                                        this.onMouseUp(Controller, hand); 
-                                                                                                    }, true);    
+                                this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //   
                                 debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
-                                clickEvents(Controller, hand);
+                                return clickEvents(hand);
+                            },
+/*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
+                                this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                                this.clickY = event.clientY - TOPOFFSET;    *///  Game.Screens.gameScreen.canvas.offsetTop; //  
+                             /*    canvasLayer.removeEventListener("mousedown", (e) => {
+                                                                                    this.onMouseDown(e, Controller, hand); 
+                                                                                }, true);   */
+   /*                              canvasLayer.addEventListener("mouseup", () => {
+                                                                            this.onMouseUp(Controller, hand); 
+                                                                        }, true);    
+                                debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
+                                return clickEvents(hand);
                             },
     onMouseUp:              function (Controller, hand) {
-                                document.getElementById("card_layer").removeEventListener("mouseup", () => {
+                                canvasLayer.removeEventListener("mouseup", () => {
                                                                                                         this.onMouseUp(Controller, hand); 
                                                                                                     }, true);  
-                                document.getElementById("card_layer").addEventListener("mousedown", (e) => {
+                                canvasLayer.addEventListener("mousedown", (e) => {
                                                                                                         this.onMouseDown(e, Controller, hand); 
                                                                                                     }, true);   
                                 for (let action in Controller.actions) {
@@ -63,31 +69,32 @@ export var Mouse = {
                                         gameboard.select = card;
                                     }
                                 }
-                            }    
+                            }     */
 };
 /********************************************************************************************************************************************** */
 
  
 //  ----------------------------------------------------------------------------------------------------------------------------------------
 
-function clickEvents(Controller, hand) {
+function clickEvents(hand) {
 /*     let clickX = Controller.clickPosition.X;
     let clickY = Controller.clickPosition.Y; */
     for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
         const card = hand[index];
         if (didMouseClickOnCard(index, card, hand.length, Mouse.clickX, Mouse.clickY) === true) {
             index++;
-            let key = index.toString();
+            return index.toString();
+           /*  let key = index.toString();
             let action = Controller.bindings[key];
             if (Controller.isMyTurn === true) {
                 if (Controller.actions[action] === false) {
                     Controller.actions[action] =   true;
-                    Controller.readAction();
+                    Controller.readAction(); */
                 }
             }
         }   
-    }
-}
+    // }
+// }
 
 function mouseMoveEvents(Controller, hand) {
 /*     let clickX = Controller.clickPosition.X;
@@ -134,7 +141,7 @@ function checkPointerLocation(cardNumber, card, arrayLength, x, y) {
 }
 
 function cardLocation(i, card, arrayLength) {
-    let xCenter = document.getElementById("card_layer").width /2;      //    Game.Screens.gameScreen.canvas.width/2;
+    let xCenter = 700 /2;      //    Game.Screens.gameScreen.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * card.CARD_W/2 +  i * card.CARD_W/2 ;
     return xLocation; 
 }

@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.0
+ *  @version   0.8.2
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -65,7 +65,7 @@ import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
 import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
-import { inputDevices }             from "./lib/controller.mjs";
+import { Controller }               from "./lib/controller.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -613,7 +613,7 @@ function inputUpdate() {
     /*  take specific game 'action' once the action is set to 'true'  */ 
     for (let i=0; i<6; i++) {
       let play = `playCard_${i+1}`;
-      if (Game.Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
+      if (Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
         if (Game.Components.gameboard.user === null) {
             Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
             Game.Player.human.hand.splice(i, 1);
@@ -1780,7 +1780,7 @@ function mainGameLoop() {
         } else {
             gBoard = Empty;
         };
-        inputDevices.listeners(Game.Controller, Game.Player.human.hand, gBoard);
+        Controller.listeners(document.getElementById("card_layer"), Game.Player.human.hand, inputUpdate);
         debug.init();
         playerNameChangeListener();
         Game.State.startOfGame = true;
