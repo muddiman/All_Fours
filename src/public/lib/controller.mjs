@@ -69,14 +69,15 @@ import { debug     } from "./debugging.mjs";
 // };
 
 export var Controller = {
- listeners:     function (canvasLayer, hand, callback) {
+    /*  mouse controls  */
+listeners:      function (canvasLayer, hand, callback) {
                     canvasLayer.addEventListener("click", (e)=> {
-                                    let key = Mouse.onClick(e, hand);
-                                    let action =  Controller.bindings[key];
-                                    Controller.actions[action] = true;
-                                    callback();
-                                }, true); 
-                                debug.console("All listeners started.");
+                                                                let key = Mouse.onClick(e, hand);
+                                                                let action =  this.bindings[key];
+                                                                this.actions[action] = true;
+                                                                callback(action);
+                                                            }, true); 
+                    debug.console("All listeners started.");
                 },     
 bindings: {
     'Escape'    : 'showMenuScreen',

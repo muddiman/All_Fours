@@ -605,13 +605,26 @@ function toggleMute() {
     }
 }
 
-function inputUpdate() {
+function inputUpdate(action) {
     debug.console(`interval - Action!`);
     toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
     toggleMute();
     togglePause();
+
     /*  take specific game 'action' once the action is set to 'true'  */ 
     for (let i=0; i<6; i++) {
+        let play = `playCard_${i+1}`;
+        if (action === play) {      // queries the key's state, and calls the corresponding function
+          if (Game.Components.gameboard.user === null) {
+              Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
+              Game.Player.human.hand.splice(i, 1);
+              Game.Controller.init();
+          }
+        }
+      }
+
+    /*  take specific game 'action' once the action is set to 'true'  */ 
+   /*  for (let i=0; i<6; i++) {
       let play = `playCard_${i+1}`;
       if (Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
         if (Game.Components.gameboard.user === null) {
@@ -621,7 +634,7 @@ function inputUpdate() {
         }
       }
     }   
-
+ */
     if (Game.Controller.actions['selectNext']) {
         if (Game.Components.gameboard.select) {
             for (let i=0; i < Game.Player.human.hand.length; i++) {
@@ -1083,7 +1096,7 @@ function displayLabels() {
         bgx.fillText(index + 1, cardLocation(index, Game.Player.human.hand.length) + CARD_W / 4, HEIGHT - 2);
     }
 }
-
+//  Display.onBackground.
 
 function displayUserCard() {
     playCard('bottom', Game.Components.gameboard.user);

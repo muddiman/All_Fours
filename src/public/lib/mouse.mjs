@@ -28,11 +28,11 @@ export var Mouse = {
                                 mouseMoveEvents(Controller, hand);          //  mousemove, mouseover
                             },  */
     onClick:            function (event, hand) {
-                                this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
-                                this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //   
-                                debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
-                                return clickEvents(hand);
-                            },
+                            this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                            this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //   
+                            debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
+                            return clickEvents(hand);
+                        },
 /*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
                                 this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
                                 this.clickY = event.clientY - TOPOFFSET;    *///  Game.Screens.gameScreen.canvas.offsetTop; //  
@@ -96,7 +96,7 @@ function clickEvents(hand) {
     // }
 // }
 
-function mouseMoveEvents(Controller, hand) {
+function moveEvents(Controller, hand) {
 /*     let clickX = Controller.clickPosition.X;
     let clickY = Controller.clickPosition.Y; */
     for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
@@ -141,7 +141,7 @@ function checkPointerLocation(cardNumber, card, arrayLength, x, y) {
 }
 
 function cardLocation(i, card, arrayLength) {
-    let xCenter = 700 /2;      //    Game.Screens.gameScreen.canvas.width/2;
+    let xCenter = 700 / 2;      //    Game.Screens.gameScreen.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * card.CARD_W/2 +  i * card.CARD_W/2 ;
     return xLocation; 
 }
@@ -150,7 +150,7 @@ function cardLocation(i, card, arrayLength) {
  *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.0
+ *  @version   0.8.2
  *  @since     2018-10-1
  *  @license   NON-Commercial
  *  @See:      http://www.roger-clarke.com/allfours/license.html

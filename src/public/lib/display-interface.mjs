@@ -19,7 +19,7 @@ const CARD_H=96;
 
 /*  IMPORTS */
 /*  import screens  */
-import { gCanvasLayer } from "./lib/screen.mjs";
+import { gCanvasLayer } from "./lib/screen_update.mjs";
 
 /*  CLASSES */
 /*  OJECTS  */
@@ -29,12 +29,12 @@ var Game = {
 };
 
 export var Display = {
-    onBackground:       new gCanvasLayer("game_board",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     OPAQUE,      0,  68, 102,   0),
-    onCardScreen:       new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
-    onMsgScreen:        new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
-    onMenuScreen:       new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
-    onVideoScreen:      new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5,   0,   0,   0),
-    labels:      function () {
+    onBackground:       new gCanvasLayer("game_board",    0, `rgba( 68, 102,   0, 1.0)`),
+    onCardScreen:       new gCanvasLayer("card_layer",    1, `rgba(255, 255, 255, 0.0)`),
+    onMsgScreen:        new gCanvasLayer("msg_layer",     2, `rgba(255, 255, 255, 0.0)`),
+    onMenuScreen:       new gCanvasLayer("menu_layer",    3, `rgba(204, 204, 204, 0.8)`),
+    onVideoScreen:      new gCanvasLayer("video_screen",  5, `rgba(  0,   0,   0, 0.0)`),
+    labels:     function () {
                     let bgx = this.onBackground.ctx;
                     bgx.setFont("15px Arial");
                     // bgx.font = "15px Arial";
@@ -43,8 +43,7 @@ export var Display = {
                     let labelUserCards = "1     2       3       4       5       6";
                     bgx.fillText("TRUMP", 15, 30 + CARD_H); // user keyboard play labels
                     bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); // trump label
-                },
-    
+                },   
     userCard:   function () {
                     playCard('bottom', Game.Components.gameboard.user);
                 },

@@ -37,7 +37,7 @@ export function tickertape(message) {
         t.clear();
         x-=2;
         tbx.fillText(message, x, y);
-    }, 1000/24);
+    }, 1000/60);
 }
 
 
