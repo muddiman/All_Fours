@@ -13,7 +13,7 @@ ___
  You can  download the card images or get more information here: <http://www.github.com/>.
 
 #### Current Version
-Two-Man All Fours Ver. 0.6.6
+Two-Man All Fours Ver. 0.8.3
 
 
 #### Known Bugs
@@ -22,7 +22,7 @@ Two-Man All Fours Ver. 0.6.6
 - 'Mute' function not working
 - Arrow keys input not working correctly
 - Pause not working
-- Menu Screen flickering uncontrollably
-- no display for the "counting for game" subroutine
-- under trump, reneed, still to be added
-- AI making illegal plays
+- Menu Screen not working
+- no debug display 
+- under trump, rekneed, still to be added
+- Computer makes illegal plays
