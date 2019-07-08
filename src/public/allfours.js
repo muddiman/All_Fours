@@ -181,11 +181,11 @@ Game.Background = {
 
 Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
-    gameScreen  : null,         //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
+    gameScreen  : new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
     msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
     menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
     pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         4, 204, 204, 204),
-    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5, 0, 0, 0),  
+    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5,   0,   0,   0),  
 };
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
@@ -198,7 +198,7 @@ function setPlayerName() {
 }
 
 /* Card layer object */
-Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
+/* Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
         this.canvas.width = WIDTH;
@@ -213,7 +213,7 @@ Game.Screens.gameScreen = {                                                     
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
 };
-
+ */
 Game.Background.scoreboard = {
     playerAname    :   Game.Player.computer.getName(),
     playerBname    :   Game.Player.human.getName(),
@@ -571,9 +571,9 @@ function cardLocation(i, arrayLength) {
     return xLocation; 
 }
 
-function togglePause() {
+function togglePause(action) {
     //  probe all game keys
-    if (Game.Controller.actions['pause']) {
+    if (action === 'togglePause') {
         if (document.getElementById('pause_screen').style.visibility === 'visible') {
             document.getElementById('pause_screen').style.visibility = 'hidden';
             pauseGame();
@@ -585,34 +585,34 @@ function togglePause() {
     }
 }
 
-function toggleMenuScreen() {
+function toggleMenuScreen(action) {
     //  probe all game keys
-    if (Game.Controller.actions['showMenuScreen']) {           // toggle menu screen
-        if (document.getElementById('menu_layer').style.visibility === 'visible') {
-            document.getElementById('menu_layer').style.visibility = 'hidden';
+    if (action === 'toggleMenuScreen') {           // toggle menu screen
+        if (document.getElementById('home_screen').style.visibility === 'visible') {
+            document.getElementById('home_screen').style.visibility = 'hidden';
         } else {
-            document.getElementById('menu_layer').style.visibility = 'visible';
+            document.getElementById('home_screen').style.visibility = 'visible';
         }
-        Game.Controller.init();
+        // Game.Controller.init();
     }
 }
 /*  toggle mute */
-function toggleMute() {
-    if (Game.Controller.actions['mute']) {           // toggle menu screen
-        Game.Components.Sound.sndFx[0].muteAudio();
-        Game.Components.Sound.sndFx[1].muteAudio();
-        Game.Controller.init();
+function toggleMute(action) {
+    if (action === 'toggleMute') {           // toggle menu screen
+        Game.Components.Sound.muteAll();
+        // Game.Components.Sound.sndFx[1].muteTrack();
+        // Game.Controller.init();
     }
 }
 
 function inputUpdate(action) {
-    debug.console(`interval - Action!`);
-    toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
-    toggleMute();
-    togglePause();
+    debug.console(`controller callback:`);
+    toggleMenuScreen(action);                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
+    toggleMute(action);
+    togglePause(action);
 
     /*  take specific game 'action' once the action is set to 'true'  */ 
-    for (let i=0; i<6; i++) {
+    for (let i=0; i<9; i++) {
         let play = `playCard_${i+1}`;
         if (action === play) {      // queries the key's state, and calls the corresponding function
           if (Game.Components.gameboard.user === null) {
@@ -635,7 +635,7 @@ function inputUpdate(action) {
       }
     }   
  */
-    if (Game.Controller.actions['selectNext']) {
+    if (action === 'selectNext') {
         if (Game.Components.gameboard.select) {
             for (let i=0; i < Game.Player.human.hand.length; i++) {
                 if (i < Game.Player.human.hand.length - 1) {
@@ -655,7 +655,7 @@ function inputUpdate(action) {
         }  
     }
 
-    if (Game.Controller.actions['selectPrevious']) {
+    if (action === 'selectPrevious') {
         if (Game.Components.gameboard.select) {
             for (let i=Game.Player.human.hand.length; i >=0; i--) {
                 if (i > 0) {
@@ -673,7 +673,7 @@ function inputUpdate(action) {
         }
     }
 
-    if (Game.Controller.actions['confirmSelection']) {
+    if (action === 'confirmSelection') {
         if (!Game.Components.gameboard.user) {
             for (let i=0; i<Game.Player.human.hand.length; i++) {
                 if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {

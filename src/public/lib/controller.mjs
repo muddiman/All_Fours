@@ -71,16 +71,28 @@ import { debug     } from "./debugging.mjs";
 export var Controller = {
     /*  mouse controls  */
 listeners:      function (canvasLayer, hand, callback) {
-                    canvasLayer.addEventListener("click", (e)=> {
+                    canvasLayer.addEventListener("click", (e) => {
                                                                 let key = Mouse.onClick(e, hand);
                                                                 let action =  this.bindings[key];
-                                                                this.actions[action] = true;
+                                                                // this.actions[action] = true;
                                                                 callback(action);
-                                                            }, true); 
+                                                            }, true);
+                    window.addEventListener("keydown", (e) => {
+                                                                let key = Keyboard.onKeyDown(e);
+                                                                let action = this.bindings[key];
+                                                                // this.actions[action] =   true;
+                                                                callback(action);
+                                                            }, true);
+                    canvasLayer.addEventListener("touch", (e) => {
+                                                                let key = Touch.onTouch(e, hand);
+                                                                let action =  this.bindings[key];
+                                                                // this.actions[action] = true;
+                                                                callback(action);
+                                                            }, true);                                         
                     debug.console("All listeners started.");
                 },     
 bindings: {
-    'Escape'    : 'showMenuScreen',
+    'Escape'    : 'toggleMenuScreen',
     '1'         : 'playCard_1',
     '2'         : 'playCard_2',
     '3'         : 'playCard_3',
@@ -94,12 +106,12 @@ bindings: {
     'ArrowLeft' : 'selectPrevious',
     'Enter'     : 'confirmSelection',
     ' '         : 'confirmSelection',
-    'p'         : 'pause',
-    'm'         : 'mute'
+    'p'         : 'togglePause',
+    'm'         : 'toggleMute'
  },
 
  actions: {
-    'showMenuScreen': false,
+    'toggleMenuScreen': false,
     'playCard_1'    : false,
     'playCard_2'    : false,
     'playCard_3'    : false,
@@ -112,19 +124,19 @@ bindings: {
     'selectNext'    : false,
     'selectPrevious': false,
     'confirmSelection': false,
-    'pause'         : false,
-    'mute'          : false,
+    'togglePause'         : false,
+    'toggleMute'          : false,
  },
 };  
 
 
 /**
- *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
+ *  @copyright (c) 2018 - 2019 Prodigy Engineering, LLC. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.2
+ *  @version   0.8.3
  *  @since     2018-10-1
  *  @license   NON-Commercial
- *  @See:      http://www.roger-clarke.com/allfours/license.html
- *             http://www.roger-clarke.com/allfours/copyright.html
+ *  @See:      http://www.twomanallfours.com/allfours/license.html
+ *             http://www.twomanallfours.com/allfours/copyright.html
  */

@@ -48,12 +48,12 @@
                   </div>
               
                   <div class="btn menuContainer">            
-                    <button type="submit" class="disabled menuButtons" id="PlayGame" onmousedown="pressBtn('PlayGame')">Play Game</button>
-                    <button type="submit" class="menuButtons" id="settings"  onmousedown="pressBtn('settings')" >Settings</button>
-                    <button type="submit" class="menuButtons" id="animate" onmousedown="pressBtn('animate')">Login/Animate</button>
-                    <button id="quit" class="menuButtons" onmousedown="pressBtn('quit')">Quit</button>
+                    <button type="submit" class="disabled menuButtons" id="button_1" onmousedown="pressBtn('button_1')">Play Game</button>
+                    <button type="submit" class="menuButtons" id="button_2"  onmousedown="pressBtn('button_2')" >Settings</button>
+                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login/Animate</button>
+                    <button id="button_4" class="menuButtons" onmousedown="pressBtn('button_4')">Quit</button>
                   </div>
-                  <div class="container" id="lower_card_div">
+                  <div class="container" id="progress_section">
                   <p id="loading">Loading...</p>
                     <div id="progress">
                       <div id="progress-bar">1%</div>
@@ -78,7 +78,7 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="homeScreen()">Menu</button>
+                    <button class="w3-btn" onclick="menuScreen()">Menu</button>
                     <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>

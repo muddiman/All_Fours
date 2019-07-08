@@ -11,6 +11,32 @@
         }, 1000);
     }
 
+    function menuScreen() {   
+        var menuScreen = document.getElementById('home_screen');
+        var progressSection = document.getElementById('progress_section');
+        menuScreen.style.display = 'block';
+        clickOutsideForm();
+        progressSection.style.display = 'none';
+    }
+
+    function config() {
+        let menuScreen = document.getElementById('home_screen');
+        menuScreen.style.display = 'block';
+        let timeOutID = setTimeout(() => {
+            menuScreen.style.display = 'block';
+            clearTimeout(timeOutID);
+            let button1 = document.getElementById('button_1');
+            let button2 = document.getElementById('button_2');
+            let button3 = document.getElementById('button_3');
+            let button4 = document.getElementById('button_4');
+            button1.innerText = 'Difficulty';
+            button2.innerText = 'Mode';
+            button3.innerText = 'Audio';
+            button4.innerText = 'Back';
+            menuScreen.style.display = 'block';
+        }, 500);
+    }
+
     function clickOutsideForm() {
         var modal = document.getElementById('home_screen');
         window.onclick = function(event) {
@@ -23,11 +49,22 @@
     function pressBtn(id) {
         let btn = document.getElementById(id);
         btn.setAttribute("class", "pressed menuButtons");
-
         btn.addEventListener("mouseup", () => {
                                             btn.setAttribute("class", "menuButtons");
                                             document.getElementById('home_screen').style.display='none';
-                                            // mainGameLoop(); 
+                                            if (id === 'button_2') {
+                                                config();
+                                            }
+                                            switch (id) {
+                                                case 'button_2':
+                                                    config();
+                                                    break;
+                                                case 'button_4':
+                                                    homeScreen();
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
                                         }, true);
     }
 
@@ -61,8 +98,8 @@
                 elem.innerHTML = `${width}%`; 
             }
             if (width >= 100) {
-                let play_game = document.getElementById("PlayGame");
-                play_game.className = "enabled menuButtons";
+                let button1 = document.getElementById("button_1");
+                button1.className = "enabled menuButtons";
                 document.getElementById("loading").style.color= "rgb(0, 255, 0)";
                 document.getElementById("loading").innerHTML = `Game Loaded.`;
             }
@@ -73,5 +110,6 @@
 (function () {
     let timeOutID = setTimeout(() => {
         homeScreen();
+        clearTimeout(timeOutID);
     }, 500);
 })();

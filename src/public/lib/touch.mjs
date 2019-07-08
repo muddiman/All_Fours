@@ -19,6 +19,8 @@ const TOPOFFSET  = 160;
 /*  classes */
 /*  objects  */
 export var Touch = {
+    touchX:             null,
+    touchY:             null,
     eventsHandler:     function (Controller, hand) {
                                 // let hand = Game.Player.human.hand;
                                 let touchX = Controller.clickPosition.X;
@@ -39,19 +41,26 @@ export var Touch = {
                                     }   
                                 }    
                             },
-    onTouchStart:           function (touchEvent, Controller) {
-                                document.getElementById('game_board').removeEventListener('touchstart', (e) => {
+    onTouch:                function (touchEvent, hand) {
+                                this.touchX = touchEvent.clientX - LEFTOFFSET;
+                                this.touchY = touchEvent.clientY - TOPOFFSET;
+                                debug.console(`Click location: (${this.touchX}, ${this.touchY})`);
+                                // return touchEvents(hand);
+                            },                        
+    onTouchStart:           function (touchEvent, hand) {
+/*                                 document.getElementById('game_board').removeEventListener('touchstart', (e) => {
                                                                                                             this.onTouchStart(e, Controller);
                                                                                                         }, true);
                                 document.getElementById("card_layer").addEventListener("touchend", () => {
                                                                                                         this.onTouchEnd(Controller);
-                                                                                                    }, true);
-                                let locX = touchEvent.clientX - LEFTOFFSET;     //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
-                                let locY = touchEvent.clientY - TOPOFFSET;  //   Game.Screens.gameScreen.canvas.offsetTop; //  
-                                debug.console("Click location: (", locX, ", ", locY, ")");
-                                Controller.touchPosition.X = locX;
-                                Controller.touchPosition.Y = locY;
+                                                                                                    }, true); */
+                                this.touchX = touchEvent.clientX - LEFTOFFSET;     //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                                this.touchY = touchEvent.clientY - TOPOFFSET;  //   Game.Screens.gameScreen.canvas.offsetTop; //  
+                                debug.console(`Click location: (${this.touchX}, ${this.touchY})`);
+                                // Controller.touchPosition.X = locX;
+                                // Controller.touchPosition.Y = locY;
                                 // touchEventHandler(locX, locY); 
+                                // return touchEvents(hand);
                             },
     onTouchEnd:             function (Controller) {
                                 document.getElementById("card_layer").removeEventListener("touchend", () => {

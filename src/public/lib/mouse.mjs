@@ -30,7 +30,7 @@ export var Mouse = {
     onClick:            function (event, hand) {
                             this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
                             this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //   
-                            debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
+                            debug.console(`Click location: (${this.clickX}, ${this.clickY})`);
                             return clickEvents(hand);
                         },
 /*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
@@ -77,24 +77,14 @@ export var Mouse = {
 //  ----------------------------------------------------------------------------------------------------------------------------------------
 
 function clickEvents(hand) {
-/*     let clickX = Controller.clickPosition.X;
-    let clickY = Controller.clickPosition.Y; */
-    for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
+    for (let index = 0; index < hand.length; index++) {                //  cycle through cards in hand, and match curson location to card location
         const card = hand[index];
         if (didMouseClickOnCard(index, card, hand.length, Mouse.clickX, Mouse.clickY) === true) {
             index++;
             return index.toString();
-           /*  let key = index.toString();
-            let action = Controller.bindings[key];
-            if (Controller.isMyTurn === true) {
-                if (Controller.actions[action] === false) {
-                    Controller.actions[action] =   true;
-                    Controller.readAction(); */
-                }
-            }
-        }   
-    // }
-// }
+        }
+    }
+}   
 
 function moveEvents(Controller, hand) {
 /*     let clickX = Controller.clickPosition.X;

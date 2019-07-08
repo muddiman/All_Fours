@@ -163,8 +163,15 @@ export function Sound(src) {
     // document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
 }
 Sound.prototype.mute        = false;
+Sound.prototype.muteAll     = function () {
+                                if (this.mute === false) {
+                                    this.mute = true;
+                                } else {
+                                    this.mute = false;
+                                }
+                            };
 Sound.prototype.play        = function() {
-                                if (SOUND_ON === true) {
+                                if (this.mute === false) {
                                     this.sound.play();  
                                 }
                             };

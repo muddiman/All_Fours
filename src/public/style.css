@@ -41,7 +41,7 @@ nav {
     width: 70%;
 }
 .screen {
-    /* border: 5px solid black; */
+    border: 5px solid black;
         /* margin-left: 15px; */
 }
 #game_board {

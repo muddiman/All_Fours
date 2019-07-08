@@ -7,9 +7,10 @@
                 Code: Screen Class Module  (allfours.js)   
     
     DESCRIPTION:    screen module for All Fours Game
-    PURPOSE:    screen class, generates new screens for all fours game
+    PURPOSE:        screen class, generates new screens for all fours game
 */
 
+import { debug } from "./debugging.mjs";
 /*  globals  */
 
 
@@ -20,13 +21,14 @@ export function gCanvasLayer(ID, _LEFTOFFSET, _TOPOFFSET, _WIDTH, _HEIGHT, _OPAC
         this.canvas.width = _WIDTH;
         this.canvas.height = _HEIGHT;
         this.canvas.id = ID;
+        this.canvas.setAttribute("class", "screen");
         this.ctx = this.canvas.getContext('2d');
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById(ID).style = `position: absolute; left: ${_LEFTOFFSET}px; top: ${_TOPOFFSET}px; z-index: ${Z}; background-color: rgba(${red}, ${green}, ${blue}, ${_OPACITY});`;
-        console.log(`New ${this.canvas.id} canvas initialized.`);
+        debug.console(`New ${this.canvas.id} canvas initialized.`);
     };
 }
-//  Prototypes
+/*  Prototypes */
 //  gCanvasLayer.prototype.ctx      = this.canvas.getContext('2d');
 gCanvasLayer.prototype.clear    = function () {
                                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -43,7 +45,7 @@ gCanvasLayer.prototype.setFont  = function (fontString) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.7.1
+ *  @version   0.8.3
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
