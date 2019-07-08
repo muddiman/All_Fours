@@ -30,14 +30,14 @@ export function tickertape(message) {
     //tbx.fillText(message, 690, 40);
     x=width;
     y=40;
-    setInterval(function () {       // anonymous function for handling the animation
+    let ID = setInterval(function () {       // anonymous function for handling the animation
         if (x<-400) {
             x=width;
         } 
         t.clear();
-        x--;
+        x-=2;
         tbx.fillText(message, x, y);
-    }, 5);
+    }, 1000/60);
 }
 
 
@@ -47,7 +47,7 @@ export function tickertape(message) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.6.6
+ *  @version   0.7.2
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

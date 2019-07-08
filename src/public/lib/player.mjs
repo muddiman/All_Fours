@@ -14,7 +14,7 @@
 const MAX_CARDS_IN_HAND=12;
 const MAX_POINTS=14;
 const MAX_CARDS_IN_LIFT=48;
-const MAX_CHARACTERS=12;
+const MAX_CHARACTERS=10;
 
 
 /* Player Class/Object Constructor */

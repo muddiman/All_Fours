@@ -198,7 +198,8 @@ function loadAllAssets(assetObjects) {
 /*
 *       var Assets = {
 *           Images: { cards: cards[52], Decals: null, backgroundObjects: null, },
-*           Sounds: { backgroundMusic: null, eventMusic: null, soundEffects: null }
+*           Sounds: { backgroundMusic: null, eventMusic: null, soundEffects: null },
+*           Videos: { cutScenes[1] }
 *       };       
 */
 
