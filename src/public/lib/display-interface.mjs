@@ -7,10 +7,19 @@
                                                 Programmer: Roger A. Clarke (A.K.A. .muddicode)
                                                 Code: Display Interface    (Class Methods & that draws the graphics for the game)                        
 */
+/*  globals */
+const LEFTOFFSET=15;
+const TOPOFFSET=180;
+const WIDTH=700;
+const HEIGHT=450;
+const OPAQUE=1.0;
+const TRANSPARENT=0;
+const CARD_W=72;
+const CARD_H=96;
 
 /*  IMPORTS */
 /*  import screens  */
-import { gCanvasLayer } from "./lib/screen.mjs";
+import { gCanvasLayer } from "./lib/screen_update.mjs";
 
 /*  CLASSES */
 /*  OJECTS  */
@@ -20,18 +29,21 @@ var Game = {
 };
 
 export var Display = {
-    labels:      function () {
-                    // let c=Game.Background.canvas;
-                    let bgx = Game.Background.ctx;
+    onBackground:       new gCanvasLayer("game_board",    0, `rgba( 68, 102,   0, 1.0)`),
+    onCardScreen:       new gCanvasLayer("card_layer",    1, `rgba(255, 255, 255, 0.0)`),
+    onMsgScreen:        new gCanvasLayer("msg_layer",     2, `rgba(255, 255, 255, 0.0)`),
+    onMenuScreen:       new gCanvasLayer("menu_layer",    3, `rgba(204, 204, 204, 0.8)`),
+    onVideoScreen:      new gCanvasLayer("video_screen",  5, `rgba(  0,   0,   0, 0.0)`),
+    labels:     function () {
+                    let bgx = this.onBackground.ctx;
                     bgx.setFont("15px Arial");
                     // bgx.font = "15px Arial";
                     bgx.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
-                    //  Game.Background.display.setFillStyle("rgba(255,255,255,1.0");
+                    // this.onBackground.display.setFillStyle("rgba(255,255,255,1.0");
                     let labelUserCards = "1     2       3       4       5       6";
                     bgx.fillText("TRUMP", 15, 30 + CARD_H); // user keyboard play labels
                     bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); // trump label
-                },
-    
+                },   
     userCard:   function () {
                     playCard('bottom', Game.Components.gameboard.user);
                 },
@@ -44,10 +56,10 @@ export var Display = {
                     let gbx = Game.Background.ctx;
                     gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
                 },
-    playerHand: function (player) {
+    showPlayerHand: function (player) {
                     return new Promise(function (resolve) {
-                        let c = Game.Screens.gameScreen.canvas;
-                        let x = Game.Screens.gameScreen.ctx;
+                        let c = this.onGameScreen.canvas;
+                        let x = this.onGameScreen.ctx;
                         let xCenter = c.width / 2;
                         // let coordX = xCenter - Math.ceil(player.hand.length / 2) + i * CARD_W / 2;
                         let coordY = 340;
@@ -58,13 +70,13 @@ export var Display = {
                         }
                     });
                 },
-    score:      function (scoreboard) {
-                    var c = Game.Background.canvas;
-                    var x = Game.Background.ctx;
-                    var upperLeftCornerX = c.width - 265; //   (LxB: 260 x 120 box; x,y => 400,5)
-                    var upperLeftCornerY = 5;
-                    var width = 260;
-                    var height = 120;
+    showScoreboard: function (players) {
+                    let c = this.onBackgroundBackground.canvas;
+                    let x = this.onBackground.ctx;
+                    const upperLeftCornerX = c.width - 265; //   (LxB: 260 x 120 box; x,y => 400,5)
+                    const upperLeftCornerY = 5;
+                    const width = 260;
+                    const height = 120;
                     x.beginPath();
                     x.lineWidth = 4;
                     x.strokeStyle = "black";
@@ -80,16 +92,16 @@ export var Display = {
                     // text
                     x.fillStyle = "#ffffff"; // white
                     x.font = "30px Arial";
-                    x.fillText(Game.Player.computer.name, upperLeftCornerX + 15, 40);
-                    x.fillText(Game.Player.human.name, upperLeftCornerX + 15, 105);
+                    x.fillText(players.computer.name, upperLeftCornerX + 15, 40);
+                    x.fillText(players.human.name,    upperLeftCornerX + 15, 105);
                     // score tiles (numbers)
-                    x.fillText(Game.Player.computer.score, upperLeftCornerX + 215, 40);
-                    x.fillText(Game.Player.human.score, upperLeftCornerX + 215, 105);
+                    x.fillText(players.computer.score, upperLeftCornerX + 215, 40);
+                    x.fillText(players.human.score,    upperLeftCornerX + 215, 105);
                 },
-    message:    function () {
+    showMessage:    function (msgboard) {
                     document.getElementById("msg_layer").style.visibility = "visible";
-                    var m = Game.Screens.msgScreen.canvas;
-                    var c = Game.Screens.msgScreen.ctx;
+                    var m = this.onMsgScreen.canvas;
+                    var c = this.onMsgScreen.ctx;
                     c.beginPath();
                     c.lineWidth = 2;
                     c.strokeStyle = "black";
@@ -100,12 +112,17 @@ export var Display = {
                     c.fillRect(170, 100, 400, 200);
                     // c.globalAlpha=0.1;
                     c.font = "60px Monaco";
-                    c.fillStyle = "rgba(255,255,0,1.0)"; // white
+                    c.fillStyle = "rgba(255, 255, 0, 1.0)"; // white
                     // let msgText = msgboard.text;
-                    c.fillText(Game.Components.msgboard.text, 200, 200);
+                    c.fillText(msgboard.text, 200, 200);
                     document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
-                    let pause = setTimeout(clearMsgBoard, 3000);
-                }
+                    let pauseID = setTimeout(clearMsgBoard, 3000);
+                },
+    clearMsgBoard:  function () {
+                    let canvas = this.onMsgScreen.canvas;
+                    let c = this.onMsgScreen.ctx;
+                    this.onMsgScreen.clear();
+                },
 };
 
 

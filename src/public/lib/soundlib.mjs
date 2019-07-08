@@ -149,8 +149,9 @@ function Sound() {
 */
 
 // import { SOUND_ON } from "../allfours";
-export var SOUND_ON=true;
-
+// export var SOUND_ON=true;
+import { SETTINGS } from "./settings.mjs";
+export const SOUND_ON = SETTINGS.SOUND_ON;
 /*  sound constructor/class */
 export function Sound(src) {
     this.sound          = document.createElement("audio");
@@ -162,8 +163,15 @@ export function Sound(src) {
     // document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
 }
 Sound.prototype.mute        = false;
+Sound.prototype.muteAll     = function () {
+                                if (this.mute === false) {
+                                    this.mute = true;
+                                } else {
+                                    this.mute = false;
+                                }
+                            };
 Sound.prototype.play        = function() {
-                                if (SOUND_ON === true) {
+                                if (this.mute === false) {
                                     this.sound.play();  
                                 }
                             };

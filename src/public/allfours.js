@@ -6,11 +6,11 @@
 */
 
 /**
- *  @copyright (c) 2018 Roger Clarke. All rights reserved.
+ *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.7.1
+ *  @version   0.8.2
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -42,8 +42,8 @@
    III. Shut Down Game 
 
    MVC Model:
-     Display Module     ==> DispInt.mjs     --> screens.mjs, 
-     Controller Module  ==> controls.mjs    --> mouse.mjs, keyboard.mjs, touch.mjs, keymap.JSON
+     Display Module     ==> Display-Interface.mjs     --> screens.mjs, 
+     Controller Module  ==> controller.mjs    --> mouse.mjs, keyboard.mjs, touch.mjs, keymap.JSON
      Game Engine        ==> engine.mjs     --> 
      Main Game          ==> allfours.js
 */
@@ -62,9 +62,10 @@ import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
 import { gCanvasLayer }             from "./lib/screen.mjs";
 import { computerAI }               from "./lib/ai.mjs";
-import { sndFx, bkgndMusic, SOUND_ON }    from "./lib/soundlib.mjs";
+import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
-import { debug, DEBUG_MODE }                    from "./lib/debugging.mjs";
+import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
+import { Controller }               from "./lib/controller.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
@@ -72,6 +73,7 @@ import { debug, DEBUG_MODE }                    from "./lib/debugging.mjs";
 /***************************************     the globals *  ********************************************************/
 
 /*  Flags   */
+const MAGNIFY_CARD=false;
 /* DEBUG_MODE = false;
 SOUND_ON = false; */
 
@@ -96,7 +98,7 @@ const PLAYER2_NAME = "You";
 
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET =  15;
-const TOPOFFSET  = 160;
+const TOPOFFSET  = 180;
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -179,24 +181,24 @@ Game.Background = {
 
 Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
-    gameScreen  : null,         //  new gCanvasLayer("cards_layer",LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, TRANSPARENT,  1,     255, 255, 255),
+    gameScreen  : new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
     msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
     menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
-    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.6,         4, 204, 204, 204),
-    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5, 0, 0, 0),  
+    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         4, 204, 204, 204),
+    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5,   0,   0,   0),  
 };
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
     human       : new Player(PLAYER2_NAME, "A-Team")
 };
-/* function setPlayerName() {
+function setPlayerName() {
     let playerName = document.getElementById("player_name").value;
     Game.Player.human.changeName(playerName);
     debug.console(Game.Player.human.getName());
-} */
+}
 
 /* Card layer object */
-Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
+/* Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
     canvas: document.createElement("canvas"),
     init: function () {
         this.canvas.width = WIDTH;
@@ -205,14 +207,13 @@ Game.Screens.gameScreen = {                                                     
         this.ctx = this.canvas.getContext("2d");
         document.getElementById("game_container").appendChild(this.canvas);
         document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
-        // this.refresh = setInterval(_drawCardScreen, FPS_30);
         console.log(`New ${this.canvas.id} canvas initialized.`);
     },
     clear: function () {                                                        // wipes the entire card screen clean
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     },
 };
-
+ */
 Game.Background.scoreboard = {
     playerAname    :   Game.Player.computer.getName(),
     playerBname    :   Game.Player.human.getName(),
@@ -254,14 +255,30 @@ Game.Components.cutScenes = [];
 Game.Components.deck = {
     cards: [],
     trump: null,
-    init: function () {
+    counter: 0,
+    cardImagesLoaded:   function () {
+        // this.counter++;
+
+
+        let percent = Math.floor((this.counter / 52) * 100);
+        console.log(`${this.counter} card images loaded: ${percent}%`);
+        let delayID = setTimeout(() => {
+            clearTimeout(delayID);
+            this.cards.forEach(element => {
+                if (element.imageLoaded === true) {
+                    this.counter++;
+                }
+             });
+            percent = Math.floor((this.counter / 52) * 100);
+            console.log(`${this.counter} card images loaded: ${percent}%`);          
+        }, 3000);
+    },
         /** creates deck (array of all 52 cards)
          *  @param: null
          *  @returns: deck
          */
-        // var SUITS = ['c', 'd', 'h', 's'];
-        // var FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
-        // return new Promise(() => {
+    init: function () {
+            this.counter = 0;
             let n = 0; 
             for (let y = 0; y < SUITS.length; y++) {
                 var rank = 1;
@@ -273,8 +290,8 @@ Game.Components.deck = {
                     rank++;
                 }
             }
-        // });-
-        return this;
+            console.log(`card images loaded: ${this.counter}`);
+            return this;
     },
     shuffle: function () {
         /** randomly mixes up the cards in the deck
@@ -302,7 +319,6 @@ Game.Components.deck = {
     setTrump: function (card) {
         this.trump  = card;
         Game.Background.update(true);
-
     },
     getTrump: function () {
         return this.trump; //  = card;
@@ -325,7 +341,6 @@ Game.Components.deck = {
         let trump = this.cards.shift();
         this.setTrump(trump);
         Game.Background.update(true);
-        //return human, computer;
     },
     beg: function (human, computer) {
         /** randomly mixes up the cards in the deck
@@ -402,7 +417,6 @@ Game.State = {
 }; */
 //  message board object
 Game.Components.msgboard = {
-// var msgboard = {
     visible     : false,
     isUpdated   : false,
     text        : null,
@@ -439,14 +453,28 @@ Game.Components.gameboard = {                       // the gameplay board
         this.computer = null;
         this.select = null;
         this.isUpdated = true;
+        this.stopListening();
+        this.isListening = false;
+    },
+    setUserCard: function (card) {
+        this.user = card;
+        this.isUpdated = true;
+    },
+    setComputerCard: function (card) {
+        this.computer = card;
+        this.isUpdated = true;
     },
     listenForSelectCard: function (callback) {
         this.listeningForSelectCard = setInterval(callback, 250);
     },
     listenForUserCard: function (callback) {
-        this.listen = setInterval(callback, 250);
+        if (this.isListening === false) {
+            this.isListening =   true;
+            this.listen = setInterval(callback, 250);
+        }
     },
     stopListening: function () {
+        this.isListening = false;
             clearInterval(this.listen);
             clearInterval(this.listeningForSelectCard);
     },
@@ -460,8 +488,17 @@ Game.Components.gameboard = {                       // the gameplay board
  *  Manages ALL user input (mouse, touch and keyboard) as an Object
  */
 Game.Controller = {
-// var Game.Controller = {
-    clickPosition: [],
+// var Controller = {
+   /*  clickPosition: {
+        X:  null,
+        Y:  null,
+    },
+    listeners: Controller.listeners,
+    eventHandlers:  Controller.eventHandlers,    
+    touchPosition: {
+        X:  null,
+        Y:  null,
+    }, */
     cardSelection: null,
     keys: {},
     bindings: {
@@ -509,7 +546,7 @@ Game.Controller = {
         this.isMyTurn = false;
         this.clickPosition = [];
         this.cardSelection = null;
-        this.refresh = setInterval(inputUpdate, 250); //      FPS_2
+        // this.refresh = setInterval(inputUpdate, 1000/20); //      FPS_2
         for (let action in this.actions) {
             this.actions[action] = false;
         }    
@@ -517,6 +554,9 @@ Game.Controller = {
     stop: function () {
         clearInterval(this.refresh);
     },
+    readAction: function () {
+        inputUpdate();
+    }
 };
 
 
@@ -525,314 +565,83 @@ Game.Controller = {
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*  INPUT SECTION   */
 
-function removeInputListener() {
-    return new Promise(function (resolve) {
-        console.log('event listener removed');
-        document.getElementById('card_layer').removeEventListener('click', mouseEventHandler(event)); // change to cardsLayer 
-    });
+function cardLocation(i, arrayLength) {
+    let xCenter = Game.Screens.gameScreen.canvas.width/2;
+    let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
+    return xLocation; 
 }
 
-// listens for touch events, captures and returns its location as a position array --> [x.y]
-//      document.getElementById('game_board').addEventListener('touch', onTouch(e));
-/*  touch input */
-/**
- * 
- * @param {*} touchEvent 
- */
-function onTouch(touchEvent) {
-    let x = touchEvent.clientX; // click location
-    let y = touchEvent.clientY;
-    let posArr = [x, y];
-    document.getElementById('game_board').removeEventListener('touch', onTouch(e));
-    touchEventHandler(posArr);
-}
-
-/**
- * 
- * @param {[x,y]} positionArray 
- */
-function touchEventHandler(positionArray) {
-    return new Promise(function (resolve, reject) {
-        var n = null;
-        var x = positionArray[0];
-        console.log(x);
-        var y = positionArray[1];
-        console.log(y);
-        var p = x - 160;
-        if (y > 450) {
-            switch (true) {
-                case (p < 36):
-                    n = 0;
-                    break;
-                case (p < 72):
-                    n = 1;
-                    break;
-                case (p < 108):
-                    n = 2;
-                    break;
-                case p < 144:
-                    n = 3;
-                    break;
-                case p < 180:
-                    n = 4;
-                    break;
-                case (p < 252):
-                    n = 5;
-                    break;
-                default:
-                    n = 'Out of Range'; // change to zero from  null; 
-            }
-        } else {
-            n = 'Please click on a card!';
-        }
-        //resolve(n);
-        if (n != null && n < 6) {
-            console.log(n);
-            resolve(n);
-        } else {
-            reject(n);
-        }
-    });
-}
-
-
-/*  keyboard input  */
-function onKeystroke(keyboardEvent) {
-    // case-switch a keystroke to corresponding card number in hand
-    // => {
-    let code = keyboardEvent.keyCode;
-    let action = Game.Controller.bindings[code];
-    if (action) {
-        Game.Controller.actions[action] = true;
-    }
-
-    let yourHand = human.hand;
-    let i = 0;
-    let arrowKeyRight = 8594;
-    let arrowKeyLeft = 8592;
-    if (keyboardEvent == 27) {
-        alert('Sure you wish to quit game?');
-    }
-    // while (keyboardEvent.code == arrowKeyRight || keyboardEvent.code == arrowKeyLeft) {
-    if (arrowKeyRight == keyboardEvent.code) {
-        enlargeCard(i);
-    } else if (arrowKeyLeft == keyboardEvent.code) {
-        enlargeCard(-i);
-    }
-    i = i % yourHand.length + 1;
-    // }
-}
-
-/*
-function cardLocation(locX, locY) {
-    let upperLeftCornerX;
-    let upperLeftCornerY;
-    locX > upperLeftCornerX && locX < upperLeftCornerX + CARD_W / 2;
-    locY > upperLeftCornerY && locY < upperLeftCornerY + CARD_H;
-}
-*/
-
-function gControllerListeners() {
-    document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
-    document.getElementById("card_layer").addEventListener("mousemove", onMouseOver, true);   
- //   document.getElementById("card_layer").addEventListener("mouseup", onMouseUp, true);   
-    window.addEventListener('keydown', onKeyDown);       // keyboard
-    window.addEventListener("keyup", onKeyUp);
-    console.log("All listeners loaded");
-}
- 
-function onMouseOver(event) {
-    let posX = event.clientX - Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
-    let posY = event.clientY - Game.Screens.gameScreen.canvas.offsetTop;
-    // let text = `(${posX}, ${posY})`;
-    debug.console("(", posX, ", ", posY, ")");
-    //  mouseOverSelect(posX, posY);
-    debug.screen;
-    debug.display(`(${posX}, ${posY})`);
-}
-/*
-function mouseOverSelect(x, y) {
-    // pass;
-    // select
-
-} */
-
-function clickConfirmation() {
-    // Pass;
-}
-
-function arrowKeySelectCard() {
-    // Pass;
-    if (Game.Controller.keyState[KEY_RA]) {
-        Game.Components.gameboard.select = hand[i];
-    }
-    if (Game.Controller.keyState[KEY_LA]) {
-        Game.Components.gameboard.select = hand[-i];
-    }
-}
-
-function enterConfirmCard() {
-
-}
-
-function onMouseDown(event) {
-    // document.getElementById("card_layer").removeEventListener("mousedown", onMouseDown, true);.
-    // Game.Components.Sound.sndFx[1].play();
-    let locX = event.clientX - LEFTOFFSET;
-    let locY = event.clientY - TOPOFFSET;
-    debug.console("Click location: (", locX, ", ", locY, ")");
-    Game.Controller.clickPosition[1] = locX;
-    Game.Controller.clickPosition[2] = locY;
-}
-
-function onMouseUp(event) {
-    for (action in Game.Controller.actions) {
-        if (Game.Controller.actions[action] == true) {
-            Game.Controller.actions[action] = false;
-        }
-    }
-    document.getElementById("card_layer").addEventListener("mousedown", onMouseDown, true);   
-}
-
-function isMouseOverCard(cardNumber, x, y) {
-    let XOFFSET=134;
-    let YOFFSET=340;
-    let upperLeftCornerX = cardNumber * CARD_W / 2 + XOFFSET;
-    let upperLeftCornerY = YOFFSET;
-    if (upperLeftCornerX < x && x < upperLeftCornerX + (cardNumber + 1) * CARD_W / 2) {
-        if (upperLeftCornerY < y && y < upperLeftCornerY + CARD_H) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function clickEventHandler() {
-    let myHand = Game.Player.human.hand;
-    let handPosX = 134;
-    let handPosY = 340;
-    let locX = Game.Controller.clickPosition[1];
-    // console.log("X --> ", locX);
-    let locY = Game.Controller.clickPosition[2];
-    // console.log("Y --> ", locY);
-    if (locY > handPosY && locY < handPosY + CARD_H) {
-        for (let i = 1; i <= myHand.length; i++) {
-            if (locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2) {
-                // play(i);
-                // Game.Components.gameboard.user = myHand[i - 1];
-                // play(i - 1);
-                let key = i.toString();
-                // console.log(key);
-                let action = Game.Controller.bindings[key];
-                if (Game.Controller.isMyTurn === true) {
-                    if (Game.Controller.actions[action] === false) {
-                        Game.Controller.actions[action] = true;
-                    }
-                }
-                break;
-            }
-            if (i == myHand.length && locX > handPosX + (i - 1) * CARD_W / 2 && locX < handPosX + i * CARD_W / 2 + CARD_W / 2) {
-                let key = i.toString();
-                let action = Game.Controller.bindings[key];
-                if (Game.Controller.isMyTurn === true) {
-                    if (Game.Controller.actions[action] === false) {
-                        Game.Controller.actions[action] = true;
-                    }
-                }
-                break;
-            }
-        }
-    }
-}
-
-async function onKeyDown(event) {
-    let key = event.key;
-    Game.Components.Sound.sndEffect[1].play();
-    window.removeEventListener('keydown', onKeyDown); // keyboard
-    // await gWaitState(1);
-    if (key) {
-        console.log("ID: ", key); // ASCII id of key thats was pressed
-        //  stop listening
-    }
-    let action = Game.Controller.bindings[key];
-    if (key === 'Escape' || key === 'p') {
-        Game.Controller.actions[action] = true;
-    }
-   /*  if (key === 'p') {
-        Game.Controller.actions[action] = true;
-    } */
-    if (Game.Controller.isMyTurn===true) {
-        if (Game.Controller.actions[action] === false) {
-            Game.Controller.actions[action] = true;
-        }
-    }
-}
-
-function onKeyUp(event) {
-    let key = event.key;
-    let action = Game.Controller.bindings[key];
-    // Game.Controller.actions[action] = false;
-    window.addEventListener('keydown', onKeyDown); // keyboard
-}
-
-function togglePause() {
+function togglePause(action) {
     //  probe all game keys
-    if (Game.Controller.actions['pause']) {           // toggle menu screen
+    if (action === 'togglePause') {
         if (document.getElementById('pause_screen').style.visibility === 'visible') {
-        // if (Game.Screens.pauseScreen.style.visibility === 'hidden') {
+            document.getElementById('pause_screen').style.visibility = 'hidden';
             pauseGame();
         } else {
-            // document.getElementById('pause-screen').style.visibility = 'visible';
+            document.getElementById('pause_screen').style.visibility = 'visible';
             unPauseGame();
         }
         Game.Controller.init();
     }
 }
 
-function toggleMenuScreen() {
+function toggleMenuScreen(action) {
     //  probe all game keys
-    if (Game.Controller.actions['showMenuScreen']) {           // toggle menu screen
-        if (document.getElementById('menu_layer').style.visibility === 'visible') {
-            document.getElementById('menu_layer').style.visibility = 'hidden';
+    if (action === 'toggleMenuScreen') {           // toggle menu screen
+        if (document.getElementById('home_screen').style.visibility === 'visible') {
+            document.getElementById('home_screen').style.visibility = 'hidden';
         } else {
-            document.getElementById('menu_layer').style.visibility = 'visible';
+            document.getElementById('home_screen').style.visibility = 'visible';
         }
-        Game.Controller.init();
+        // Game.Controller.init();
     }
 }
 /*  toggle mute */
-function toggleMute() {
-    if (Game.Controller.actions['mute']) {           // toggle menu screen
-        Game.Components.Sound.sndFx[0].muteAudio();
-        Game.Components.Sound.sndFx[1].muteAudio();
-        Game.Controller.init();
+function toggleMute(action) {
+    if (action === 'toggleMute') {           // toggle menu screen
+        Game.Components.Sound.muteAll();
+        // Game.Components.Sound.sndFx[1].muteTrack();
+        // Game.Controller.init();
     }
 }
 
-function inputUpdate() {
-    toggleMenuScreen();                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
-    clickEventHandler();
-    toggleMute();
-    togglePause();
+function inputUpdate(action) {
+    debug.console(`controller callback:`);
+    toggleMenuScreen(action);                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
+    toggleMute(action);
+    togglePause(action);
+
     /*  take specific game 'action' once the action is set to 'true'  */ 
-    for (let i=0; i<6; i++) {
+    for (let i=0; i<9; i++) {
+        let play = `playCard_${i+1}`;
+        if (action === play) {      // queries the key's state, and calls the corresponding function
+          if (Game.Components.gameboard.user === null) {
+              Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
+              Game.Player.human.hand.splice(i, 1);
+              Game.Controller.init();
+          }
+        }
+      }
+
+    /*  take specific game 'action' once the action is set to 'true'  */ 
+   /*  for (let i=0; i<6; i++) {
       let play = `playCard_${i+1}`;
-      if (Game.Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
+      if (Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
         if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.user = Game.Player.human.hand[i];
+            Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
             Game.Player.human.hand.splice(i, 1);
             Game.Controller.init();
         }
       }
     }   
-
-    if (Game.Controller.actions['selectNext']) {
+ */
+    if (action === 'selectNext') {
         if (Game.Components.gameboard.select) {
             for (let i=0; i < Game.Player.human.hand.length; i++) {
                 if (i < Game.Player.human.hand.length - 1) {
                     if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
                         Game.Components.gameboard.select = Game.Player.human.hand[i+1];
-                        console.log(i);
+                        debug.console(i);
                         Game.Controller.init();
                         break;
                     }
@@ -846,13 +655,13 @@ function inputUpdate() {
         }  
     }
 
-    if (Game.Controller.actions['selectPrevious']) {
+    if (action === 'selectPrevious') {
         if (Game.Components.gameboard.select) {
             for (let i=Game.Player.human.hand.length; i >=0; i--) {
                 if (i > 0) {
                     if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
                             Game.Components.gameboard.select = Game.Player.human.hand[i-1];
-                            console.log(i);
+                            debug.console(i);
                             break;
                     }
                 } else {
@@ -864,19 +673,17 @@ function inputUpdate() {
         }
     }
 
-    if (Game.Controller.actions['confirmSelection']) {
+    if (action === 'confirmSelection') {
         if (!Game.Components.gameboard.user) {
-            // Game.Components.gameboard.user = Game.Components.gameboard.select;
             for (let i=0; i<Game.Player.human.hand.length; i++) {
                 if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
-                    Game.Components.gameboard.user = Game.Player.human.hand[i];
+                    Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
                     Game.Player.human.hand.splice(i,1);
                     Game.Components.gameboard.select = null;
                 }
             }
         }
     }
-    // Game.Controller.init();
 }
 
 
@@ -890,10 +697,10 @@ function gWaitState(secs) {                       // institutes a wait state for
     });
 }
 
-function listCardOnBoard() {                                    // debugging function to view the played cards in memory
+/* function listCardOnBoard() {                                    // debugging function to view the played cards in memory
     console.log(`User: ${Game.Components.gameboard.user.getCardName()}`);
     console.log(`Computer: ${Game.Background.computer.getCardName()}`);
-}
+} */
 
 function firstJackDeal() {
     let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal between two players
@@ -964,27 +771,8 @@ function allocatePoints() {
         debug.display(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
     }
     Game.GamePlay.init();
-/* 
-    if (didPlayerPlayedJack(Game.Player.computer) === true) {
-        Game.Player.computer.addPoints(JACK);
-    } 
-    if (didPlayerPlayedJack(Game.Player.human) === true) {
-        Game.Player.human.addPoints(JACK); // += JACK;
-    } 
-*/
 }
 
-
-function didUserPlayCard() {
-    let listen = setInterval(inputUpdate(), 250);
-    for (var action in Game.Controller.actions) {
-        if (Game.Controller.actions[action] === true) {
-            // Game.Controller.stop();
-            clearInterval(listen);
-            return true;
-        }
-    }
-}
 
 function play(player) {
     return new Promise((resolve, reject) => {
@@ -1005,13 +793,14 @@ function play(player) {
     } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
-        Game.Components.gameboard.listenForUserCard(() => {
+        // Game.Components.gameboard.listenForUserCard(() => {
+            console.log(`Listening for card!`);
             if (Game.Components.gameboard.user) {
-                Game.Components.gameboard.stopListening();
+                // Game.Components.gameboard.stopListening();
                 Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
             } 
-        } );  
+        // } );  
         if (Game.Components.gameboard.user) {
             if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
                 trackCards(Game.Player.human, Game.Components.gameboard.user);
@@ -1054,7 +843,7 @@ function trackCards(player, cardPlayed) {
 }
 
 
-async function playGameRound(whoPlaysFirst) {
+/* async function playGameRound(whoPlaysFirst) {
     let otherPlayer = null;
     let winner = null;
     if (whoPlaysFirst === Game.Player.computer) {
@@ -1080,7 +869,7 @@ async function playGameRound(whoPlaysFirst) {
     })
     .catch(err => console.log(err));
     return winner;
-}                                            // if human deal, computer plays first 
+}  */                                           // if human deal, computer plays first 
             // Game.Components.gameboard.user = null;
 
             // console.log(`lets see if it reaches here!`);
@@ -1114,101 +903,28 @@ async function playGameRound(whoPlaysFirst) {
         return card user selected
         }
 */
-
+/* 
 async function  postPlay(winner) {
     let time=2;
-/*     Game.Components.msgboard.text =  `${winner.name} won!`;                         // announce winner
-    Game.Components.msgboard.makeVisible();             //  = true; */
     debug.console(`${winner.name} won!`);                         // announce winner
     await gWaitState(time);
     console.log(`Wait ${time} seconds.`);
     winner.lift.push(Game.Components.gameboard.user);
     winner.lift.push(Game.Components.gameboard.computer);
-    // winner.addCardsToLift([Game.Components.gameboard.computer, Game.Components.gameboard.user]);
-    //  Game.Components.gameboard.init();
-/*     Game.Components.msgboard.text = `${winner.name} will play first.`;
-    Game.Components.msgboard.makeVisible();         //   = true;
-    await gWaitState(time); */
-    // console.log(`Wait ${time} seconds.`);
-    // await Game.Components.gameboard.init();
-/*     if (Game.Player.human.hand.length === Game.Player.computer.hand.length) {        //  while card in hand hasn't finish, keep playing
-        if (Game.Player.computer.hand.length > 0) {
-            console.log(`Call playGameRound function.`);
-            playGameRound(winner);
-        } else {
-            console.log(`Round finish. Calculating points.`);
-            allocatePoints();
-            Game.State.endOfGame = true;
-        }
-    } else {
-        // console.log(`Error!`);
-    } */
 }
-
-function didPlayerPlayedJack(player) {
-    let lift = player.getLift();
-    for (let eachCard in lift) {
-        if (lift[eachCard].suit === Game.Components.deck.trump.suit) {
-            if (lift[eachCard].face ==='j') {
-                return true;
-            }
-        } 
-    }
-    return false;
-}
-
-    /* 
-        GAME RHYTHM:
-    publish who plays first
-    wait
-    play
-    wait
-    play 
-    wait
-    determineWinner
-    publish winner
-    wait
-    init
-    */
-
-/**
- * 
- * @param {*} human.hand  the human player's hand (array of cards)
- * @returns card or error
  */
-function humanPlay() {
-    //let cardChoice;
-    return new Promise(function (resolve) {
-        let hand = Game.Player.human.hand;
-        let cardChoice = Game.Components.Game.Components.gameboard.user;
-        let i = hand.indexOf(cardChoice);
-        let cardName = cardChoice.getCardName(); // not needed - delete after debugging
-        console.log(cardName);
-        hand.splice(i, 1);
-        if (cardChoice === null) {
-            reject("Did not get user input");
-        } else {
-            resolve(cardChoice);
-        }
-    });
-}
 
-/* function computerAI() {
-    // play a random card
-    let compHand = Game.Player.computer.hand;
-    let i = Math.floor(Math.random() * compHand.length);
-    console.log("Computer chooses " + i + "th card.");
-    return i;
-} */
+
+
 
 /**
  * 
  * @param {int} i integer [0 .. length of computer's hand]
  */
-function computerPlay(i) {                          // run the 'thinking animation'
-    let card = Game.Player.computer.hand[i];
+function computerPlay(i) {  
+    console.trace('comuterPlay(i):');                        // run the 'thinking animation'
+    const card = Game.Player.computer.hand[i];
     Game.Components.gameboard.computer = card;
-    // let cardName = card.getCardName();
     debug.console(card.getCardName());
     Game.Player.computer.hand.splice(i, 1);
 }
@@ -1241,7 +957,7 @@ function determineWinner(called, played) {
         return Game.Player.computer;
     }
 }
-
+/* 
 function determineHangJack(called, played) {
     // determines ij hang jack occurred
     // parameters: called and played card objects
@@ -1254,7 +970,7 @@ function determineHangJack(called, played) {
             return false;
         }
     }
-}
+} */
 //  Points associated with KickCard
 function kickPoints(card) {
     switch (card.face) {
@@ -1276,7 +992,10 @@ function kickPoints(card) {
             return 0;
     }
 }
-
+/**
+ * 
+ * @param {*} player 
+ */
 function countForGame(player) {
     let points = 0;
     let lift = player.getLift();
@@ -1285,65 +1004,32 @@ function countForGame(player) {
         // var card = player.lift.pop;
         switch (lift[eachCard].getFace()) {
             case 'a':
-                points += 4;
+                points +=  4;
                 break;
             case 'k':
-                points += 3;
+                points +=  3;
                 break;
             case 'q':
-                points += 2;
+                points +=  2;
                 break;
             case 'j':
-                points += 1;
+                points +=  1;
                 break;
             case 't':
                 points += 10;
                 break;
             default:
-                points += 0;
+                points +=  0;
         }
     }
     let text = `${player.getName()} has ${points} points`;
     debug.display(text);
+    debug.console(text);
     return points;
 }
 
-//  End of game round subroutines
-//if (userHand.length == 0) {
-//    distributePoints();
 
-//  deal (toggle dealer)
-// if (human.points >= 14) {
-//   let declaredWinner = "Congrations ", + human.name +"You beat us at All Fours";
-//    console.log(declaredWinner);
-// msgBoard.text = declared Winner;
-// msgBoard.visible = true;
-//}
-
-/*
-    function distributePoints() {
-        //  Game
-        let hGamePoints = countForGame(human);
-        let cGamePoints = countForGame(computer);
-        // logic to determine assignment of game points
-        if (hGamePoints == cGamePoints) {
-            dealer.points += GAME;
-        } else if (hGamePoints > cGamePoints) {
-            human.points += GAME;
-        } else {
-            computer.points += GAME;
-        }
-        
-        //  High
-        //  Low
-        //  Jack
-        //  Hang Jack
-        
-
-    }
-  */
-
-// rank_highest_trump --> player += HIGH
+/* // rank_highest_trump --> player += HIGH
 function whoPlayedHigh() {
     let highestHumanTrumpCard = null;
     let highestComputerTrumpCard = null;
@@ -1362,7 +1048,7 @@ function whoPlayedHigh() {
     } else {
         return Game.Player.human;
     }
-}
+} */
 
 // Hang Jack --> player.points += HANG_JACK
 function isHangJack(playedCard, calledCard) {
@@ -1391,23 +1077,26 @@ function isHangJack(playedCard, calledCard) {
 
 function displayCardCache() {
     for (card in gCardImageCacheObj) {
-        console.log(`${card} : ${gCardImageCacheObj[card].id}`);
+        debug.console(`${card} : ${gCardImageCacheObj[card].id}`);
     }
 }
 
 //  labels on game objects in the Background                                                         
 function displayLabels() {
-    //  let c=Game.Background.display.canvas;
     let bgx = Game.Background.display.ctx;
     Game.Background.display.setFont("15px Arial");
     // bgx.font = "15px Arial";
     bgx.fillStyle = "rgba(255,255,255,1.0)"; // white, opaque
     //  Game.Background.display.setFillStyle("rgba(255,255,255,1.0");
-    let labelUserCards = "1     2       3       4       5       6";         // user keyboard play labels
+    // let labelUserCards = "1     2       3       4       5       6";         // user keyboard play labels
     bgx.fillText("TRUMP", 15, 30 + CARD_H);                                 // trump label      
-    bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); 
+    // bgx.fillText(labelUserCards, 134 + CARD_W / 4, HEIGHT - 2); 
+    for (let index = 0; index < Game.Player.human.hand.length; index++) {
+        const element = Game.Player.human.hand[index];
+        bgx.fillText(index + 1, cardLocation(index, Game.Player.human.hand.length) + CARD_W / 4, HEIGHT - 2);
+    }
 }
-
+//  Display.onBackground.
 
 function displayUserCard() {
     playCard('bottom', Game.Components.gameboard.user);
@@ -1483,7 +1172,7 @@ function rotateImage(img, x, y, angle) {
 
 
 function selectCard(player) {
-    let hand = player.hand;
+    let hand = Game.Player.human.hand;
     let card = hand[0];
     let image = card.image;
     let c = Game.Screens.gameScreen.canvas;
@@ -1493,47 +1182,15 @@ function selectCard(player) {
     // cardLayer.ctx.scale(2,2);
 }
 
-function enlargeCard(cardNo) {
-    let hand = player.hand;
-    let card = hand[cardNo];
+function enlargeCard(cardNumber) {
+    let hand = Game.Player.human.hand;
+    let card = hand[cardNumber];
     let image = card.image;
     let c = Game.Screens.gameScreen.canvas;
     let gsx = Game.Screens.gameScreen.ctx;
     // let cardImgs = gCardImageCacheObj['jh'];
-    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
+    gsx.drawImage(image, 550, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
     // cardLayer.ctx.scale(2,2);
-}
-
-function mouseOver(e) {
-    let canvasX = e.clientX - LEFTOFFSET;
-    let canvasY = e.clientY - TOPOFFSET;
-    let n = null; //  n --> cardNumber
-    let p = canvasX - 160; //  p --> position
-    if (canvasY > 350 && canvasY < 450) {
-        switch (true) {
-            case (p < 36):
-                n = 0;
-                break;
-            case (p < 72):
-                n = 1;
-                break;
-            case (p < 108):
-                n = 2;
-                break;
-            case p < 144:
-                n = 3;
-                break;
-            case p < 180:
-                n = 4;
-                break;
-            case (p < 252):
-                n = 5;
-                break;
-            default:
-                n = 'Out of Range'; // change to zero from  null; 
-        }
-    }
-    enlargeCard(n);
 }
 
 
@@ -1546,23 +1203,18 @@ function displayPlayerHand(player) {
         let c = Game.Screens.gameScreen.canvas;
         let x = Game.Screens.gameScreen.ctx;
         let xCenter = c.width / 2;
-        // let coordX = xCenter - (Math.floor(player.hand.length / 2) * CARD_W);   
-        let coordX = xCenter - (3 * CARD_W); // 350 - 3 * 72 = 134
+        let coordX;
         let coordY = 340;
         for (let i = 0; i < player.hand.length; i++) {
-            //x.drawImage(player.hand[i].image, xCenter - (CARD_W*(6-i)/2), 340, CARD_W, CARD_H); // display cards on the game board        // playCard('left', player.hand[i]);
-            x.drawImage(player.hand[i].image, coordX + i * CARD_W / 2, coordY, CARD_W, CARD_H);
+            coordX = cardLocation(i, player.hand.length);
+            x.drawImage(player.hand[i].image, coordX, coordY, CARD_W, CARD_H);
         }
-        /* 
-            coordY = c.height - CARD_H - 20;
-            Let coordX = xCenter - (player.hand.length/2 * CARD_W);   
-        */
     });
 }
 
 /**
  * Displays the kickcard/trump in the top left corner of the gameboard
- * @param {*} trump -Card
+ * @param {Card} trump -Card
  * @returns void 
  */
 function displayTrump(trump) {
@@ -1570,11 +1222,11 @@ function displayTrump(trump) {
     let topCornerY = 5;
     let gbx = Game.Background.display.ctx;
     if (trump) {
-        gbx.drawImage(trump.image, topCornerX, topCornerY); // upper left corner (x,y) => (5,5)
+        gbx.drawImage(trump.image, topCornerX, topCornerY, CARD_W, CARD_H); // upper left corner (x,y) => (5,5)
     }
 }
 
-function acquireImage() {
+/* function acquireImage() {
     let x = Game.Screens.gameScreen.ctx;
     let imgData = x.getImageData(5, 5, CARD_W, CARD_H); // capture image from gameboard
     x.putImageData(imgData, 200, 200); // place captured image info elsewhere
@@ -1583,9 +1235,9 @@ function acquireImage() {
     } else {
         return console.log('Fail: image object does NOT exist!');
     }
-}
+} */
 
-function message() {
+function displayMessage() {
     document.getElementById("msg_layer").style.visibility = "visible";
     var m = Game.Screens.msgScreen.canvas;
     var c = Game.Screens.msgScreen.ctx;
@@ -1610,15 +1262,9 @@ function message() {
     c.fillText(Game.Components.msgboard.text, WIDTH/2, HEIGHT/2);
     document.getElementById("msg_layer").addEventListener("click", clearMsgBoard);
     let pause = setTimeout(clearMsgBoard, 3000);
-/*     Game.Sound.loadAsync("./lib/snd/ui-sound3.oga", () => {
-        console.log(`Sound loaded.`);
-    });
-    // Game.Sound.playSound("./lib/snd/ui-sound3.oga", settings);
-    playSoundInstance("./lib/snd/ui-sound3.oga"); */
-    // clearTimeout(pause);    //  garbage collection
 }
  
-function clearMsgBoard() { // garbage collection
+function clearMsgBoard() {                      // garbage collection
     // Game.Components.Sound.cardSlideSnd.play();
     Game.Components.msgboard.init();
     document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
@@ -1630,15 +1276,15 @@ function gameMenu() {
     // menuLayer.init();
 }
 
-function removeGameMenu() {
+function removeUtilityScreens() {
     document.getElementById('menu_layer').style.visibility = "hidden";
+    document.getElementById('pause_screen').style.visibility = "hidden";
 }
 
-function cleanBoard() {
+/* function cleanBoard() {
     var c = Game.Background.display.ctx;
     Game.Background.display.clear();
-    // c.clearRect(170, 100, 400, 200);
-}
+} */
 
 /**
  * draws score on the gameboard
@@ -1702,7 +1348,7 @@ function displayScore(scoreboard) {
  *  this will be handled by game-loader.js in the final version
  */
 var asset1 = new Promise(function (resolve, reject) {
-    Game.Components.deck.init();
+    Game.Components.deck.init().cardImagesLoaded();     //  .isDeckLoaded();
     resolve(`1`);
 });
 var asset2 = new Promise(function (resolve, reject) {
@@ -1739,36 +1385,7 @@ var asset7 = new Promise(function (resolve, reject) {
     Game.Sound.init();
     resolve(`7`);
 }); */
-/* function loadGameAssets() {
-    return new Promise(function (resolve, reject) {
-        console.log(`0.0`);
-        Game.Components.deck.init(); 
-        resolve(`0.1`);       
-        })                                      // Promise: loads all  card images into cache   and daisy chain all other tasks                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            images into cache array
-        .then((count) => {
-          console.log(`${count}`);
-          Game.Components.gameboard.init(); // game play cards cache for display
-          resolve(`0.2`);       
-        })
-        //  load all graphical assets and screen objects/canvas layers, to cache
-        .then((count) => {
-            console.log(`${count}`);
-            _initializeScreens();
-            resolve(`0.3`);
-        })
-        .then((count) => {
-            console.log(`${count}`);
-            Game.Controller.init();
-            resolve(`0.4`);
-        }) // load/initialize user input
-        .then((count) => {
-        console.log(`${count}`);
-        Game.Components.msgboard.init();
-    })
-    .catch((err) => {
-        console.log(`${err} assets not loaded.`);
-    });
-}  */
+
 /*     //  sound components      
     // return gObjectsArr;
     resolve(`Assets loaded.`);
@@ -1780,32 +1397,24 @@ var asset7 = new Promise(function (resolve, reject) {
 /*  INITIALIZE GRAPHICS OBJECTS */
 function _initializeScreens() {
     let s = [];
-/*     let s0 = Promise.resolve(Game.Background.init()); // screens[0] = gameBoard;
-    let s1 = Promise.resolve(cardLayer.init()); // screens[1] = cardsLayer;
-    let s2 = Promise.resolve(msgLayer.init());  // screens[2] = msgLayer;
-    let s3 = Promise.resolve(menuLayer.init()); // screens[3] = menuLayer; */
     s[0] = Promise.resolve(Game.Background.display.init()); // screens[0] = gameBoard;
     s[1] = Promise.resolve(Game.Screens.gameScreen.init()); // screens[1] = cardsLayer;
     s[2] = Promise.resolve(Game.Screens.msgScreen.init());  // screens[2] = msgLayer;
     s[3] = Promise.resolve(Game.Screens.menuScreen.init()); // screens[3] = menuLayer;
     s[4] = Promise.resolve(Game.Screens.videoScreen.init());// screens[4] = videoClipsLayer;
-    // s[5] = Promise.resolve(Game.debug.screen.init());       // screens[5] = debug_screen;
-    Promise.all([s[0], s[1], s[2], s[3], s[4], s[5]]).then((s) => {
+    s[5] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
+    // s[6] = Promise.resolve(Game.debug.screen.init());       // screens[6] = debug_screen;
+    Promise.all([s[0], s[1], s[2], s[3], s[4], s[5], s[6]]).then((s) => {
         console.log("Screens initialized");
         return(s);
     });
-    //  return screens;
-    //  for (screen in screens) {
-    //    screen.init();
-    //  }
-    // return s;
 }
 
 function loadCutScenes() {
     Game.Components.cutScenes[0] = document.createElement("video");
     Game.Components.cutScenes[0].setAttribute("id", "hangjack_video");
     let videoSource = document.createElement("source");
-    videoSource.setAttribute("src", "/vid/hangjack_Small.mp4");
+    videoSource.setAttribute("src", "vid/hangjack_Large.mp4");
     videoSource.setAttribute("type", "video/mp4");
     Game.Components.cutScenes[0].appendChild(videoSource);
     Game.Screens.videoScreen.canvas.style.visibility = "hidden";    
@@ -1813,31 +1422,18 @@ function loadCutScenes() {
 
 function loadScreenCache() {
     let screens = [];
-    screens[0] = gameBoard;     // and scoreLayer 
-    screens[1] = cardsLayer;
-    screens[2] = msgLayer;
-    screens[3] = menuLayer;
-    screens[4] = videoScreen;
+    screens[0] = Game.Background.display;     // and scoreLayer 
+    screens[1] = Game.Screens.gameScreen;
+    screens[2] = Game.Screens.msgScreen;
+    screens[3] = Game.Screens.menuScreen;
+    screens[4] = Game.Screens.videoScreen;
+    screens[5] = Game.Screens.pauseScreen;
     if (DEBUG_MODE === true) {
-        screen[5] = debug_screen;
+        screen[6] = debug_screen;
     }
     return screens;             // screens array
 }
 
-//  update object boards & render (execute draw functions) object screens
-/* 
-function updateGameScreen() {
-    displayScore(computer, human);
-    if (Game.Components.deck.trump) {
-        displayTrump(Game.Components.deck.trump);
-    }
-    displayLabels();
-}
- */
-/* function update() {
-    Game.Background.isUpdated = true;
-}
- */
 
 
 function displayDebugScreen() {
@@ -1853,13 +1449,10 @@ function displayDebugScreen() {
 
 
 function displayBackground() {
-    // if (Game.Background.isUpdated === true) {
-        // Game.Background.display.clear();
-        displayLabels();
-        displayScore(Game.Background.scoreboard);
-        displayTrump(Game.Components.deck.getTrump());
-        Game.Background.update(false);
-    // }
+    displayLabels();
+    displayScore(Game.Background.scoreboard);
+    displayTrump(Game.Components.deck.getTrump());
+    Game.Background.update(false);
 }
 
 function updateGameScreen() {
@@ -1887,80 +1480,43 @@ function displayCutScene() {
     let vHeight = 540/3;                    //  position
     let posX = WIDTH/2 - vWidth/2;          //  center of board
     let posY = HEIGHT/2 - vHeight/2;
-    Game.Components.cutScenes[0].addEventListener("play", ()=>{
-        var $this = this;
-        var runVideo = setInterval(() => {
-            if (Game.Components.cutScenes[0].ended) {
-                removeVideo();
-            }       
+    function removeVideo() {
+        Game.Components.cutScenes[0].pause();
+        Game.Screens.videoScreen.clear();
+        Game.Screens.videoScreen.canvas.removeEventListener('click', () => {
+                                                                        removeVideo();
+                                                                        clearInterval(intervalID);
+                                                                    });
+        Game.Screens.videoScreen.canvas.style.visibility = "hidden";    
+    }
+    Game.Components.cutScenes[0].addEventListener("play", () => {
+        Game.Screens.videoScreen.canvas.addEventListener('click', () => {
+                                                                    clearInterval(intervalID);
+                                                                    removeVideo();
+                                                                });
+        var intervalID = setInterval(() => {      
             Game.Screens.videoScreen.clear();
             Game.Screens.videoScreen.ctx.shadowBlur = 10;           //  styling 
             Game.Screens.videoScreen.ctx.shadowOffsetY = 15;
             Game.Screens.videoScreen.ctx.shadowOffsetX = 10;
             Game.Screens.videoScreen.ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
-            Game.Screens.videoScreen.ctx.drawImage(Game.Components.cutScenes[0], posX, posY, vWidth, vHeight);      
-        }, 1000/30);
+            Game.Screens.videoScreen.ctx.drawImage(Game.Components.cutScenes[0], posX, posY, vWidth, vHeight); 
+            Game.Screens.videoScreen.ctx.font = '50px serif';
+            Game.Screens.videoScreen.ctx.fillStyle = 'rgb(255, 255, 255)';
+            let textSize = Game.Screens.videoScreen.ctx.measureText("Hang Jack!!!");
+            let centerX = WIDTH / 2  - Number(textSize.width) / 2;
+            debug.console(centerX);
+            Game.Screens.videoScreen.ctx.fillText('Hang Jack!!!', centerX, HEIGHT / 2);     
+        }, 1000/15);
     });
     Game.Screens.videoScreen.canvas.style.visibility = "visible";    
     Game.Components.cutScenes[0].play();
-    
-    
-    Game.Screens.videoScreen.canvas.addEventListener('click', removeVideo);
-
-    function removeVideo() {
-        Game.Components.cutScenes[0].pause();
-        clearInterval(runVideo);
-        Game.Screens.videoScreen.clear();
-        Game.Screens.videoScreen.canvas.removeEventListener('click', removeVideo);
-        Game.Screens.videoScreen.canvas.style.visibility = "hidden";    
-    }
 }
 
-    //  Game.Background.isUpdated = true;
-    // emphasizeTrump();
-    /*
 
-    */
+ 
 
-/* 
-function updateMsgScreen() {
-    if (msgboard.visible === true) { // if message object is true, then
-        message(); // call the msg box function 
-    }
-}
- */
- function updateMsgScreen() {
-     //     toggle visibility
-     if (Game.Components.msgboard.visible === true) {
-         // Game.msgboard.visible = false;
-         message(); 
-     } else {
-         Game.Components.msgboard.visible = true;
-     }
-     Game.Components.msgboard.isUpdated = true;
- }
 
-function _updateGame() {
-    //  update();
-    //  updateGameScreen();
-    //  updateMsgScreen();
-    //  updateMenuScreen();
-}
-
-/* function updateMenuScreen() { //  game pauses and menu comes up  when 'ESC' key is pressed.
-    var c = menuLayer.ctx;
-    c.font = "70px Arial";
-    c.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
-    let welcomeMsg = "Let's play";
-    c.fillText(welcomeMsg, 200, 125);
-    c.font = "100px Arial";
-    let gamelogo = "ALL FOURS!";
-    c.fillText(gamelogo, 75, 250);
-    c.font = "50px Arial";
-    let loading = "LOADING . . .";
-    c.fillText(loading, 200, 415);
-}
- */
 function _drawGameScreen() {
     if (Game.Components.gameboard.isUpdated === true) {
         Game.Screens.gameScreen.clear();
@@ -1974,10 +1530,20 @@ function _drawGameScreen() {
 function updateMsgboard() {
     Game.Components.msgboard. isUpdated = true;
 }
+
+function _drawVideoScreen() {
+    Game.Screens.videoScreen.clear();
+    // displayCutScene();
+    // if (Game.Components.msgboard.visible === true) {
+    // displaycur();
+    // updateMsgScreen();
+    // }
+}
+
 function _drawMsgScreen() {
     if (Game.Components.msgboard.visible === true) {
     Game.Screens.msgScreen.clear();
-    message();
+    displayMessage();
     // updateMsgScreen();
     }
 }
@@ -1985,7 +1551,11 @@ function _drawMsgScreen() {
 function _drawMenuScreen() {
     Game.Screens.menuScreen.clear();
     displayMenuScreen();
-    //  updateMenuScreen();
+}
+
+function _drawPauseScreen() {
+    Game.Screens.pauseScreen.clear();
+    // displayPauseScreen();
 }
 
 function _drawBackground() {
@@ -2009,7 +1579,6 @@ function _drawDebugScreen() {
 
 
 function displayMenuScreen() {
-    // Game.Screens.menuScreen.clear();
     let c = Game.Screens.menuScreen.ctx;
     c.font = "70px Arial";
     c.fillStyle = "rgba(254,254,254,1.0)"; // white, opaque
@@ -2021,14 +1590,16 @@ function displayMenuScreen() {
     c.font = "50px Arial";
     let loading = "LOADING . . .";
     c.fillText(loading, 200, 415);
+    // pauseGame();
 }
 
-function _renderAllScreens() {
-    
+function _renderAllScreens() {   
     _drawBackground();
     _drawGameScreen();
     _drawMsgScreen();
     _drawMenuScreen();
+    // _drawVideoScreen();
+    // _drawPauseScreen();
     /* if (DEBUG_MODE === true) {
         _drawDebugScreen();
     } */
@@ -2038,7 +1609,10 @@ function _renderAllScreens() {
     //_drawMsgScreen();        // displayMessage();
     // _drawMenuScreen();      
 
-
+function _startEngine() {
+    Game.Engine.start();
+}
+      
 
 function _stopEngine() {
   Game.Engine.stop();
@@ -2049,56 +1623,12 @@ function _clearAllScreens() {
         screen.clear();
     }
 }
-/*
-function firstJackDeal(player1, player2) {
-    let player = player1;
-    let i=0;
-    while (deck[i].face != 'j' && i < Game.Components.deck.length) {
-        if (player == player1) {        // toggle player1 & player2
-            player = player2;
-        } else {
-            player = player2; 
-        }
-        i++;
-    }
-    return player;
-} 
-*/
-/* Game.State = {
-    assetsLoaded:    false,
-    startOfFourteen:    false,
-    startOfRound:   false,
-    startOfGame:    false,
-    deal:           false,
-    dealer:         null,
-    playFirst:      null,
-    whoPlayedCallCard: null,
-    computerTurn    false,
-    userTurn        false,
-    userPlayed:       false,
-    computerPlayed:   false,
-    endOfRound:     false,
-    endOfGame:      false,
-    endOfFourteen:  false,
-    init:           function () {
-                        this.startOfFourteen =    false;
-                        this.startOfRound =   false;
-                        this.startOfGame =    false;
-                        this.deal =           false;
-                        this.dealer =         null;
-                        this.playFirst =      null;
-                        this.userPlay =       false;
-                        this.computerPlay =   false;
-                        this.endOfRound =     false;
-                        this.endOfGame =      false;
-                        this.endOfFourteen =  false; 
-                        this.whoPlayedCallCard = null;
-                    },
-};
- */
+
+
 export function gameLoop() {
     /*  A series of 'game states'   */
-    if (Game.State.startOfGame === true) {
+    // inputUpdate();
+    if (Game.State.startOfGame === true) {   
         Game.State.startOfGame = false;
         console.log(`Start of game is true. Set it to false.`);
         if (!Game.State.dealer) {
@@ -2164,7 +1694,7 @@ export function gameLoop() {
         if (Game.State.whoPlayedCallCard === Game.Player.computer) {
             Game.State.whoPlayedCallCard   = null;
             var winner = determineWinner(Game.Components.gameboard.computer, Game.Components.gameboard.user);
-            if (isHangJack(Game.Components.gameboard.computer, Game.Components.gameboard.user  &&  Game.GamePlay.whoHangedJack === null)) {
+            if (isHangJack(Game.Components.gameboard.computer, Game.Components.gameboard.user) === true  &&  Game.GamePlay.whoHangedJack === null) {
                 Game.GamePlay.whoHangedJack = winner;
             };
         }
@@ -2175,19 +1705,19 @@ export function gameLoop() {
                     Game.GamePlay.whoHangedJack = winner;
                 }
         }
-        console.log(`${winner.getName()}!`);
-        console.log(Game.Components.gameboard.user.getCardName()); 
-        console.log(Game.Components.gameboard.computer.getCardName());
+        debug.console(`${winner.getName()}!`);
+        debug.console(Game.Components.gameboard.user.getCardName()); 
+        debug.console(Game.Components.gameboard.computer.getCardName());
         // postPlay(winner);
         winner.lift.push(Game.Components.gameboard.user);
         winner.lift.push(Game.Components.gameboard.computer);
-        setTimeout(() => {
+        let tmOutID = setTimeout(() => {
             if (Game.Player.computer.hand.length > 0 && Game.Player.human.hand.length > 0) {
                 Game.State.playFirst = winner;
             }
             if (Game.Player.computer.hand.length === 0 && Game.Player.computer.hand.length === 0) { 
-                console.log(Game.Player.human.lift);                                //  if -ve, throw an error
-                console.log(Game.Player.computer.lift);                                //  if -ve, throw an error
+                debug.console(Game.Player.human.lift);                                //  if -ve, throw an error
+                debug.console(Game.Player.computer.lift);                                //  if -ve, throw an error
                 allocatePoints();
                 Game.Player.computer.liftInit();
                 Game.Player.human.liftInit();
@@ -2195,7 +1725,8 @@ export function gameLoop() {
             }
             Game.Components.gameboard.init();
             Game.Engine.start();
-            console.log(`Engine Restarted!`);
+            debug.console(`Engine Restarted!`);
+            clearTimeout(tmOutID);
         }, 1500); 
     }   
     if (Game.State.endOfGame === true) {
@@ -2215,8 +1746,8 @@ export function gameLoop() {
             let text = `${gameWinner} WON!!!`;
             Game.Engine.stop();
             debug.console(`Engine Stopped!`);
+            debug.console(`Game has ended!`);
             Game.Components.msgboard.init().message(text).makeVisible();
-
         }   
     }
 }
@@ -2232,8 +1763,11 @@ const JACK = 1;
 const GAME = 1;
 const HANG_JACK = 3;
 
+var Empty = {
+    select: null,
+};
 /** 
- *   repeat game rounds until a player  quit() ==> ESC key (do - while loop)
+ *   
  *   @param: null
  *   @return: void
  */
@@ -2250,15 +1784,24 @@ function mainGameLoop() {
             Game.debug.display("DEBUG MODE ON!");
             // Game.debug.loadScreen();
         }
-        console.log(Game.Player.human.hand);
+        debug.console(Game.Player.human.hand);
         Game.Screens.menuScreen.clear();
-        removeGameMenu();
-        gControllerListeners();
+        removeUtilityScreens();
+        var gBoard = Empty;
+        if (MAGNIFY_CARD === true) {
+            gBoard = Game.Components.gameboard;
+        } else {
+            gBoard = Empty;
+        };
+        Controller.listeners(document.getElementById("card_layer"), Game.Player.human.hand, inputUpdate);
+        debug.init();
+        playerNameChangeListener();
         Game.State.startOfGame = true;
-        // Game.Player.playFirst = dealHandFcn();
-        Game.Engine.start();  
+        Game.Engine.start();
+        // displayCutScene();  
     })  
-    .then(() => { 
+/*     .then(() => { 
+        // displayCutScene();
         // Game.Components.Sound.cardSlideSnd.muteAudio(); 
         // playSoundInstance("./lib/snd/ui-sound3.oga");   
         // console.log("playGameRound");
@@ -2268,62 +1811,77 @@ function mainGameLoop() {
             // Game.Engine.start();                            //  Start Game
         // }, 5000);
         // Game.Player.playFirst = dealHandFcn();              //  dealing here because objects not loading properly in gameLoop()
-    })             
+    })  */            
     .catch((err) => {
         console.error(`${err} something went wrong somewhere.`);
     });
 }
-function start() {
-    Game.Engine.start();  
-}
-function quitGame() {
-    //  pass;
-    //  stop game Engine
-    //  stop listenere
-    //  stop Intervals
-    //  remove screens
-}
+
 function pauseGame() {
-    Game.Engine.stop();
-    document.getElementById('pause_screen').style.visibility = "hidden";  
+    // Game.Engine.stop();
+    let bgx = Game.Background.display.ctx;
+    let gsx = Game.Screens.gameScreen.ctx;
+    let msx = Game.Screens.menuScreen.ctx;  
+    /*  turn Background display to grayscale    */
+    let bgdImgData = bgx.getImageData(0, 0, WIDTH, 4*HEIGHT);
+    let gscImgData = gsx.getImageData(0, 0, WIDTH, 4*HEIGHT);
+    for (let index = 0; index < bgdImgData.data.length; index++) {
+        bgdImgData.data[index] = bgdImgData.data[index] + gscImgData.data[index];      
+    };
+    let grayBkgnd = grayScale(bgdImgData);
+    msx.putImageData(grayBkgnd, 0, 0);
+    /*  turn gamescreen to greyscale */
+    let grayGameScreen = grayScale(gscImgData);
+    // msx.putImageData(grayGameScreen, 0, 0);
 }
+
+function grayScale(dataFile) {
+    for (let i = 0; i < dataFile.data.length/4; i+=4) {
+            let r = dataFile.data[i];
+            let g = dataFile.data[i+1];
+            let b = dataFile.data[i+2];
+            let brightness = (3*r+4*g+b)/8;
+        dataFile.data[i]   = brightness;
+        dataFile.data[i+1] = brightness;
+        dataFile.data[i+2] = brightness;
+        // dataFile.data[i+3] = 255;    
+    }
+    return dataFile;
+}
+
 function unPauseGame() {
     Game.Engine.start();
-    document.getElementById('pause_screen').style.visibility = "visible";  
 }
-function restartGame() {
-    //  quit game
-    //  mainGameLoop();
-}
-tickertape(`Play Two-Man All Fours by Roger Clarke`);
-mainGameLoop();
 
+function playerNameChangeListener() {
+    clickEnterButton();
+    let nameInput = document.getElementById("player_name");
+    nameInput.addEventListener('input', changePlayerName);
+}
+
+function clickEnterButton() {
+    let entBtn = document.getElementById("enter_btn");
+    let nameInput = document.getElementById("player_name");
+    function stopBtnListener() {
+        nameInput.removeEventListener('input', changePlayerName);
+        entBtn.removeEventListener('click', stopBtnListener);
+    }
+    entBtn.addEventListener('click', stopBtnListener);
+}
+function changePlayerName() {
+    let nameInput = document.getElementById("player_name");
+    if (nameInput.value.length != 0) {
+        Game.Player.human.changeName(nameInput.value);
+    }
+}
+
+tickertape(`Play Two-Man All Fours`);
+// mainGameLoop();
+let pauseID = setTimeout(function () {
+    mainGameLoop();
+    clearTimeout(pauseID);
+}, 3000);
 //------------------------------------------------------------------------------------------------------------------
-
-/*  Distribute points   */
-// rank_lowest_trump --> player += LOW
-function whoPlayedLow() {
-    //  pass;
-    //  return Player;
-}
-
-
-//whoPlayedHigh.points += HIGH;
-
-// jack of trump --> player += JACK
-function whoPlayedJack() {
-    //  pass;
-    //  return Player;
-}
-//whoPlayedJack.points += JACK;
-
-function postRoundFcn() {
-    return null;
-}
-
-
-
-
 
     //          GARBAGE COLLECTION
     // clear setTimeouts and setIntervals, remove Event Listeners etc.
@@ -2333,18 +1891,12 @@ function postRoundFcn() {
 //                                                                            THE END!
 /**************************************************************************************************************************************************************************************************** */
 
-
-
-
-// while (human.hand.length && computer.hand.length > 0)
-// while (human.points || computer.points < 14)
-
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //                                                                               TODO: 
 //      ***KNOWN BUGS***
-//      AI needs over-hauling
-//      Video clips not working 
+//      AI needs tweeking
+//      Game freezes in second round
+                // try to see what causing the free:  memory running out
 //      
 //
 
@@ -2358,8 +1910,9 @@ BackEnd:
 FrontEnd:
     Display Library
     Testing Library
+    Debug Library
     Sound Library
-    Game Library --> components etc... objects & classes
+    Game Library --> inputs, components etc... objects & classes
 */
 
 
