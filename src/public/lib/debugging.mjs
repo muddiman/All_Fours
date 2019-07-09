@@ -17,9 +17,9 @@ const OFF=false; */
 
 // import { DEBUG_MODE } from "../allfours";
 import { gCanvasLayer } from "./screen.mjs";
-import { SETTINGS }   from "./settings.mjs";
-export const DEBUG_MODE = SETTINGS.DEBUG_MODE;
-
+// import { SETTINGS }     from "./settings.mjs";
+// export const DEBUG_MODE = SETTINGS.DEBUG_MODE;
+export const DEBUG_MODE=false;
 export const debug = {
     isUpdated:  false, 
     screen:     new gCanvasLayer("debug_screen", 400 + 72, 450, 300 - 72, 150, 0.2, 4, 0, 0, 0),
