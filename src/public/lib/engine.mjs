@@ -106,7 +106,7 @@ Engine.prototype.init = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.0
+ *  @version   0.8.4
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

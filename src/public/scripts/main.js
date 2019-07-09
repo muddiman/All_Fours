@@ -1,9 +1,34 @@
+const defaultWidth=700;
+const defaultHeight=450;
+const mobileWidth=400;
+const tabletWidth=700;
 
-function initCanvas(img) {
+function initCanvas(img) { 
+    var WIDTH, HEIGHT;
+    var viewportWIDTH = window.innerWidth;
+    var viewportHEIGHT= window.innerHeight;
+    if (viewportWIDTH <= mobileWidth) {
+        WIDTH=300;
+        HEIGHT=(WIDTH / defaultWidth) * defaultHeight;
+    }
+    switch (viewportWIDTH) {
+        case viewportWIDTH <= mobileWidth:
+            WIDTH=300;
+            break;
+        case viewportWIDTH >= mobileWidth && viewportWIDTH <= tabletWidth:
+            WIDTH=300;
+            break;
+        case viewportWIDTH >= tabletWidth:
+            WIDTH=700;
+            break;                
+        default:
+            break;
+    }
+    HEIGHT=(WIDTH / defaultWidth) * defaultHeight;
     let canvas = document.createElement("canvas");
     canvas.id     = "videolayer";
-    canvas.width  = 1520;
-    canvas.height =  710;
+    canvas.width  = viewportWIDTH;
+    canvas.height =  viewportHEIGHT;
     canvas.style  = "z-index = 0;";
     let ctx = canvas.getContext("2d");
     // ctx.fillStyle = "rgb(255, 0, 0)";
