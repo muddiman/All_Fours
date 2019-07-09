@@ -1,7 +1,11 @@
 
 
 /*  executes when webpage is loaded */
-    function homeScreen() {   
+    function homeScreen() { 
+        let menuScreen = document.getElementById('menu_screen');
+        if (menuScreen.style.display === 'block') {
+            menuScreen.style.display = 'none';
+        }  
         var modal = document.getElementById('home_screen');
         modal.style.display = 'block';
         clickOutsideForm();
@@ -9,20 +13,24 @@
             progressBar();
             clearTimeout(waitID);
         }, 1000);
+        let waitTwoID = setTimeout(() => {
+            modal.classList = "fade_trans modal gMenu";
+            clearTimeout(waitTwoID);
+        }, 2000);
     }
 
     function menuScreen() {   
-        var menuScreen = document.getElementById('home_screen');
-        var progressSection = document.getElementById('progress_section');
+        let menuScreen = document.getElementById('menu_screen');
+        // var progressSection = document.getElementById('progress_section');
         menuScreen.style.display = 'block';
         clickOutsideForm();
-        progressSection.style.display = 'none';
+        // progressSection.style.display = 'none';
     }
 
     function config() {
-        let menuScreen = document.getElementById('home_screen');
+        let menuScreen = document.getElementById('menu_screen');
         menuScreen.style.display = 'block';
-        let timeOutID = setTimeout(() => {
+/*         let timeOutID = setTimeout(() => {
             menuScreen.style.display = 'block';
             clearTimeout(timeOutID);
             let button1 = document.getElementById('button_1');
@@ -34,7 +42,7 @@
             button3.innerText = 'Audio';
             button4.innerText = 'Back';
             menuScreen.style.display = 'block';
-        }, 500);
+        }, 500); */
     }
 
     function clickOutsideForm() {
@@ -59,7 +67,7 @@
                                                 case 'button_2':
                                                     config();
                                                     break;
-                                                case 'button_4':
+                                                case 'button_8':
                                                     homeScreen();
                                                     break;
                                                 default:
