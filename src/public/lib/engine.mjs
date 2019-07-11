@@ -23,7 +23,7 @@ export var Engine = function(time_step, render, gameLoop) {
     this.accumulated_time = 0;                      // amt. of time that has accumulated since last update fcn call
     this.loopCounter    = 0;
     this.isBehind       = false;                     // if Engine is running behind and getting trouble keeping up with current frame rate
-    this.animate          = function () {
+    this.animate        = function () {
                             // console.trace('Animate - Request Animation Frame loop:');
                             this.loopCounter = (this.loopCounter + 1) % 60;
                                 if (this.loopCounter === 0) {
@@ -35,7 +35,7 @@ export var Engine = function(time_step, render, gameLoop) {
                             requestAnimationFrame(this.animate);
                             // requestAnimationFrame(this.start());
                         }; 
-    this.start        = function () {
+    this.start          = function () {
                             // console.trace('RunID - setInterval loop:');
                             //  debug.console(`using ${METHODOLOGY}.`);
                             // this.init();
@@ -63,20 +63,20 @@ export var Engine = function(time_step, render, gameLoop) {
                                     //  debug
                                     // n++;
                                 }
-                            /*  keeps the engine updated if cycle time lapses for more than a cycle     */
-                            while (this.accumulated_time >= this.time_interval) {
-                                this.accumulated_time -= this.time_interval;
-                                //  this.update();
-                                this.isBehind = true;
-                            }
-                            if (this.isBehind) {       //  screen is drawn only when when the matrix is updated
-                                this.render();
-                                // r++;                    //   debugging
-/*                                 debug.console(`one behind ${r}`);  */
-                                // debug.console(this.accumulated_time); 
-                                this.isBehind = false;
-                            }
-                          }, this.time_interval);
+                                /*  keeps the engine updated if cycle time lapses for more than a cycle     */
+                                while (this.accumulated_time >= this.time_interval) {
+                                    this.accumulated_time -= this.time_interval;
+                                    //  this.update();
+                                    this.isBehind = true;
+                                }
+                                if (this.isBehind) {       //  screen is drawn only when when the matrix is updated
+                                    this.render();
+                                    // r++;                    //   debugging
+    /*                                 debug.console(`one behind ${r}`);  */
+                                    // debug.console(this.accumulated_time); 
+                                    this.isBehind = false;
+                                }
+                            }, this.time_interval);
 
                         };
     this.stop           = () => {
@@ -106,7 +106,7 @@ Engine.prototype.init = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.0
+ *  @version   0.8.4
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
