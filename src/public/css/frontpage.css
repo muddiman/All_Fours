@@ -21,7 +21,7 @@ h1 {
 /*  classes */
 .headsup-display {
     position: fixed;
-    font-family: "Segoe UI", consolas;
+    font-family: "Microsoft YaHei UI Light", "Segoe UI", consolas;
     font-weight: bolder;
     text-align: center;
     margin: 0;

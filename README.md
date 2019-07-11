@@ -13,7 +13,7 @@ ___
  You can  download the card images or get more information here: <http://www.github.com/>.
 
 #### Current Version
-Two-Man All Fours Ver. 0.8.3
+Two-Man All Fours Ver. 0.8.4
 
 
 #### Known Bugs

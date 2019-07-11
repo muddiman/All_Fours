@@ -39,18 +39,18 @@
     <!--    HOMESCREEN      -->   
         <div class="modal gMenu" id="home_screen" style="display: none;"> 
                 <span title="Close Title Screen" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
-              <div class="animate" id="content">
+              <div class="animate content">
                 <!-- <form class="modal-content animate" method="POST"> -->
                  <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
                   <div class="imgcontainer">
                     <!--    Game Logo Here -->
-                    <H4>TWO-MAN ALL FOURS</H4>
+                    <!-- <H4>TWO-MAN ALL FOURS</H4> -->
                   </div>
               
                   <div class="btn menuContainer">            
                     <button type="submit" class="disabled menuButtons" id="button_1" onmousedown="pressBtn('button_1')">Play Game</button>
                     <button type="submit" class="menuButtons" id="button_2"  onmousedown="pressBtn('button_2')" >Settings</button>
-                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login/Animate</button>
+                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login</button>
                     <button id="button_4" class="menuButtons" onmousedown="pressBtn('button_4')">Quit</button>
                   </div>
                   <div class="container" id="progress_section">
@@ -58,13 +58,36 @@
                     <div id="progress">
                       <div id="progress-bar">1%</div>
                     </div>
-                    <!-- <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button> -->
+                   <!-- <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button> -->
                     <!--    Home Icon & Settings Icon (bottom left corner)      -->
                   </div>
         
                   <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
                 </div>  <!-- </form> -->
             </div> <!-- end of home_screen  --> 
+
+    <!--    MENUSCREEN      -->   
+        <div class="modal gMenu" id="menu_screen" style="display: none;"> 
+            <span title="Close Title Screen" class="close" onclick="document.getElementById('menu_screen').style.display='none'">×</span>
+            <div class="animate fade_trans content" >
+                <!-- <form class="modal-content animate" method="POST"> -->
+                 <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
+                <div class="imgcontainer">
+                    <!--    Game Logo Here -->
+                    <H4>SETTINGS/OPTIONS</H4>
+                </div>
+              
+                <div class="btn menuContainer">            
+                    <button type="submit" class="menuButtons" id="button_5" onmousedown="pressBtn('button_5')">Display</button>
+                    <button type="submit" class="menuButtons" id="button_6"  onmousedown="pressBtn('button_6')" >Sound</button>
+                    <button type="submit" class="menuButtons" id="button_7" onmousedown="pressBtn('button_7')">Misc</button>
+                    <button id="button_8" class="menuButtons" onmousedown="pressBtn('button_8')">Back</button>
+                </div>
+                        
+                <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
+            </div>  <!-- </animation div> -->
+        </div> <!-- end of menu_screen  --> 
+
         <!-- Game Board -->
         <div class="container" id="game_container">
                 <!--  <canvas id="game_board" width="700" height="450"></canvas> would go here -->
@@ -78,7 +101,7 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="menuScreen()">Menu</button>
+                    <button class="w3-btn" onclick="homeScreen()">Menu</button>
                     <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
@@ -106,6 +129,7 @@
     <script type="text/javascript" src="/src/public/lib/title-script.js"></script>
     <script type="module" src="allfours.js">
         window.onload = function () {
+            //loadAssets();     //  images, sound & video files
            // loadGame();
             
 /*             let timeOutID = setTimeout(function () {

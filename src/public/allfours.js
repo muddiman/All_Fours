@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.2
+ *  @version   0.8.4
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -57,6 +57,7 @@
 */
 
 /*  imports */
+import { SETTINGS }                 from "./lib/settings.mjs";
 import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
@@ -74,6 +75,8 @@ import { Controller }               from "./lib/controller.mjs";
 
 /*  Flags   */
 const MAGNIFY_CARD=false;
+const ON=true;
+const OFF=false;
 /* DEBUG_MODE = false;
 SOUND_ON = false; */
 
@@ -99,6 +102,8 @@ const PLAYER2_NAME = "You";
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET =  15;
 const TOPOFFSET  = 180;
+
+
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -129,6 +134,7 @@ const TOPOFFSET  = 180;
 
 /*  Main Game Object (parent object)    */
 var Game = {
+    SETTINGS   : {},
     //  Display : Display,
     //  Sound   : gSM,  
     GamePlay   : {},
@@ -141,6 +147,9 @@ var Game = {
     Engine     : new Engine(1000/24, _renderAllScreens, gameLoop),
     debug      : debug,
 };
+Game.SETTINGS = SETTINGS;
+
+Game.SETTINGS.init(OFF, OFF, OFF, 7, 0, 0, 0);
 
 Game.GamePlay = {
     HI:     null,
@@ -182,10 +191,10 @@ Game.Background = {
 Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
     gameScreen  : new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
-    msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 2, 255, 255, 255),
-    menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         3, 204, 204, 204),
-    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, 0.8,         4, 204, 204, 204),
-    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 5, HEIGHT + 5, TRANSPARENT, 5,   0,   0,   0),  
+    msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, TRANSPARENT, 2, 255, 255, 255),
+    menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         3, 204, 204, 204),
+    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),
+    videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, TRANSPARENT, 5,   0,   0,   0),  
 };
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
@@ -197,23 +206,6 @@ function setPlayerName() {
     debug.console(Game.Player.human.getName());
 }
 
-/* Card layer object */
-/* Game.Screens.gameScreen = {                                                               //  Object: cardLayer --> TODO: turn into a "class"
-    canvas: document.createElement("canvas"),
-    init: function () {
-        this.canvas.width = WIDTH;
-        this.canvas.height = HEIGHT;
-        this.canvas.id = "card_layer";
-        this.ctx = this.canvas.getContext("2d");
-        document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById("card_layer").style = "position: absolute; left: " + LEFTOFFSET + "px; top:  " + TOPOFFSET + "px; z-index: 1; background-color: rgba(255, 255, 255," + TRANSPARENT + ");";
-        console.log(`New ${this.canvas.id} canvas initialized.`);
-    },
-    clear: function () {                                                        // wipes the entire card screen clean
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    },
-};
- */
 Game.Background.scoreboard = {
     playerAname    :   Game.Player.computer.getName(),
     playerBname    :   Game.Player.human.getName(),
@@ -544,16 +536,16 @@ Game.Controller = {
     },
     init: function () {
         this.isMyTurn = false;
-        this.clickPosition = [];
+        // this.clickPosition = [];
         this.cardSelection = null;
         // this.refresh = setInterval(inputUpdate, 1000/20); //      FPS_2
         for (let action in this.actions) {
             this.actions[action] = false;
         }    
     },
-    stop: function () {
+/*     stop: function () {
         clearInterval(this.refresh);
-    },
+    }, */
     readAction: function () {
         inputUpdate();
     }
@@ -611,7 +603,7 @@ function inputUpdate(action) {
     toggleMute(action);
     togglePause(action);
 
-    /*  take specific game 'action' once the action is set to 'true'  */ 
+    /*  invoke specific game 'action'  */ 
     for (let i=0; i<9; i++) {
         let play = `playCard_${i+1}`;
         if (action === play) {      // queries the key's state, and calls the corresponding function
@@ -623,18 +615,8 @@ function inputUpdate(action) {
         }
       }
 
-    /*  take specific game 'action' once the action is set to 'true'  */ 
-   /*  for (let i=0; i<6; i++) {
-      let play = `playCard_${i+1}`;
-      if (Controller.actions[play]) {      // queries the key's state, and calls the corresponding function
-        if (Game.Components.gameboard.user === null) {
-            Game.Components.gameboard.setUserCard(Game.Player.human.hand[i]);
-            Game.Player.human.hand.splice(i, 1);
-            Game.Controller.init();
-        }
-      }
-    }   
- */
+    /*  Highlight card  */ 
+
     if (action === 'selectNext') {
         if (Game.Components.gameboard.select) {
             for (let i=0; i < Game.Player.human.hand.length; i++) {
@@ -642,7 +624,7 @@ function inputUpdate(action) {
                     if (Game.Components.gameboard.select === Game.Player.human.hand[i]) {
                         Game.Components.gameboard.select = Game.Player.human.hand[i+1];
                         debug.console(i);
-                        Game.Controller.init();
+                        // Game.Controller.init();
                         break;
                     }
                 } else {
@@ -651,7 +633,7 @@ function inputUpdate(action) {
             }
         } else {
                 Game.Components.gameboard.select = Game.Player.human.hand[0];
-                Game.Controller.init();
+                // Game.Controller.init();
         }  
     }
 
@@ -672,7 +654,7 @@ function inputUpdate(action) {
             Game.Components.gameboard.select = Game.Player.human.hand[-1];
         }
     }
-
+    /*  play highlighted card   */
     if (action === 'confirmSelection') {
         if (!Game.Components.gameboard.user) {
             for (let i=0; i<Game.Player.human.hand.length; i++) {
@@ -719,7 +701,7 @@ function dealHandFcn(dealer) {
     }       //      else if (dealer === human) {               // switch dealer
         console.log(`${dealer.getName()} deals.`);
         // Game.Components.deck.init();
-        Game.Components.deck.init().shuffle().deal();
+        Game.Components.deck.init().shuffle().shuffle().shuffle().deal();
         // Game.Components.Sound.sndEffect[0].play();
         let kick_points = kickPoints(Game.Components.deck.getTrump());
         dealer.addPoints(kick_points);
@@ -793,14 +775,11 @@ function play(player) {
     } else {
         Game.Controller.isMyTurn = true; 
         console.log(`YOUR TURN!`);
-        // Game.Components.gameboard.listenForUserCard(() => {
             console.log(`Listening for card!`);
             if (Game.Components.gameboard.user) {
-                // Game.Components.gameboard.stopListening();
                 Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
             } 
-        // } );  
         if (Game.Components.gameboard.user) {
             if (Game.Components.gameboard.user.suit === Game.Components.deck.trump.suit) {
                 trackCards(Game.Player.human, Game.Components.gameboard.user);
@@ -1348,7 +1327,7 @@ function displayScore(scoreboard) {
  *  this will be handled by game-loader.js in the final version
  */
 var asset1 = new Promise(function (resolve, reject) {
-    Game.Components.deck.init().cardImagesLoaded();     //  .isDeckLoaded();
+    Game.Components.deck.init();    // .cardImagesLoaded();     //  .isDeckLoaded();
     resolve(`1`);
 });
 var asset2 = new Promise(function (resolve, reject) {
@@ -1917,5 +1896,5 @@ FrontEnd:
 
 
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
+/*                 Copyright (c) 2018-2019 Prodigy Engineering LLC, NY. All Rights Reserved                 */
 /********************************************************************************************** */

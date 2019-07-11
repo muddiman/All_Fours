@@ -48,7 +48,7 @@ export var Keyboard = {
  *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.3
+ *  @version   0.8.4
  *  @since     2018-10-1
  *  @license   NON-Commercial
  *  @See:      http://www.roger-clarke.com/allfours/license.html
