@@ -21,7 +21,7 @@ const TOPOFFSET=180;
     desktop/laptop width:
 */
 
-var viewportWIDTH = window.innerWidth;
+/* var viewportWIDTH = window.innerWidth;
 var viewportHEIGHT= window.innerHeight;
 var WIDTH;
 var HEIGHT;
@@ -44,26 +44,28 @@ export var RATIO;
     RATIO=(WIDTH / defaultWIDTH);
     HEIGHT = Math.floor((WIDTH / defaultWIDTH) * defaultHEIGHT);
 })();
-
+ */
 /*  screen canvas class */
-export function gCanvasLayer(ID, Z, color) {
+export function gCanvasLayer(ID, zIndex, color) {
     this.canvas = document.createElement("canvas");
     this.init = function () {
         this.canvas.width = this.width;
         this.canvas.height = this.height;
         this.canvas.id = ID;
+        this.z = zIndex;
+        this.color = color;
         this.canvas.setAttribute("class", "screen");
         this.ctx = this.canvas.getContext('2d');
         document.getElementById("game_container").appendChild(this.canvas);
-        document.getElementById(ID).style = `position: absolute; left: ${this.xOffset}px; top: ${this.yOffset}px; z-index: ${Z}; background-color: ${color});`;
+        document.getElementById(ID).style = `position: absolute; left: ${this.xOffset}px; top: ${this.yOffset}px; z-index: ${this.z}; background-color: ${this.color};`;
         console.log(`New ${this.canvas.id} canvas initialized.`);
         return this;
     };
 }
 /*  Prototypes  */
 //  universal properties
-gCanvasLayer.prototype.width    = WIDTH;
-gCanvasLayer.prototype.height   = HEIGHT;
+gCanvasLayer.prototype.width    = 700;  //  WIDTH;
+gCanvasLayer.prototype.height   = 450;  //  HEIGHT;
 gCanvasLayer.prototype.xOffset  = LEFTOFFSET;
 gCanvasLayer.prototype.yOffset  = TOPOFFSET;
 //  universal methods
@@ -85,9 +87,18 @@ gCanvasLayer.prototype.text = function (text, color, x, y) {
                                     this.ctx.fillText(text, x, y);
                                     return this;
                                 };
-gCanvasLayer.prototype.image = function (image, x, y, width, height) {
+gCanvasLayer.prototype.placeImage = function (image, x, y, width, height) {
                                     this.ctx.drawImage(image, x, y, width, height);
                                     return this;
+                                };
+gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, width, height, fill) {
+                                    this.ctx.beginPath();
+                                    this.ctx.lineWidth = lineWidth; //  4
+                                    this.ctx.strokeStyle = strokeStyle; //  "black";
+                                    this.ctx.rect(x, y, width, height);
+                                    this.ctx.stroke();
+                                    this.ctx.fillStyle = fill;
+                                    this.ctx.fillRect(x, y, width, height); 
                                 };
 //================================================================================================================================
 

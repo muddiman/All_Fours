@@ -58,6 +58,7 @@
 
 /*  imports */
 import { SETTINGS }                 from "./lib/settings.mjs";
+import { Display }                  from "./lib/display-interface.mjs";
 import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
@@ -149,7 +150,7 @@ var Game = {
 };
 Game.SETTINGS = SETTINGS;
 
-Game.SETTINGS.init(OFF, OFF, OFF, 7, 0, 0, 0);
+Game.SETTINGS.init(OFF, OFF, OFF, 7, 0, 0, 0);      //  see settings.mjs
 
 Game.GamePlay = {
     HI:     null,
@@ -188,10 +189,10 @@ Game.Background = {
     }
 };
 
-Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
+// Game.Background.display = new gCanvasLayer("game_board", LEFTOFFSET, TOPOFFSET, WIDTH, HEIGHT, OPAQUE,     0, 68, 102,    0);
 Game.Screens = {
-    gameScreen  : new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
-    msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, TRANSPARENT, 2, 255, 255, 255),
+    // gameScreen  : new gCanvasLayer("card_layer",   LEFTOFFSET, TOPOFFSET, WIDTH,     HEIGHT,     TRANSPARENT, 1, 255, 255, 255),
+    // msgScreen   : new gCanvasLayer("msg_layer",    LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, TRANSPARENT, 2, 255, 255, 255),
     menuScreen  : new gCanvasLayer("menu_layer",   LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         3, 204, 204, 204),
     pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),
     videoScreen : new gCanvasLayer("video_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, TRANSPARENT, 5,   0,   0,   0),  
@@ -366,7 +367,7 @@ Game.Components.deck = {
 //  Load JSON file from file system
 // var fs = require('fs');
 
-/*   game state */
+/*   game states */
 Game.State = {
     assetsLoaded:    false,
     startOfFourteen:    false,
@@ -1078,20 +1079,20 @@ function displayLabels() {
 //  Display.onBackground.
 
 function displayUserCard() {
-    playCard('bottom', Game.Components.gameboard.user);
+    Display.playCard('bottom', Game.Components.gameboard.user);
 }
 
 function displayComputerCard() {
-    playCard('top', Game.Components.gameboard.computer);
+    Display.playCard('top', Game.Components.gameboard.computer);
 }
 
-function displayShowcaseCard() {
+/* function displayShowcaseCard() {
     // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
     let bigCard = Game.Components.gameboard.select;
     let c = Game.Screens.gameScreen.canvas;
     let gsx = Game.Screens.gameScreen.ctx;
     gsx.drawImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
-}
+} */
 
 function emphasizeTrump() {
     // displays an oversize trumpcard for three and a half secs
@@ -1177,7 +1178,7 @@ function enlargeCard(cardNumber) {
  * 
  * @param {object} player object
  */
-function displayPlayerHand(player) {
+/* function displayPlayerHand(player) {
     return new Promise(function (resolve) {
         let c = Game.Screens.gameScreen.canvas;
         let x = Game.Screens.gameScreen.ctx;
@@ -1189,7 +1190,7 @@ function displayPlayerHand(player) {
             x.drawImage(player.hand[i].image, coordX, coordY, CARD_W, CARD_H);
         }
     });
-}
+} */
 
 /**
  * Displays the kickcard/trump in the top left corner of the gameboard
@@ -1215,7 +1216,7 @@ function displayTrump(trump) {
         return console.log('Fail: image object does NOT exist!');
     }
 } */
-
+/* 
 function displayMessage() {
     document.getElementById("msg_layer").style.visibility = "visible";
     var m = Game.Screens.msgScreen.canvas;
@@ -1226,7 +1227,7 @@ function displayMessage() {
     let posY      = 100;
     c.beginPath();
     c.lineWidth = 2;
-    c.strokeStyle = "rgba(0,0,0,0.0)";
+    c.strokeStyle = "rgba(0,0,0,0.0)";  //  black, opaque
     c.rect(posX, posY, boxWidth, boxHeight);
     c.stroke();
     //c.globalAlpha=0.4;
@@ -1248,7 +1249,7 @@ function clearMsgBoard() {                      // garbage collection
     Game.Components.msgboard.init();
     document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
     document.getElementById("msg_layer").style.visibility = "hidden";
-}
+} */
 
 function gameMenu() {
     // pass;
@@ -1336,6 +1337,7 @@ var asset2 = new Promise(function (resolve, reject) {
 });
 var asset3 = new Promise(function (resolve, reject) {
     _initializeScreens();
+    //  Display.init();
     resolve(`3`);
 });
 var asset4 = new Promise(function (resolve, reject) {
@@ -1376,12 +1378,15 @@ var asset7 = new Promise(function (resolve, reject) {
 /*  INITIALIZE GRAPHICS OBJECTS */
 function _initializeScreens() {
     let s = [];
-    s[0] = Promise.resolve(Game.Background.display.init()); // screens[0] = gameBoard;
-    s[1] = Promise.resolve(Game.Screens.gameScreen.init()); // screens[1] = cardsLayer;
-    s[2] = Promise.resolve(Game.Screens.msgScreen.init());  // screens[2] = msgLayer;
+    // s[0] = Promise.resolve(Game.Background.display.init()); // screens[0] = gameBoard;
+    s[0] = Promise.resolve(Display.init()); // screens[0] = gameBoard;
+    // s[1] = Promise.resolve(Game.Screens.gameScreen.init()); // screens[1] = cardsLayer;
+    // s[2] = Promise.resolve(Game.Screens.msgScreen.init());  // screens[2] = msgLayer;
     s[3] = Promise.resolve(Game.Screens.menuScreen.init()); // screens[3] = menuLayer;
     s[4] = Promise.resolve(Game.Screens.videoScreen.init());// screens[4] = videoClipsLayer;
     s[5] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
+    // s[6] = Promise.resolve(Display.onBackground.init()); // screens[0] = gameBoard;
+
     // s[6] = Promise.resolve(Game.debug.screen.init());       // screens[6] = debug_screen;
     Promise.all([s[0], s[1], s[2], s[3], s[4], s[5], s[6]]).then((s) => {
         console.log("Screens initialized");
@@ -1401,9 +1406,9 @@ function loadCutScenes() {
 
 function loadScreenCache() {
     let screens = [];
-    screens[0] = Game.Background.display;     // and scoreLayer 
-    screens[1] = Game.Screens.gameScreen;
-    screens[2] = Game.Screens.msgScreen;
+    screens[0] = Display.onBackground;   // Game.Background.display;     // and scoreLayer 
+    screens[1] = Display.onCardScreen;
+    screens[2] = Display.onMsgScreen;
     screens[3] = Game.Screens.menuScreen;
     screens[4] = Game.Screens.videoScreen;
     screens[5] = Game.Screens.pauseScreen;
@@ -1425,32 +1430,30 @@ function displayDebugScreen() {
     // x.fillText(Game.Player.computer.name, 0, 0);            //  test
 }
 
-
-
-function displayBackground() {
-    displayLabels();
-    displayScore(Game.Background.scoreboard);
-    displayTrump(Game.Components.deck.getTrump());
-    Game.Background.update(false);
-}
-
 function updateGameScreen() {
     Game.Components.gameboard.isUpdated = true;
 }
 
+
+function displayBackground() {
+    Display.labels(Game.Player.human.hand).scoreboard(Game.Player);
+    if (Game.Components.deck.getTrump()) {
+        Display.trump(Game.Components.deck.getTrump());
+    }
+}
+
 function displayGameScreen() {
     if (Game.Components.gameboard.computer) {
-        displayComputerCard();
+        Display.playCard('top', Game.Components.gameboard.computer);
     }
     if (Game.Components.gameboard.user) {
-        displayUserCard();
+        Display.playCard('bottom', Game.Components.gameboard.user);
     }
     if (Game.Player.human.hand) {
-        displayPlayerHand(Game.Player.human);
-        //selectCard(human);
+        Display.hand(Game.Player.human.hand);
     }
     if (Game.Components.gameboard.select) {
-        displayShowcaseCard();
+        Display.showcaseCard(Game.Components.gameboard.select);
     }
 }
 
@@ -1498,11 +1501,11 @@ function displayCutScene() {
 
 function _drawGameScreen() {
     if (Game.Components.gameboard.isUpdated === true) {
-        Game.Screens.gameScreen.clear();
+        Display.onCardScreen.clear();
         displayGameScreen();
         Game.Components.gameboard.isUpdated = false;
     }
-    Game.Screens.gameScreen.clear();
+    Display.onCardScreen.clear();
     displayGameScreen();
 }
 
@@ -1521,8 +1524,9 @@ function _drawVideoScreen() {
 
 function _drawMsgScreen() {
     if (Game.Components.msgboard.visible === true) {
-    Game.Screens.msgScreen.clear();
-    displayMessage();
+    //Game.Screens.msgScreen.clear();
+    Display.onMsgScreen.clear();
+    Display.message(Game.Components.msgboard);
     // updateMsgScreen();
     }
 }
@@ -1538,12 +1542,7 @@ function _drawPauseScreen() {
 }
 
 function _drawBackground() {
-    if (Game.Background.isUpdated === true) {
-        Game.Background.display.clear();
-        displayBackground();
-        //  Game.Background.isUpdated = false;
-    }
-    Game.Background.display.clear();
+    Display.onBackground.clear();
     displayBackground(); 
 }
 function _drawDebugScreen() {
@@ -1573,7 +1572,7 @@ function displayMenuScreen() {
 }
 
 function _renderAllScreens() {   
-    _drawBackground();
+    _drawBackground();              //      Display.onBackground.labels()       //  .trump(state).scoreboard(score);
     _drawGameScreen();
     _drawMsgScreen();
     _drawMenuScreen();
