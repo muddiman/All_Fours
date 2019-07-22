@@ -82,7 +82,11 @@ gCanvasLayer.prototype.setFont  = function (fontString) {
                                      return this;
                                 };
 /*  drawing functions    */                            
-gCanvasLayer.prototype.text = function (text, color, x, y) {
+gCanvasLayer.prototype.text = function (text, color, x, y, centered) {
+                                    if (centered === true){
+                                        this.ctx.textAlign    = "center";
+                                        this.ctx.textBaseline = "middle";
+                                    }
                                     this.ctx.fillStyle = color;         //  in rgb or rgba string
                                     this.ctx.fillText(text, x, y);
                                     return this;
@@ -91,15 +95,23 @@ gCanvasLayer.prototype.placeImage = function (image, x, y, width, height) {
                                     this.ctx.drawImage(image, x, y, width, height);
                                     return this;
                                 };
-gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, width, height, fill) {
+gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, width, height, color) {
                                     this.ctx.beginPath();
                                     this.ctx.lineWidth = lineWidth; //  4
                                     this.ctx.strokeStyle = strokeStyle; //  "black";
                                     this.ctx.rect(x, y, width, height);
                                     this.ctx.stroke();
-                                    this.ctx.fillStyle = fill;
+                                    this.ctx.fillStyle = color;
                                     this.ctx.fillRect(x, y, width, height); 
+                                    return this;
                                 };
+gCanvasLayer.prototype.shadow = function (color, xOffset, yOffset, blur) {
+                                    this.ctx.shadowBlur = blur;
+                                    this.ctx.shadowOffsetX = xOffset;
+                                    this.ctx.shadowOffsetY = yOffset;
+                                    this.ctx.shadowColor = color;
+                                    return this;
+                                };                                
 //================================================================================================================================
 
 /**
@@ -107,7 +119,7 @@ gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, w
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.4
+ *  @version   0.8.6
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.

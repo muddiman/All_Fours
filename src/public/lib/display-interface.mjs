@@ -12,34 +12,34 @@ const LEFTOFFSET=15;
 const TOPOFFSET=180;
 const WIDTH=700;
 const HEIGHT=450;
+const MARGIN=5;
+const scoreboardwIDTH=260;
+const scoreboardHEIGHT=120;
 const OPAQUE=1.0;
 const TRANSPARENT=0;
 const CARD_W=72;
 const CARD_H=96;
+const USERHAND_Y=340;
 
 /*  IMPORTS */
-/*  import screens  */
+/*  the screens  */
 import { gCanvasLayer } from "./screen_update.mjs";
 
-/*  CLASSES */
-/*  OJECTS  */
-var Game = {
-    Background: {},
-    Screens:    {}
-};
+/*  The Display OBJECT  */
 
 export var Display = {
     onBackground:          new gCanvasLayer("game_board",    0, "rgba( 68, 102, 210, 1.0)"),
     onCardScreen:          new gCanvasLayer("card_layer",    1, `rgba(  0,   0,   0, 0.0)`),
     onMsgScreen:           new gCanvasLayer("msg_layer",     2, `rgba(255, 255, 255, 0.0)`),
-    // onMenuScreen:       new gCanvasLayer("menu_layer",    3, `rgba(204, 204, 204, 0.8)`),
-    // onVideoScreen:      new gCanvasLayer("video_screen",  5, `rgba(  0,   0,   0, 0.0)`),
+    onMenuScreen:          new gCanvasLayer("menu_layer",    3, `rgba(204, 204, 204, 0.8)`),
+    onVideoScreen:         new gCanvasLayer("video_screen",  5, `rgba(  0,   0,   0, 0.0)`),
     init:       function () {
                     this.onBackground.init();
                     this.onCardScreen.init();
                     this.onMsgScreen.init();
-                    /* this.onMenuScreen.init();
-                    this.onVideoScreen.init(); */
+                    this.onMenuScreen.init();
+                    this.onVideoScreen.init();
+                    this.onVideoScreen.canvas.style.visibility = "hidden";     
                     return this;
                 },
 /*  methods  */
@@ -53,33 +53,25 @@ export var Display = {
     scoreboard: function (players) {
                     let c = this.onBackground.canvas;
                     const x = this.onBackground.ctx;
-                    const upperLeftCornerX = c.width - 265;         //   (LxB: 260 x 120 box; x,y => 400,5)
-                    const upperLeftCornerY = 5;
-                    const width = 260;
-                    const height = 120;
-                    /*  rectangle   */
-                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, width, height, "#ff0000");
-                    /*  shadow   */
-                    x.shadowBlur = 40;
-                    x.shadowOffsetX = 10;
-                    x.shadowOffsetY = 10;
-                    x.shadowColor = "black";
-                    /* text */
+                    const upperLeftCornerX = c.width - scoreboardwIDTH - MARGIN;         //   (LxB: 260 x 120 box; x,y => 400,5)
+                    const upperLeftCornerY = MARGIN;
+                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, scoreboardwIDTH, scoreboardHEIGHT, "#ff0000")
+                        .shadow("black", 10, 10, 40);
                     this.onBackground.setFont("bold 30px Arial")
-                        .text(players.computer.name, "#ffffff", upperLeftCornerX + 15, 40)
-                        .text(players.human.name,    "#ffffff", upperLeftCornerX + 15, 105)
-                        .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40)      //          
-                        .text(players.human.score,    "#ffffff", upperLeftCornerX + 215, 105);      //          
+                        .text(players.computer.name,  "#ffffff", upperLeftCornerX + 15, 40, false)
+                        .text(players.human.name,     "#ffffff", upperLeftCornerX + 15, 105, false)
+                        .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40, false)      //          
+                        .text(players.human.score,    "#ffffff", upperLeftCornerX + 215, 105, false);      //          
                     return this;
                 },                  
     trump:      function (card) {
-                    const topCornerX = 5; // 5 pixels in
-                    const topCornerY = 5;
+                    const topCornerX = MARGIN; // 5 pixels in
+                    const topCornerY = MARGIN;
                     this.onBackground.placeImage(card.image, topCornerX, topCornerY, CARD_W, CARD_H); // upper left corner (x,y) => (5,5)
                     return this;
                 },
     playCard:   function (playPosition, card) {
-                    var c = this.onCardScreen.canvas;
+                    const c = this.onCardScreen.canvas;
                     const x = this.onCardScreen.ctx;
                     const xCenter = c.width  / 2;
                     const yCenter = c.height / 2;
@@ -102,7 +94,7 @@ export var Display = {
                 },
     hand:       function (hand) {
                         let coordX;
-                        let coordY = 340;
+                        const coordY = USERHAND_Y;
                         for (let i = 0; i < hand.length; i++) {
                             coordX = cardLocation(i, hand.length);
                             this.onCardScreen.placeImage(hand[i].image, coordX, coordY, CARD_W, CARD_H);
@@ -111,45 +103,73 @@ export var Display = {
                 },
     showcaseCard:   function (bigCard) {
                     // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
-                    let c = Display.onCardScreen.canvas;
+                    const c = Display.onCardScreen.canvas;
                     this.onCardScreen.placeImage(bigCard.image, c.width / 2 - 0.75 * CARD_W, c.height - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
                 },                
                     
     message:    function (msgboard) {
-                    document.getElementById("msg_layer").style.visibility = "visible";
-                    var m = this.onMsgScreen.canvas;
-                    const c = this.onMsgScreen.ctx;
-                    /*  c.beginPath();
-                    c.lineWidth = 2;
-                    c.strokeStyle = "black";
-                    c.rect(170, 100, 400, 200);
-                    c.stroke(); */
-                    this.onMsgScreen.drawRectangle("black", 2, 170, 100, 400, 200, "rgba(0,0,0, 0.0)");
-                    c.textAlign    = "center";
-                    c.textBaseline = "middle";
-                    this.onMsgScreen.setFont("bold 20px Monaco").text(msgboard.text, "rgba(255, 255, 0, 1.0)", 200, 200);
-                    //c.globalAlpha=0.4;
-                    // c.fillStyle = "rgba(0,0,0, 0.0)"; // black, transparent
-                    //  c.fillRect(170, 100, 400, 200);
-                    // c.globalAlpha=0.1;
-                    // c.font = "60px Monaco";
-                    c.fillStyle = "rgba(255, 255, 0, 1.0)"; // white
-                    // let msgText = msgboard.text;
-                    //  c.fillText(msgboard.text, 200, 200);
-                    document.getElementById("msg_layer").addEventListener("click", this.clearMsgBoard);
+                    this.onMsgScreen.canvas.style.visibility = "visible";
+                    this.onMsgScreen.setFont("bold 20px Monaco")
+                        .text(msgboard.text, "rgba(255, 255, 0, 1.0)", WIDTH / 2, 200, true);
+                    this.onMsgScreen.canvas.addEventListener("click", this.clearMsgBoard);
                     let pauseID = setTimeout(()=>{
                         clearTimeout(pauseID);
                         this.clearMsgBoard(msgboard);
                     }, 3000);
                 },
     clearMsgBoard:  function (msgboard) {
-                    // let canvas = this.onMsgScreen.canvas;
-                    // let c = this.onMsgScreen.ctx;
-                    this.onMsgScreen.clear();
                     msgboard.init();
-                    document.getElementById("msg_layer").removeEventListener("click", this.clearMsgBoard);
-                    document.getElementById("msg_layer").style.visibility = "hidden";
+                    this.onMsgScreen.clear();
+                    this.onMsgScreen.canvas.removeEventListener("click", this.clearMsgBoard);
+                    this.onMsgScreen.canvas.style.visibility = "hidden";
+                },
+    menu:       function () {
+                    this.onMenuScreen.setFont("70px Arial")
+                        .text("Lets play", "rgba(254,254,254,1.0)", 200, 125, false )
+                        .setFont("100px Arial")
+                        .text("All Fours", "rgba(254,254,254,1.0)", 75, 250, false )
+                        .setFont("50px Arial")
+                        .text("loading...", "rgba(254,254,254,1.0)", 200, 415, false );
+                },
+    video:      function (videoclip) {
+                    const vWidth = 960/2;                     //  size(33%)
+                    const vHeight = 540/2;                    //  position
+                    const posX = WIDTH/2 - vWidth/2;          //  center of board
+                    const posY = HEIGHT/2 - vHeight/2;
+                    videoclip.addEventListener("play", () => {
+                        videoclip.addEventListener("end", () => {
+                                                            clearInterval(intervalID);
+                                                            this.removeVideo(videoclip);
+                                                        });
+                        this.onVideoScreen.canvas.addEventListener('click', () => {
+                                                                                        clearInterval(intervalID);
+                                                                                        this.removeVideo(videoclip);
+                                                                                    });
+                                            });
+                    let intervalID = setInterval(() => {      
+                        this.onVideoScreen.clear();
+                        this.onVideoScreen.shadow("rgba(0, 0, 0, 0.7)", 10, 15 ,10);
+                        this.onVideoScreen.placeImage(videoclip, posX, posY, vWidth, vHeight); 
+                        this.onVideoScreen.setFont('50px serif');
+                        let centerX = WIDTH / 2; //  - Number(textSize.width) / 2;
+                        this.onVideoScreen.text('Hang Jack!!!', 'rgb(255, 255, 255)', centerX, HEIGHT / 2, true);     
+                    }, 1000/15);
+                    this.onVideoScreen.canvas.style.visibility = "visible";    
+                    videoclip.play();
                 }, 
+    removeVideo: function (videoclip) {
+                    videoclip.pause();
+                    this.onVideoScreen.clear();
+                    this.onVideoScreen.canvas.removeEventListener('click', () => {
+                                                                                    removeVideo(videoclip);
+                                                                                    clearInterval(intervalID);
+                                                                                });
+                    videoclip.removeEventListener('end', () => {
+                                                                                    removeVideo(videoclip);
+                                                                                    clearInterval(intervalID);
+                                                                                });
+                    this.onVideoScreen.canvas.style.visibility = "hidden";    
+                },            
 };
 
 
@@ -160,7 +180,7 @@ function displayCardCache() {
 }
 
 function emphasizeTrump() {
-    // displays an oversize trumpcard for two secs
+    /* displays an oversize trumpcard for two secs  */
     let bigCard = Game.Components.deck.trump;
     let gsx = Game.Screens.gameScreen.ctx;
     let posX = 5;
@@ -246,7 +266,7 @@ function cardLocation(i, arrayLength) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.4
+ *  @version   0.8.6
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
