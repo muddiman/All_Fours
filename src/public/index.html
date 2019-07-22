@@ -1,22 +1,40 @@
 <!DOCTYPE HTML>
-<HTML>
+<HTML lang="en">
 <HEAD>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="css/frontpage.css"/>
     <title>Two-Man All Fours</title>
     <script type="text/javascript" src="scripts/main.js"></script>
 </HEAD>
 <BODY>
     <div class="headsup-display" id="banner"> 
-        <h1>Two-Man All Fours Game</h1>
-        <div class="component">
-            <a href="allfours.html"><button class="buttons" id="click">Let's Play!</button></a>
-        </div>
+        Two-Man All Fours Game
+    </div>
+    <div class="component">
+        <a href="allfours.html"><button class="buttons" id="click">Let's Play!</button></a>
     </div>
     <script>
         window.onload = function () {
+            let source;
+            if (window.innerWidth <= 450) {
+                console.log("mobile");      //   450x750
+                source = "";
+            }
+            if (window.innerWidth > 450 && window.innerWidth <= 900) {
+                console.log(`tablet`);      //  1024x1366
+                source = "";
+            } 
+            if (window.innerWidth > 900) {
+                console.log(`desktop`);     //  1920x1080
+                source = "img/playcards.jpg";
+            }
+            
+            console.log(`Width: ${window.innerWidth}, Height: ${window.innerHeight}`);
             let img = new Image();
             img.id = "cardImage";
-            img.src = "img/playcards.jpg";
+            img.src = source;
             img.onload = function () { 
                 initCanvas(img);
             };

@@ -6,7 +6,7 @@
         font-family: "Microsoft YaHei UI Light",'Times New Roman', Times, serif;
     }
     #controlPanel {
-        top: 180px;
+        top: 200px;
     }
     #loading {
         font-size: 15px;
@@ -117,6 +117,7 @@
 
     .menuContainer {
         padding: 5px;
+                
     }
 
     span.psw {

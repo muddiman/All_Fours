@@ -1,5 +1,5 @@
 * {
-    font: "Microsoft YeHai UI", tahoma;
+    font-family: "Segoe UI", consolas, tahoma;
 }
 /*  elements    */
 button {
@@ -21,8 +21,9 @@ h1 {
 /*  classes */
 .headsup-display {
     position: fixed;
-    font-family: Monaco, consolas;
+    font-family: "Microsoft YaHei UI Light", "Segoe UI", consolas;
     font-weight: bolder;
+    text-align: center;
     margin: 0;
     padding: 0;
     z-index: 1;
@@ -47,8 +48,17 @@ h1 {
     background-color: rgba(0, 0, 0, 0.6);
     color: rgb(9, 247, 21);
     bottom: 100px;
-    right: 450px;
+    /* left: 50%; */
+    
 }
 #click:hover {
     background-color: rgba(255, 0, 0, 1.0);
+}
+
+/*  Media Queries   */
+@media screen and (max-width: 450px) {
+    #banner {font-size: 30px; color: green;}
+}
+@media screen and (min-width: 900px) {
+    #banner {font-size: 70px; }
 }

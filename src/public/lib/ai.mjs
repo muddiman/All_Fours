@@ -407,7 +407,7 @@ function isHangJackInPlay(hand, kickCard) {
  *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.4
+ *  @version   0.8.6
  *  @since     2018-10-1
  *  @license   Dual license - MIT & GPL
  *  @See:      http://www.gnu.org/licenses/gpl.html
