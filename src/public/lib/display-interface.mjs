@@ -8,10 +8,13 @@
                                                 Code: Display Interface    (Class Methods & that draws the graphics for the game)                        
 */
 /*  globals */
+var dWidth = 1;
+var dHeight = 1;
 const LEFTOFFSET=15;
 const TOPOFFSET=180;
 const WIDTH=700;
 const HEIGHT=450;
+const SCALE=scale(dWidth, dHeight);
 const MARGIN=5;
 const scoreboardwIDTH=260;
 const scoreboardHEIGHT=120;
@@ -172,6 +175,15 @@ export var Display = {
                 },            
 };
 
+function scale(device_width, device_height) {
+    let scale_factor = 1;
+    if (device_width <= device_height) {
+        scale_factor = WIDTH / device_width;
+    } else {
+        scale_factor = HEIGHT / device_height;
+    }
+    return scale_factor;
+}
 
 function displayCardCache() {
     for (card in gCardImageCacheObj) {
