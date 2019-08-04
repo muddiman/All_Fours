@@ -12,21 +12,33 @@ const LEFTOFFSET=15;
 const TOPOFFSET=180;
 const WIDTH=700;
 const HEIGHT=450;
+const devWidth=window.innerWidth;
+const devHeight=window.innerHeight;
 const MARGIN=5;
-const scoreboardwIDTH=260;
+const scoreboardWIDTH=260;
 const scoreboardHEIGHT=120;
 const OPAQUE=1.0;
 const TRANSPARENT=0;
 const CARD_W=72;
 const CARD_H=96;
-const USERHAND_Y=340;
+export const USERHAND_Y=340;
+// var displayScale = scale(devWidth, devHeight);
+/* const gameWIDTH  = Math.floor(displayScale * devWidth);
+const gameHEIGHT = Math.floor(displayScale * devHeight);
+const gameMARGIN = Math.floor(displayScale * MARGIN);
+const gameLEFTOFFSET = Math.floor(displayScale * LEFTOFFSET);
+const gameTOPOFFSET = Math.floor(displayScale * TOPOFFSET);
+const gameCARD_W = Math.floor(displayScale * CARD_W);
+const gameCARD_H = Math.floor(displayScale * CARD_H);
+const gameUSERHAND_Y = Math.floor(displayScale * USERHAND_Y);
+const gameScoreboardWIDTH = Math.floor(displayScale * scoreboardWIDTH);
+const gameScoreboardHEIGHT = Math.floor(displayScale * scoreboardHEIGHT); */
 
 /*  IMPORTS */
 /*  the screens  */
 import { gCanvasLayer } from "./screen_update.mjs";
 
 /*  The Display OBJECT  */
-
 export var Display = {
     onBackground:          new gCanvasLayer("game_board",    0, "rgba( 68, 102, 210, 1.0)"),
     onCardScreen:          new gCanvasLayer("card_layer",    1, `rgba(  0,   0,   0, 0.0)`),
@@ -44,7 +56,8 @@ export var Display = {
                 },
 /*  methods  */
     labels:     function (hand) {
-                    this.onBackground.setFont("bold 15px Arial").text("TRUMP", "rgba(254,254,254,1.0)", 15, 30 + CARD_H); 
+                    let fontSize = Math.floor(this.onBackground.scale * 15);    
+                    this.onBackground.setFont(`bold ${fontSize}px Arial`).text("TRUMP", "rgba(254,254,254,1.0)", 15, 30 + CARD_H); 
                     for (let index = 0; index < hand.length; index++) {
                         this.onBackground.text(index + 1, "rgba(254,254,254,1.0)", cardLocation(index, hand.length)  + CARD_W / 4, HEIGHT - 2);
                     }
@@ -53,11 +66,12 @@ export var Display = {
     scoreboard: function (players) {
                     let c = this.onBackground.canvas;
                     const x = this.onBackground.ctx;
-                    const upperLeftCornerX = c.width - scoreboardwIDTH - MARGIN;         //   (LxB: 260 x 120 box; x,y => 400,5)
+                    const upperLeftCornerX = WIDTH - scoreboardWIDTH - MARGIN;         //   (LxB: 260 x 120 box; x,y => 400,5)
                     const upperLeftCornerY = MARGIN;
-                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, scoreboardwIDTH, scoreboardHEIGHT, "#ff0000")
+                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, scoreboardWIDTH, scoreboardHEIGHT, "#ff0000")
                         .shadow("black", 10, 10, 40);
-                    this.onBackground.setFont("bold 30px Arial")
+                    let fontSize = Math.floor(this.onBackground.scale * 30);    
+                    this.onBackground.setFont(`bold ${fontSize}px Arial`)
                         .text(players.computer.name,  "#ffffff", upperLeftCornerX + 15, 40, false)
                         .text(players.human.name,     "#ffffff", upperLeftCornerX + 15, 105, false)
                         .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40, false)      //          
@@ -73,23 +87,23 @@ export var Display = {
     playCard:   function (playPosition, card) {
                     const c = this.onCardScreen.canvas;
                     const x = this.onCardScreen.ctx;
-                    const xCenter = c.width  / 2;
-                    const yCenter = c.height / 2;
+                    const xCenter = WIDTH  / 2;
+                    const yCenter = HEIGHT / 2;
                     switch (playPosition) {
                         case "left":
-                            x.drawImage(card.image, xCenter - 60, yCenter - 30);
+                            this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
                             break;
                         case "top":
-                            x.drawImage(card.image, xCenter - 40, yCenter - 50);
+                            this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 50, CARD_W, CARD_H);
                             break;
                         case "right":
-                            x.drawImage(card.image, xCenter - 20, yCenter - 30);
+                            this.onCardScreen.placeImage(card.image, xCenter - 20, yCenter - 30, CARD_W, CARD_H);
                             break;
                         case "bottom":
-                            x.drawImage(card.image, xCenter - 40, yCenter - 10);
+                            this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 10, CARD_W, CARD_H);
                             break;
                         default:
-                            x.drawImage(card.image, xCenter - 60, yCenter - 30);
+                            this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
                     }
                 },
     hand:       function (hand) {
@@ -104,12 +118,13 @@ export var Display = {
     showcaseCard:   function (bigCard) {
                     // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
                     const c = Display.onCardScreen.canvas;
-                    this.onCardScreen.placeImage(bigCard.image, c.width / 2 - 0.75 * CARD_W, c.height - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
+                    this.onCardScreen.placeImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
                 },                
                     
     message:    function (msgboard) {
                     this.onMsgScreen.canvas.style.visibility = "visible";
-                    this.onMsgScreen.setFont("bold 20px Monaco")
+                    let fontSize = Math.floor(this.onBackground.scale * 20);    
+                    this.onMsgScreen.setFont(`bold ${fontSize}px Monaco`)
                         .text(msgboard.text, "rgba(255, 255, 0, 1.0)", WIDTH / 2, 200, true);
                     this.onMsgScreen.canvas.addEventListener("click", this.clearMsgBoard);
                     let pauseID = setTimeout(()=>{
@@ -124,11 +139,14 @@ export var Display = {
                     this.onMsgScreen.canvas.style.visibility = "hidden";
                 },
     menu:       function () {
-                    this.onMenuScreen.setFont("70px Arial")
+                    let fontSize = Math.floor(this.onBackground.scale * 30);    
+                    let fontSize1 = Math.floor(this.onBackground.scale * 100);    
+                    let fontSize2 = Math.floor(this.onBackground.scale * 50);    
+                    this.onMenuScreen.setFont(`${fontSize}px Arial`)
                         .text("Lets play", "rgba(254,254,254,1.0)", 200, 125, false )
-                        .setFont("100px Arial")
+                        .setFont(`${fontSize1}px Arial`)
                         .text("All Fours", "rgba(254,254,254,1.0)", 75, 250, false )
-                        .setFont("50px Arial")
+                        .setFont(`${fontSize2}px Arial`)
                         .text("loading...", "rgba(254,254,254,1.0)", 200, 415, false );
                 },
     video:      function (videoclip) {
@@ -150,7 +168,8 @@ export var Display = {
                         this.onVideoScreen.clear();
                         this.onVideoScreen.shadow("rgba(0, 0, 0, 0.7)", 10, 15 ,10);
                         this.onVideoScreen.placeImage(videoclip, posX, posY, vWidth, vHeight); 
-                        this.onVideoScreen.setFont('50px serif');
+                        let fontSize = Math.floor(this.onBackground.scale * 50);    
+                        this.onVideoScreen.setFont(`${fontSize}px serif`);
                         let centerX = WIDTH / 2; //  - Number(textSize.width) / 2;
                         this.onVideoScreen.text('Hang Jack!!!', 'rgb(255, 255, 255)', centerX, HEIGHT / 2, true);     
                     }, 1000/15);
@@ -172,6 +191,19 @@ export var Display = {
                 },            
 };
 
+// module.exports = Display;
+
+function scale(deviceWidth, deviceHeight) {
+    let scale = 1;
+    if (deviceWidth <= WIDTH + 50 || deviceHeight <= HEIGHT + 50) {
+        if (deviceWidth <= deviceHeight) {
+            scale = deviceWidth / (WIDTH + 50);
+        } else { 
+            scale = deviceHeight / (HEIGHT + 50);
+        }        
+    }
+    return scale;
+}
 
 function displayCardCache() {
     for (card in gCardImageCacheObj) {
@@ -256,7 +288,7 @@ function cleanBoard() {
 }
 
 function cardLocation(i, arrayLength) {
-    let xCenter = Display.onBackground.canvas.width/2;
+    let xCenter = WIDTH/2; //  Display.onBackground.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
     return xLocation; 
 }

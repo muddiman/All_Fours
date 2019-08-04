@@ -15,41 +15,22 @@ const defaultWIDTH=700;
 const defaultHEIGHT=450;
 const LEFTOFFSET=15;
 const TOPOFFSET=180;
+const MARGIN=50;
+// export const scaleFactor = scale(window.innerWidth, window.innerHeight);
 
-/* mobile width:
-    tablet width:
-    desktop/laptop width:
+/*  mobile width:    300,
+    tablet width:    500,
+    desktop/laptop width:   700,
 */
 
-/* var viewportWIDTH = window.innerWidth;
-var viewportHEIGHT= window.innerHeight;
-var WIDTH;
-var HEIGHT;
-export var RATIO;
-
-(function () {
-    switch (viewportWIDTH) {
-        case viewportWIDTH < 450:
-            WIDTH=300;
-            break;
-        case viewportWIDTH > 450 && viewportWIDTH < 750:
-            WIDTH=450;
-            break;
-        case viewportWIDTH > 750:
-            WIDTH=700;
-            break;
-        default:
-            break;
-    }
-    RATIO=(WIDTH / defaultWIDTH);
-    HEIGHT = Math.floor((WIDTH / defaultWIDTH) * defaultHEIGHT);
-})();
- */
 /*  screen canvas class */
 export function gCanvasLayer(ID, zIndex, color) {
-    this.canvas = document.createElement("canvas");
+    this.width  =  Math.floor(this.scale * defaultWIDTH);   //  WIDTH;
+    this.height =  Math.floor(this.scale * defaultHEIGHT);  //  HEIGHT;
+    this.canvas =  document.createElement("canvas");
     this.init = function () {
-        this.canvas.width = this.width;
+        // this.setScale(window.innerWidth, window.innerHeight);
+        this.canvas.width  = this.width;
         this.canvas.height = this.height;
         this.canvas.id = ID;
         this.z = zIndex;
@@ -63,55 +44,72 @@ export function gCanvasLayer(ID, zIndex, color) {
     };
 }
 /*  Prototypes  */
-//  universal properties
-gCanvasLayer.prototype.width    = 700;  //  WIDTH;
-gCanvasLayer.prototype.height   = 450;  //  HEIGHT;
-gCanvasLayer.prototype.xOffset  = LEFTOFFSET;
-gCanvasLayer.prototype.yOffset  = TOPOFFSET;
+// universal properties
+gCanvasLayer.prototype.scale    = setScale(window.innerWidth, window.innerHeight);   // 1;
+gCanvasLayer.prototype.getScale = function () {
+                                    return this.scale;
+                                };
+gCanvasLayer.prototype.xOffset  = LEFTOFFSET;  //  Math.floor(this.scale * LEFTOFFSET);
+gCanvasLayer.prototype.yOffset  = TOPOFFSET;  //    Math.floor(this.scale * TOPOFFSET);
 //  universal methods
 gCanvasLayer.prototype.clear    = function () {
                                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                                     return this;
                                 };
-gCanvasLayer.prototype.clearSection    = function (x, y, width, height) {
-                                    this.ctx.clearRect(x, y, width, height);
+gCanvasLayer.prototype.clearSection  = function (x, y, width, height) {
+                                    this.ctx.clearRect(this.scale * x, this.scale * y, this.scale * width, this.scale * height);
                                     return this;
                                 };
 gCanvasLayer.prototype.setFont  = function (fontString) {
                                      this.ctx.font = fontString;
                                      return this;
                                 };
-/*  drawing functions    */                            
+/*  the universal drawing functions    */                            
 gCanvasLayer.prototype.text = function (text, color, x, y, centered) {
                                     if (centered === true){
                                         this.ctx.textAlign    = "center";
                                         this.ctx.textBaseline = "middle";
                                     }
                                     this.ctx.fillStyle = color;         //  in rgb or rgba string
-                                    this.ctx.fillText(text, x, y);
+                                    this.ctx.fillText(text, this.scale * x, this.scale * y);
                                     return this;
                                 };
 gCanvasLayer.prototype.placeImage = function (image, x, y, width, height) {
-                                    this.ctx.drawImage(image, x, y, width, height);
+                                    this.ctx.drawImage(image, this.scale * x, this.scale * y, this.scale * width, this.scale * height);
                                     return this;
                                 };
 gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, width, height, color) {
                                     this.ctx.beginPath();
                                     this.ctx.lineWidth = lineWidth; //  4
                                     this.ctx.strokeStyle = strokeStyle; //  "black";
-                                    this.ctx.rect(x, y, width, height);
+                                    this.ctx.rect(this.scale * x, this.scale * y, this.scale * width, this.scale * height);
                                     this.ctx.stroke();
                                     this.ctx.fillStyle = color;
-                                    this.ctx.fillRect(x, y, width, height); 
+                                    this.ctx.fillRect(this.scale * x, this.scale * y, this.scale * width, this.scale * height); 
                                     return this;
                                 };
 gCanvasLayer.prototype.shadow = function (color, xOffset, yOffset, blur) {
                                     this.ctx.shadowBlur = blur;
-                                    this.ctx.shadowOffsetX = xOffset;
-                                    this.ctx.shadowOffsetY = yOffset;
+                                    this.ctx.shadowOffsetX = this.scale * xOffset;
+                                    this.ctx.shadowOffsetY = this.scale * yOffset;
                                     this.ctx.shadowColor = color;
                                     return this;
-                                };                                
+                                }; 
+
+function setScale(deviceWidth, deviceHeight) {
+    let scale = 1;
+    if (deviceWidth <= defaultWIDTH + MARGIN || deviceHeight <= defaultHEIGHT + MARGIN) {
+        if (deviceWidth <= deviceHeight) {
+            scale = deviceWidth /  (defaultWIDTH + MARGIN);
+        } else { 
+            scale = deviceHeight / (defaultHEIGHT + MARGIN);
+        }        
+    }
+    // console.log(`Screen Scale = ${scale}.`);
+    return scale;
+}
+                                
+
 //================================================================================================================================
 
 /**

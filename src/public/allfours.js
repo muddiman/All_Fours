@@ -62,7 +62,7 @@ import { Display }                  from "./lib/display-interface.mjs";
 import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
-import { gCanvasLayer }             from "./lib/screen.mjs";
+// import { gCanvasLayer }             from "./lib/screen_update.mjs";
 import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
@@ -188,7 +188,7 @@ Game.Background = {
 };
 
 Game.Screens = {
-    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),        //  to be removed
+    // pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),        //  to be removed
 };
 
 Game.Player = {
@@ -952,7 +952,7 @@ function displayCardCache() {                   //  A debugging function
 
 function removeUtilityScreens() {
     document.getElementById('menu_layer').style.visibility = "hidden";
-    document.getElementById('pause_screen').style.visibility = "hidden";
+    // document.getElementById('pause_screen').style.visibility = "hidden";
 }
 
 
@@ -991,8 +991,8 @@ var asset2 = new Promise(function (resolve, reject) {
     resolve(`2`);
 });
 var asset3 = new Promise(function (resolve, reject) {
-    _initializeScreens();
-    // Display.init();
+    // _initializeScreens();
+    Display.init();
     resolve(`3`);
 });
 var asset4 = new Promise(function (resolve, reject) {
@@ -1034,8 +1034,8 @@ var asset7 = new Promise(function (resolve, reject) {
 function _initializeScreens() {
     let s = [];
     s[0] = Promise.resolve(Display.init()); // screens[0] = gameBoard;    s[5] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
-    s[1] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
-    Promise.all([s[0], s[1]]).then((s) => {
+    // s[1] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
+    Promise.all([s[0]]).then((s) => {
         console.log("Screens initialized");
         return(s);
     });
@@ -1334,13 +1334,13 @@ function mainGameLoop() {
     Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
     .then(() => {
         if (DEBUG_MODE === true) {
-            Game.debug.console("DEBUG MODE ON!");
-            Game.debug.screen.init();
+            // Game.debug.console("DEBUG MODE ON!");
+            // Game.debug.screen.init();
             // Game.debug.msg("DEBUG MODE ON!");
-            Game.debug.display("DEBUG MODE ON!");
+            // Game.debug.display("DEBUG MODE ON!");
             // Game.debug.loadScreen();
         }
-        debug.console(Game.Player.human.hand);
+        // debug.console(Game.Player.human.hand);
         Display.onMenuScreen.clear();
         removeUtilityScreens();
         var gBoard = Empty;
@@ -1350,7 +1350,7 @@ function mainGameLoop() {
             gBoard = Empty;
         };
         Controller.listeners(document.getElementById("card_layer"), Game.Player.human.hand, inputUpdate);
-        debug.init();
+        // debug.init();
         playerNameChangeListener();
         Game.State.startOfGame = true;
         Game.Engine.start();
