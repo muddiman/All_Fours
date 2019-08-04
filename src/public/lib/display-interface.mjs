@@ -5,20 +5,20 @@
                                                 Title: THE ALL FOURS GAME
                                                 Language: Javascript
                                                 Programmer: Roger A. Clarke (A.K.A. .muddicode)
-                                                Code: Display Interface    (Class Methods & that draws the graphics for the game)                        
+                                                Code: Display Interface    (custom Object Methods  that renders the game compnents on the screen)                        
 */
 /*  globals */
-const LEFTOFFSET=15;
-const TOPOFFSET=180;
+// const LEFTOFFSET=15;
+// const TOPOFFSET=180;
 const WIDTH=700;
 const HEIGHT=450;
-const devWidth=window.innerWidth;
-const devHeight=window.innerHeight;
+// const devWidth=window.innerWidth;
+// const devHeight=window.innerHeight;
 const MARGIN=5;
 const scoreboardWIDTH=260;
 const scoreboardHEIGHT=120;
-const OPAQUE=1.0;
-const TRANSPARENT=0;
+// const OPAQUE=1.0;
+// const TRANSPARENT=0;
 const CARD_W=72;
 const CARD_H=96;
 export const USERHAND_Y=340;
@@ -36,7 +36,7 @@ const gameScoreboardHEIGHT = Math.floor(displayScale * scoreboardHEIGHT); */
 
 /*  IMPORTS */
 /*  the screens  */
-import { gCanvasLayer } from "./screen_update.mjs";
+import { gCanvasLayer } from "./screen.mjs";
 
 /*  The Display OBJECT  */
 export var Display = {
@@ -74,12 +74,12 @@ export var Display = {
                     this.onBackground.setFont(`bold ${fontSize}px Arial`)
                         .text(players.computer.name,  "#ffffff", upperLeftCornerX + 15, 40, false)
                         .text(players.human.name,     "#ffffff", upperLeftCornerX + 15, 105, false)
-                        .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40, false)      //          
-                        .text(players.human.score,    "#ffffff", upperLeftCornerX + 215, 105, false);      //          
+                        .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40, false)               
+                        .text(players.human.score,    "#ffffff", upperLeftCornerX + 215, 105, false);               
                     return this;
                 },                  
     trump:      function (card) {
-                    const topCornerX = MARGIN; // 5 pixels in
+                    const topCornerX = MARGIN;      // 5 pixels in
                     const topCornerY = MARGIN;
                     this.onBackground.placeImage(card.image, topCornerX, topCornerY, CARD_W, CARD_H); // upper left corner (x,y) => (5,5)
                     return this;
@@ -119,8 +119,7 @@ export var Display = {
                     // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
                     const c = Display.onCardScreen.canvas;
                     this.onCardScreen.placeImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
-                },                
-                    
+                },                                   
     message:    function (msgboard) {
                     this.onMsgScreen.canvas.style.visibility = "visible";
                     let fontSize = Math.floor(this.onBackground.scale * 20);    
@@ -170,7 +169,7 @@ export var Display = {
                         this.onVideoScreen.placeImage(videoclip, posX, posY, vWidth, vHeight); 
                         let fontSize = Math.floor(this.onBackground.scale * 50);    
                         this.onVideoScreen.setFont(`${fontSize}px serif`);
-                        let centerX = WIDTH / 2; //  - Number(textSize.width) / 2;
+                        let centerX = WIDTH / 2;                //  - Number(textSize.width) / 2;
                         this.onVideoScreen.text('Hang Jack!!!', 'rgb(255, 255, 255)', centerX, HEIGHT / 2, true);     
                     }, 1000/15);
                     this.onVideoScreen.canvas.style.visibility = "visible";    
@@ -191,114 +190,19 @@ export var Display = {
                 },            
 };
 
-// module.exports = Display;
-
-function scale(deviceWidth, deviceHeight) {
-    let scale = 1;
-    if (deviceWidth <= WIDTH + 50 || deviceHeight <= HEIGHT + 50) {
-        if (deviceWidth <= deviceHeight) {
-            scale = deviceWidth / (WIDTH + 50);
-        } else { 
-            scale = deviceHeight / (HEIGHT + 50);
-        }        
-    }
-    return scale;
-}
-
-function displayCardCache() {
-    for (card in gCardImageCacheObj) {
-        console.log(`${card} : ${gCardImageCacheObj[card].id}`);
-    }
-}
-
-function emphasizeTrump() {
-    /* displays an oversize trumpcard for two secs  */
-    let bigCard = Game.Components.deck.trump;
-    let gsx = Game.Screens.gameScreen.ctx;
-    let posX = 5;
-    let posY = 5;
-    gsx.drawImage(bigCard.image, posX, posY, 1.5 * CARD_W, 1.5 * CARD_H);
-}
-
-function rotateImage(img, x, y, angle) {
-    Game.Screens.gameScreen.ctx.save();
-
-    Game.Screens.gameScreen.ctx.translate(x, y);
-    Game.Screens.gameScreen.ctx.rotate(angle * this.CONVERT_TO_RADIANS);
-
-    Game.Screens.gameScreen.ctx.drawImage(img,
-        -(img.width / 2),
-        -(img.height / 2));
-    Game.Screens.gameScreen.ctx.restore();
-}
-
-function selectCard(player) {
-    let hand = player.hand;
-    let card = hand[0];
-    let image = card.image;
-    let c = Game.Screens.gameScreen.canvas;
-    let gsx = Game.Screens.gameScreen.ctx;
-    // let cardImgs = gCardImageCacheObj['jh'];
-    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
-    // cardLayer.ctx.scale(2,2);
-}
-
-function enlargeCard(cardNo) {
-    let hand = player.hand;
-    let card = hand[cardNo];
-    let image = card.image;
-    let c = Game.Screens.gameScreen.canvas;
-    let gsx = Game.Screens.gameScreen.ctx;
-    // let cardImgs = gCardImageCacheObj['jh'];
-    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); //, 142, 192);
-    // cardLayer.ctx.scale(2,2);
-}
-
-function acquireImage() {
-    let x = Game.Screens.gameScreen.ctx;
-    let imgData = x.getImageData(5, 5, CARD_W, CARD_H); // capture image from gameboard
-    x.putImageData(imgData, 200, 200); // place captured image info elsewhere
-    if (x.getImageData(200, 200, CARD_W, CARD_H)) {
-        return console.log('Pass: image object exists.');
-    } else {
-        return console.log('Fail: image object does NOT exist!');
-    }
-}
-
-function clearMsgBoard() { // garbage collection
-    // Game.Components.Sound.cardSlideSnd.play();
-    Game.Components.msgboard.init();
-    document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
-    document.getElementById("msg_layer").style.visibility = "hidden";
-}
-
-function gameMenu() {
-    // pass;
-    // menuLayer.init();
-}
-
-function removeGameMenu() {
-    document.getElementById('menu_layer').style.visibility = "hidden";
-}
-
-function cleanBoard() {
-    var c = Game.Background.ctx;
-    Game.Background.clear();
-    // c.clearRect(170, 100, 400, 200);
-}
-
 function cardLocation(i, arrayLength) {
-    let xCenter = WIDTH/2; //  Display.onBackground.canvas.width/2;
+    let xCenter = WIDTH/2;                      //  Display.onBackground.canvas.width/2;
     let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
     return xLocation; 
 }
+
 /** **************************************************************************************************************************************************************
  * 
  *  @copyright (c) 2019 Roger A. Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.6
+ *  @version   0.8.7
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
