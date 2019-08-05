@@ -244,9 +244,6 @@ Game.Components.deck = {
     trump: null,
     counter: 0,
     cardImagesLoaded:   function () {
-        // this.counter++;
-
-
         let percent = Math.floor((this.counter / 52) * 100);
         console.log(`${this.counter} card images loaded: ${percent}%`);
         let delayID = setTimeout(() => {
@@ -259,6 +256,10 @@ Game.Components.deck = {
             percent = Math.floor((this.counter / 52) * 100);
             console.log(`${this.counter} card images loaded: ${percent}%`);          
         }, 3000);
+        return this;
+        /* if (this.counter !== 52) {
+            this.init();
+        } */
     },
         /** creates deck (array of all 52 cards)
          *  @param: null
@@ -277,7 +278,8 @@ Game.Components.deck = {
                     rank++;
                 }
             }
-            console.log(`card images loaded: ${this.counter}`);
+            // console.log(`card images loaded: ${this.counter}`);
+            // this.cardImagesLoaded();
             return this;
     },
     shuffle: function () {
@@ -824,7 +826,7 @@ function trackCards(player, cardPlayed) {
  * @param {int} i integer [0 .. length of computer's hand]
  */
 function computerPlay(i) {  
-    console.trace('comuterPlay(i):');                        // run the 'thinking animation'
+    // console.trace('computerPlay(i):');                        // run the 'thinking animation'
     const card = Game.Player.computer.hand[i];
     Game.Components.gameboard.computer = card;
     debug.console(card.getCardName());
@@ -983,7 +985,7 @@ function removeUtilityScreens() {
  *  this will be handled by game-loader.js in the final version
  */
 var asset1 = new Promise(function (resolve, reject) {
-    Game.Components.deck.init();    // .cardImagesLoaded();     //  .isDeckLoaded();
+    Game.Components.deck.init().cardImagesLoaded().init().cardImagesLoaded();    // .cardImagesLoaded();     //  .isDeckLoaded();
     resolve(`1`);
 });
 var asset2 = new Promise(function (resolve, reject) {
@@ -1011,18 +1013,18 @@ var asset7 = new Promise(function (resolve, reject) {
     loadCutScenes();
     resolve(`7`);
 });
-/* var asset7 = new Promise(function (resolve, reject) {
+/* var asset8 = new Promise(function (resolve, reject) {
     Game.Sound.init();
-    resolve(`7`);
+    resolve(`8`);
     // var cardSlideSnd = new Sound("./lib/snd/ui-sound3.oga");
 
 }); */
-/* var asset7 = new Promise(function (resolve, reject) {
-    Game.Sound.init();
-    resolve(`7`);
+/* var asset9 = new Promise(function (resolve, reject) {
+    Game.Settings.init();
+    resolve(`9`);
 }); */
 
-/*     //  sound components      
+/*  //  sound components      
     // return gObjectsArr;
     resolve(`Assets loaded.`);
     reject(`Error: Assets were not all loaded.`);
@@ -1049,7 +1051,7 @@ function loadCutScenes() {                  //  load array of video clips in mem
     videoSource.setAttribute("type", "video/mp4");
     Game.Components.cutScenes[0].appendChild(videoSource); 
 }
-
+/*
 function loadScreenCache() {                    //  screen cache, used in debugging
     let screens = [];
     screens[0] = Display.onBackground;    
@@ -1063,7 +1065,7 @@ function loadScreenCache() {                    //  screen cache, used in debugg
     }
     return screens;                             // screens array
 }
-
+*/
 function displayDebugScreen() {
     //  Game.debug
     let c = Game.debug.screen.canvas;
@@ -1073,11 +1075,11 @@ function displayDebugScreen() {
     // x.font = "30px Consolas";
     // x.fillText(Game.Player.computer.name, 0, 0);            //  test
 }
-
+/*
 function updateGameScreen() {
     Game.Components.gameboard.isUpdated = true;
 }
-
+*/
 
 function displayBackground() {
     Display.labels(Game.Player.human.hand).scoreboard(Game.Player);
@@ -1331,7 +1333,7 @@ function mainGameLoop() {
 
 
     /*  PRE-GAME    */
-    Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
+    Promise.all([asset1, asset2, asset3, asset4, asset5, asset6, asset7]) 
     .then(() => {
         if (DEBUG_MODE === true) {
             // Game.debug.console("DEBUG MODE ON!");

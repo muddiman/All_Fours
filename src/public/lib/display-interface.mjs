@@ -149,7 +149,7 @@ export var Display = {
                         .text("loading...", "rgba(254,254,254,1.0)", 200, 415, false );
                 },
     video:      function (videoclip) {
-                    const vWidth = 960/2;                     //  size(33%)
+                    const vWidth = 960/2;                     //  size(50%)
                     const vHeight = 540/2;                    //  position
                     const posX = WIDTH/2 - vWidth/2;          //  center of board
                     const posY = HEIGHT/2 - vHeight/2;
