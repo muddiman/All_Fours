@@ -14,6 +14,7 @@ const WIDTH=700;
 const HEIGHT=450;
 // const devWidth=window.innerWidth;
 // const devHeight=window.innerHeight;
+
 const MARGIN=5;
 const scoreboardWIDTH=260;
 const scoreboardHEIGHT=120;
