@@ -62,7 +62,7 @@ import { Display }                  from "./lib/display-interface.mjs";
 import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
-import { gCanvasLayer }             from "./lib/screen.mjs";
+// import { gCanvasLayer }             from "./lib/screen_update.mjs";
 import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
@@ -188,7 +188,7 @@ Game.Background = {
 };
 
 Game.Screens = {
-    pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),        //  to be removed
+    // pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),        //  to be removed
 };
 
 Game.Player = {
@@ -244,9 +244,6 @@ Game.Components.deck = {
     trump: null,
     counter: 0,
     cardImagesLoaded:   function () {
-        // this.counter++;
-
-
         let percent = Math.floor((this.counter / 52) * 100);
         console.log(`${this.counter} card images loaded: ${percent}%`);
         let delayID = setTimeout(() => {
@@ -259,6 +256,10 @@ Game.Components.deck = {
             percent = Math.floor((this.counter / 52) * 100);
             console.log(`${this.counter} card images loaded: ${percent}%`);          
         }, 3000);
+        return this;
+        /* if (this.counter !== 52) {
+            this.init();
+        } */
     },
         /** creates deck (array of all 52 cards)
          *  @param: null
@@ -277,7 +278,8 @@ Game.Components.deck = {
                     rank++;
                 }
             }
-            console.log(`card images loaded: ${this.counter}`);
+            // console.log(`card images loaded: ${this.counter}`);
+            // this.cardImagesLoaded();
             return this;
     },
     shuffle: function () {
@@ -824,7 +826,7 @@ function trackCards(player, cardPlayed) {
  * @param {int} i integer [0 .. length of computer's hand]
  */
 function computerPlay(i) {  
-    console.trace('comuterPlay(i):');                        // run the 'thinking animation'
+    // console.trace('computerPlay(i):');                        // run the 'thinking animation'
     const card = Game.Player.computer.hand[i];
     Game.Components.gameboard.computer = card;
     debug.console(card.getCardName());
@@ -952,7 +954,7 @@ function displayCardCache() {                   //  A debugging function
 
 function removeUtilityScreens() {
     document.getElementById('menu_layer').style.visibility = "hidden";
-    document.getElementById('pause_screen').style.visibility = "hidden";
+    // document.getElementById('pause_screen').style.visibility = "hidden";
 }
 
 
@@ -983,7 +985,7 @@ function removeUtilityScreens() {
  *  this will be handled by game-loader.js in the final version
  */
 var asset1 = new Promise(function (resolve, reject) {
-    Game.Components.deck.init();    // .cardImagesLoaded();     //  .isDeckLoaded();
+    Game.Components.deck.init().cardImagesLoaded().init().cardImagesLoaded();    // .cardImagesLoaded();     //  .isDeckLoaded();
     resolve(`1`);
 });
 var asset2 = new Promise(function (resolve, reject) {
@@ -991,8 +993,8 @@ var asset2 = new Promise(function (resolve, reject) {
     resolve(`2`);
 });
 var asset3 = new Promise(function (resolve, reject) {
-    _initializeScreens();
-    // Display.init();
+    // _initializeScreens();
+    Display.init();
     resolve(`3`);
 });
 var asset4 = new Promise(function (resolve, reject) {
@@ -1011,18 +1013,18 @@ var asset7 = new Promise(function (resolve, reject) {
     loadCutScenes();
     resolve(`7`);
 });
-/* var asset7 = new Promise(function (resolve, reject) {
+/* var asset8 = new Promise(function (resolve, reject) {
     Game.Sound.init();
-    resolve(`7`);
+    resolve(`8`);
     // var cardSlideSnd = new Sound("./lib/snd/ui-sound3.oga");
 
 }); */
-/* var asset7 = new Promise(function (resolve, reject) {
-    Game.Sound.init();
-    resolve(`7`);
+/* var asset9 = new Promise(function (resolve, reject) {
+    Game.Settings.init();
+    resolve(`9`);
 }); */
 
-/*     //  sound components      
+/*  //  sound components      
     // return gObjectsArr;
     resolve(`Assets loaded.`);
     reject(`Error: Assets were not all loaded.`);
@@ -1034,8 +1036,8 @@ var asset7 = new Promise(function (resolve, reject) {
 function _initializeScreens() {
     let s = [];
     s[0] = Promise.resolve(Display.init()); // screens[0] = gameBoard;    s[5] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
-    s[1] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
-    Promise.all([s[0], s[1]]).then((s) => {
+    // s[1] = Promise.resolve(Game.Screens.pauseScreen.init());// screens[5] = pause_screen;
+    Promise.all([s[0]]).then((s) => {
         console.log("Screens initialized");
         return(s);
     });
@@ -1049,7 +1051,7 @@ function loadCutScenes() {                  //  load array of video clips in mem
     videoSource.setAttribute("type", "video/mp4");
     Game.Components.cutScenes[0].appendChild(videoSource); 
 }
-
+/*
 function loadScreenCache() {                    //  screen cache, used in debugging
     let screens = [];
     screens[0] = Display.onBackground;    
@@ -1063,7 +1065,7 @@ function loadScreenCache() {                    //  screen cache, used in debugg
     }
     return screens;                             // screens array
 }
-
+*/
 function displayDebugScreen() {
     //  Game.debug
     let c = Game.debug.screen.canvas;
@@ -1073,11 +1075,11 @@ function displayDebugScreen() {
     // x.font = "30px Consolas";
     // x.fillText(Game.Player.computer.name, 0, 0);            //  test
 }
-
+/*
 function updateGameScreen() {
     Game.Components.gameboard.isUpdated = true;
 }
-
+*/
 
 function displayBackground() {
     Display.labels(Game.Player.human.hand).scoreboard(Game.Player);
@@ -1331,16 +1333,16 @@ function mainGameLoop() {
 
 
     /*  PRE-GAME    */
-    Promise.all([asset1, asset2, asset3, asset4, asset5, asset6]) 
+    Promise.all([asset1, asset2, asset3, asset4, asset5, asset6, asset7]) 
     .then(() => {
         if (DEBUG_MODE === true) {
-            Game.debug.console("DEBUG MODE ON!");
-            Game.debug.screen.init();
+            // Game.debug.console("DEBUG MODE ON!");
+            // Game.debug.screen.init();
             // Game.debug.msg("DEBUG MODE ON!");
-            Game.debug.display("DEBUG MODE ON!");
+            // Game.debug.display("DEBUG MODE ON!");
             // Game.debug.loadScreen();
         }
-        debug.console(Game.Player.human.hand);
+        // debug.console(Game.Player.human.hand);
         Display.onMenuScreen.clear();
         removeUtilityScreens();
         var gBoard = Empty;
@@ -1350,7 +1352,7 @@ function mainGameLoop() {
             gBoard = Empty;
         };
         Controller.listeners(document.getElementById("card_layer"), Game.Player.human.hand, inputUpdate);
-        debug.init();
+        // debug.init();
         playerNameChangeListener();
         Game.State.startOfGame = true;
         Game.Engine.start();

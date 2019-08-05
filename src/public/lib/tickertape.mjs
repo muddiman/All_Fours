@@ -8,26 +8,22 @@
 */
 import { gCanvasLayer } from "./screen.mjs";
 
-
 export function tickertape(message) {
-    var width=window.innerWidth;
-    var height=50;
+    const width=window.innerWidth;
+    const height=50;
     var x=0;
     var y=0;
-    var t = new gCanvasLayer("tck_board", 0, 0, width, height, 1.0, 0, 0, 0, 0);
-    var tb = t.canvas;
-    // document.getElementById("game_container").removeChild(tb);
+    var t = new gCanvasLayer("tck_board", 0, "black");      //  , width, height, 1.0, 0, 0, 0, 0);
+    let tb = t.canvas;
+    t.height = height;
+    t.width = t.scale * width;
     document.getElementById("ticker").appendChild(tb);
     t.init();
     tb.style.position = "static";       // setAttribute("position", "static");
-    var tbx = t.ctx;
-   // document.getElementById("game_container").appendChild(document.getElementById("tck_board"));
-    // tb.style="position: absolute; left: 0; top: 0; z-index: 1;";
-    // tb.style.backgroundColor="rgba(0,0,0, 0.7)";
-    t.setFont("30px Dot Matrix");
-    // tbx.font = "30px Dot Matrix";    //  Microsoft Yahei UI";         document.getElementById("tck_board")   digital-clock-font
-    tbx.fillStyle= "yellow";
-    //tbx.fillText(message, 690, 40);
+    let tbx = t.ctx;
+    let fontSize = t.scale * 30;
+    t.setFont(`${fontSize}px Dot Matrix`);
+    tbx.fillStyle = "yellow";
     x=width;
     y=40;
     let ID = setInterval(function () {       // anonymous function for handling the animation

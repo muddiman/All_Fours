@@ -5,11 +5,133 @@
                      Code: Main Program                            
 */
 
+function scale(deviceWidth, deviceHeight) {
+    let scale = 1;
+    if (deviceWidth <= WIDTH + 50 || deviceHeight <= HEIGHT + 50) {
+        if (deviceWidth <= deviceHeight) {
+            scale = deviceWidth / (WIDTH + 50);
+        } else { 
+            scale = deviceHeight / (HEIGHT + 50);
+        }        
+    }
+    return scale;
+}
+
+
+function displayCardCache() {
+    for (card in gCardImageCacheObj) {
+        console.log(`${card} : ${gCardImageCacheObj[card].id}`);
+    }
+}
+
+function emphasizeTrump() {
+    /* displays an oversize trumpcard for two secs  */
+    let bigCard = Game.Components.deck.trump;
+    let gsx = Game.Screens.gameScreen.ctx;
+    let posX = 5;
+    let posY = 5;
+    gsx.drawImage(bigCard.image, posX, posY, 1.5 * CARD_W, 1.5 * CARD_H);
+}
+
+function rotateImage(img, x, y, angle) {
+    Game.Screens.gameScreen.ctx.save();
+    Game.Screens.gameScreen.ctx.translate(x, y);
+    Game.Screens.gameScreen.ctx.rotate(angle * this.CONVERT_TO_RADIANS);
+    Game.Screens.gameScreen.ctx.drawImage(img,
+        -(img.width / 2),
+        -(img.height / 2));
+    Game.Screens.gameScreen.ctx.restore();
+}
+
+function selectCard(player) {
+    let hand = player.hand;
+    let card = hand[0];
+    let image = card.image;
+    let c = Game.Screens.gameScreen.canvas;
+    let gsx = Game.Screens.gameScreen.ctx;
+    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H);        
+}
+
+function enlargeCard(cardNo) {
+    let hand = player.hand;
+    let card = hand[cardNo];
+    let image = card.image;
+    let c = Game.Screens.gameScreen.canvas;
+    let gsx = Game.Screens.gameScreen.ctx;
+    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); 
+}
+
+function acquireImage() {
+    let x = Game.Screens.gameScreen.ctx;
+    let imgData = x.getImageData(5, 5, CARD_W, CARD_H);     // capture image from gameboard
+    x.putImageData(imgData, 200, 200);                      // place captured image info elsewhere
+    if (x.getImageData(200, 200, CARD_W, CARD_H)) {
+        return console.log('Pass: image object exists.');
+    } else {
+        return console.log('Fail: image object does NOT exist!');
+    }
+}
+
+function clearMsgBoard() { // garbage collection
+    Game.Components.msgboard.init();
+    document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
+    document.getElementById("msg_layer").style.visibility = "hidden";
+}
+
+function gameMenu() {
+    // pass;
+    // menuLayer.init();
+}
+
+function removeGameMenu() {
+    document.getElementById('menu_layer').style.visibility = "hidden";
+}
+
+function cleanBoard() {
+    var c = Game.Background.ctx;
+    Game.Background.clear();
+}
 
 //                    Code NOT USED:
 //----------------------------------------------------------------------------------------------
 
-
+/*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
+                                this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                                this.clickY = event.clientY - TOPOFFSET;    *///  Game.Screens.gameScreen.canvas.offsetTop; //  
+                             /*    canvasLayer.removeEventListener("mousedown", (e) => {
+                                                                                    this.onMouseDown(e, Controller, hand); 
+                                                                                }, true);   */
+   /*                              canvasLayer.addEventListener("mouseup", () => {
+                                                                            this.onMouseUp(Controller, hand); 
+                                                                        }, true);    
+                                debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
+                                return clickEvents(hand);
+                            },
+    onMouseUp:              function (Controller, hand) {
+                                canvasLayer.removeEventListener("mouseup", () => {
+                                                                                                        this.onMouseUp(Controller, hand); 
+                                                                                                    }, true);  
+                                canvasLayer.addEventListener("mousedown", (e) => {
+                                                                                                        this.onMouseDown(e, Controller, hand); 
+                                                                                                    }, true);   
+                                for (let action in Controller.actions) {
+                                    if (Controller.actions[action] == true) {
+                                        Controller.actions[action] = false;
+                                    }
+                                }
+                            }, 
+    onMouseMove:            function (event, hand, gameboard) {
+                                this.currentX = event.clientX - LEFTOFFSET; //  Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
+                                this.currentY = event.clientY - TOPOFFSET; //  Game.Screens.gameScreen.canvas.offsetTop;
+                                debug.console("(", this.currentX, ", ", this.currentY, ")");
+                                debug.display(`(${this.currentX}, ${this.currentY})`);
+                                for (let index = 0; index < hand.length; index++) {
+                                    const card = hand[index];
+                                    if (isMouseOverCard(index, card, hand.length, this.currentX, this.currentY) === true) {
+                                        gameboard.select = card;
+                                    }
+                                }
+                            }     */
 
 /*****************************************************************************************************************************************
  * 
