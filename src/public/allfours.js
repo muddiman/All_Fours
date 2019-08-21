@@ -62,7 +62,6 @@ import { Display }                  from "./lib/display-interface.mjs";
 import { Player }                   from "./lib/player.mjs";
 import { Card, gCardImageCacheObj } from "./lib/card.mjs";
 import { Engine }                   from "./lib/engine.mjs";
-// import { gCanvasLayer }             from "./lib/screen_update.mjs";
 import { computerAI }               from "./lib/ai.mjs";
 import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
 import { tickertape }               from "./lib/tickertape.mjs";
@@ -722,34 +721,42 @@ function allocatePoints() {
     debug.display(`${Game.Player.human.getName()} Game Points: ${humanPoints}`);
     if (computerPoints > humanPoints) {
         Game.Player.computer.addPoints(GAME);
-        debug.console(`${Game.Player.computer.getName()} won GAME.`);
+        let text = `${Game.Player.computer.getName()} gets GAME.`;
+        debug.console(text);
+        Game.Components.msgboard.init().message(text).makeVisible();
     } else {
         Game.Player.human.addPoints(GAME);      //   += GAME;
-        debug.console(`${Game.Player.human.getName()} won GAME.`);
+        let text = `${Game.Player.human.getName()} gets GAME.`;
+        debug.console(text);
+        Game.Components.msgboard.init().message(text).makeVisible();
     }
     /*  high  */
     if (Game.GamePlay.whoPlayedHi) {
         Game.GamePlay.whoPlayedHi.addPoints(HIGH);
         debug.console(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
-        debug.display(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
+        Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`).makeVisible();
+        // debug.display(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
     }
     /*  low */
     if (Game.GamePlay.whoPlayedLow) {
         Game.GamePlay.whoPlayedLow.addPoints(LOW);
         debug.console(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
-        debug.display(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
+        Game.Components. msgboard.init().message(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`).makeVisible();
+        // debug.display(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
     }
     /*  jack  */ 
     if (Game.GamePlay.whoPlayedJack) {
         Game.GamePlay.whoPlayedJack.addPoints(JACK);
         debug.console(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
-        debug.display(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
+        Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`).makeVisible();
+        // debug.display(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
     }
     /*  hang jack  */
     if (Game.GamePlay.whoHangedJack) {
         Game.GamePlay.whoHangedJack.addPoints(HANG_JACK);
         debug.console(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
-        debug.display(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
+        Game.Components.msgboard.init().message(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`).makeVisible();
+        // debug.display(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
     }
     Game.GamePlay.init();
 }
@@ -1301,7 +1308,7 @@ export function gameLoop() {
             } else {
                 gameWinner = Game.Player.computer;
             }
-            let text = `${gameWinner} WON!!!`;
+            let text = `${gameWinner.getName()} WON!!!`;
             Game.Engine.stop();
             debug.console(`Engine Stopped!`);
             debug.console(`Game has ended!`);
