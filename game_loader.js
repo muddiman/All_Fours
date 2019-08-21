@@ -9,6 +9,7 @@ const scriptArray = [
     "/src/public/lib/screen.js",
     "/src/public/lib/soundlib.js",
     "/src/public/lib/tickertape.js",
+    "/src/public/lib/controller.js",
 ];
 var gCardImageCacheObj = {};
 var cardCount=0;
@@ -21,7 +22,28 @@ function loadScript(scriptSource) {
     let gameContainer = document.getElementById("game_container");
     gameContainer.appendChild(script);
 }
-
+function loadVideos(id, counter) {
+    let image = new Image();
+    image.id = id;
+    image.src = `img/${id}.png`;    //  `img/${this.getCardName()}.png`;
+    image.onload =  () => {
+        //    this.imageLoaded = true;
+        gCardImageCacheObj[id] = image;
+        counter++;
+        console.log(`${id} loaded. ${counter} cards loaded.`);
+    };
+}
+function loadSounds(id, counter) {
+    let image = new Image();
+    image.id = id;
+    image.src = `img/${id}.png`;    //  `img/${this.getCardName()}.png`;
+    image.onload =  () => {
+        //    this.imageLoaded = true;
+        gCardImageCacheObj[id] = image;
+        counter++;
+        console.log(`${id} loaded. ${counter} cards loaded.`);
+    };
+}
 
 function loadCardImage(id, counter) {
     let image = new Image();
