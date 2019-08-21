@@ -1,0 +1,11 @@
+{
+    "soundEffects": [
+        "./lib/snd/ui-sound-19.oga",
+        "./lib/snd/ui-sound-20.oga",
+        "./lib/snd/ui-sound-03.oga"
+    ],
+    "backgroundMusic": [
+        "./lib/snd/ui-sound-19.oga",
+        "./lib/snd/ui-sound-20.oga"
+    ]
+}

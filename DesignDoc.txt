@@ -1,0 +1,88 @@
+**********************************************************************
+*								                                                     *
+*		 	ALL FOURS GAME				                                         *
+*			Design Document				                                         *
+*								                                                     *
+**********************************************************************
+
+GAME SYSNOPSIS
+  a. Summary
+
+STORY
+  a. Characters(optional)
+  b. Settings
+  c. Narrative
+
+GAME PLAY
+  a. Core Loop
+  b. Mechanics
+  c. Dynamics
+  d. Enemies
+  e. Design Pillars (optional)
+  f. User Experience (optional)
+
+LEVEL DESIGN
+  a. Game Progression
+  b. Environemnts
+  c. Link to Design Bible
+
+ART
+  a. Short Description
+  b. Link to Audio Design Document
+
+UI/GAME CONTROLS
+ a. Specifications
+
+AUDIO
+  a. Description
+  b. Link to Audio Design Document
+
+TARGET 
+  a. Target Audience
+  b. Target Device
+
+ANALYSIS
+  a. Market Analysis
+  b. Technical Analysis
+  c. Legal Analysis (optional: copyrighted or trade-marked material)
+
+GAME MARKETING
+  a. Promotion
+  b. Community
+
+DEVELOPMENT PLAN
+  a. Release Date
+  b. Budget
+  c. Platform
+  d. Audience
+  e. Milestones 
+  f. Unique 
+  g. MVP - Mininmum Viable Product that you would be willing to ship
+
+=======================================================================================================================
+
+GAME SYNOPSIS
+
+	"Fast-paced, collaborative, ."
+
+	(A)  Summary
+This is the software version of the beloved Trinbago card game All Fours, that captures the essence of what made
+the game extremely popular in Trinidad & Tobago.
+Played by four persons, the game involves deep analysis and skill.
+
+
+STORY
+
+	(B)  Settings
+
+
+
+DEVELOPMENT PLAN
+
+	(A)  Release Date
+
+		August 1ST, 2019
+
+	(B)  Budget
+
+		$10,000 USD (MAX)

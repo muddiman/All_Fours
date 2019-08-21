@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
+    <title>ALL FOURS</title>
+    <meta name="description" content="A card game indigenous to the country of Trinidad and Tobago. It is a pastime of Trinbagonians.">
+    <meta name="viewport"    content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="w3.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
+    <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
+</head>
+
+<body>
+    <!-- Heading -->
+    <header id="heading">
+        <div class="menuContainer">
+            <div class="row">
+                <div class="col-12">
+                    <H1><span class="primary-text">TWO-MAN</span> All Fours</H1>
+                </div>
+                <div class="col-12">
+                    <nav id="navbar">                        
+                        <a href="#">Home</a>
+                        <a href="#">About</a>
+                        <a href="#">Documentation</a>
+                        <a href="#">Contact</a>
+                        <!-- <a href="../public/lib/title-screen.html">Title Screen</a> -->
+                        <!-- <a href="../public/lib/graphics.html">Graphics</a> -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div>   
+    <!--    TICKER      -->   
+        <div  id="ticker"></div>
+    <!--    HOMESCREEN      -->   
+        <div class="modal gMenu" id="home_screen" style="display: none;"> 
+                <span title="Close Title Screen" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
+              <div class="animate content">
+                <!-- <form class="modal-content animate" method="POST"> -->
+                 <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
+                  <div class="imgcontainer">
+                    <!--    Game Logo Here -->
+                    <!-- <H4>TWO-MAN ALL FOURS</H4> -->
+                  </div>
+              
+                  <div class="btn menuContainer">            
+                    <button type="submit" class="disabled menuButtons" id="button_1" onmousedown="pressBtn('button_1')">Play Game</button>
+                    <button type="submit" class="menuButtons" id="button_2"  onmousedown="pressBtn('button_2')" >Settings</button>
+                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login</button>
+                    <button id="button_4" class="menuButtons" onmousedown="pressBtn('button_4')">Quit</button>
+                  </div>
+                  <div class="container" id="progress_section">
+                  <p id="loading">Loading...</p>
+                    <div id="progress">
+                      <div id="progress-bar">1%</div>
+                    </div>
+                   <!-- <button class="cancelbtn" onclick="document.getElementById('home_screen').style.display='none'" type="button">Cancel</button> -->
+                    <!--    Home Icon & Settings Icon (bottom left corner)      -->
+                  </div>
+        
+                  <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
+                </div>  <!-- </form> -->
+            </div> <!-- end of home_screen  --> 
+
+    <!--    MENUSCREEN      -->   
+        <div class="modal gMenu" id="menu_screen" style="display: none;"> 
+            <span title="Close Title Screen" class="close" onclick="document.getElementById('menu_screen').style.display='none'">×</span>
+            <div class="animate fade_trans content" >
+                <!-- <form class="modal-content animate" method="POST"> -->
+                 <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
+                <div class="imgcontainer">
+                    <!--    Game Logo Here -->
+                    <H4>SETTINGS/OPTIONS</H4>
+                </div>
+              
+                <div class="btn menuContainer">            
+                    <button type="submit" class="menuButtons" id="button_5" onmousedown="pressBtn('button_5')">Display</button>
+                    <button type="submit" class="menuButtons" id="button_6"  onmousedown="pressBtn('button_6')" >Sound</button>
+                    <button type="submit" class="menuButtons" id="button_7" onmousedown="pressBtn('button_7')">Misc</button>
+                    <button id="button_8" class="menuButtons" onmousedown="pressBtn('button_8')">Back</button>
+                </div>
+                        
+                <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
+            </div>  <!-- </animation div> -->
+        </div> <!-- end of menu_screen  --> 
+
+        <!-- Game Board -->
+        <div class="container" id="game_container">
+                <!--  <canvas id="game_board" width="700" height="450"></canvas> would go here -->
+        </div>
+ 
+        <!-- Game Control Panel -->
+        <div class="w3-sidebar w3-bar-block" id="controlPanel">
+            <div class="w3-card-4 w3-bar-item">
+                <div>
+                    <h3>Controls</h3>
+                </div>
+                <!-- Calls any function assign to the button via onclick -->
+                <div class="function-buttons">
+                    <button class="w3-btn" onclick="homeScreen()">Menu</button>
+                    <button class="w3-btn" onclick="Display.video(Game.Components.cutScenes[0])">Video</button>
+                    <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
+                </div>
+                <div class="user_input">                    
+                    <form>
+                      <div><h4>Enter your name:</h4>
+                        <input id="player_name" name="name" type="text"><br> 
+                      </div>
+                      <button class="w3-button w3-round-xlarge w3-border-blue" type="button" id="enter_btn"   >ENTER</button>
+                    </form>
+                </div>
+                <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
+            </div>
+        </div>
+        <!--    Menu Screen     -->       
+    </div>
+<!--        Home/Title Screen               -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container" id="copyright">
+            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
+        </div>
+    </footer>
+    <script type="text/javascript" src="./lib/title-script.js"></script>
+    <script type="module" src="allfours.js">
+        window.onload = function () {
+            //loadAssets();     //  images, sound & video files
+           // loadGame();
+            
+/*             let timeOutID = setTimeout(function () {
+               mainGameLoop();
+               clearTimeout(timeOutID);
+            }, 3000); */
+          
+        //    mainGameLoop();
+        }
+    </script>
+<!--         <script type="text/javascript" src="game_loaader.js">
+        window.onload = function () {
+           // loadGame();
+           loadAllGameComponents();
+            
+/*             let timeOutID = setTimeout(function () {
+               mainGameLoop();
+               clearTimeout(timeOutID);
+            }, 3000); */
+          
+        //    mainGameLoop();
+        }
+    </script>  -->     
+</body>
+</html>
+
+<!--
+
+==================================================================
+|                                                                |
+|                                                                |
+|                       ALL FOURS                                |
+|                     BY: .muddicode                             |
+|                                                                |
+|                                                                |
+==================================================================
+
+
+/********************************************************************************************** */
+/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
+/********************************************************************************************** */
+
+-->

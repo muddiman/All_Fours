@@ -1,0 +1,18 @@
+{
+  "name": "allfours",
+  "version": "0.6.3",
+  "description": "Popular Trinidad & Tobago card game",
+  "main": "allfours.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "serve ./public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": ".Muddicode",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^10.1.1"
+  }
+}

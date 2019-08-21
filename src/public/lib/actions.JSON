@@ -1,0 +1,17 @@
+{
+    "actions" : {
+                "showMenuScreen"    : false, 
+                "playCard_1"        : false, 
+                "playCard_2"        : false, 
+                "playCard_3"        : false, 
+                "playCard_4"        : false, 
+                "playCard_5"        : false, 
+                "playCard_6"        : false, 
+                "playCard_7"        : false, 
+                "playCard_8"        : false, 
+                "playCard_9"        : false, 
+                "selectNext"        : false, 
+                "selectPrevious"    : false, 
+                "confirmSelection"  : false
+            }
+}

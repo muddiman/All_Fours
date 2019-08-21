@@ -1,0 +1,60 @@
+
+    
+{
+"keys": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Enter", "Escape", " ", "ArrowRight", "ArrowLeft"]
+}
+
+{
+    "bindings": {                                    
+                    "Escape"       : "showMenuScreen",
+                    "ArrowRight"   : "selectNext", 
+                    "ArrowLeft"    : "selectPrevious", 
+                    "Enter"        : "confirmSelection", 
+                    " "            : "confirmSelection",
+                    "1"            : "playCard_1", 
+                    "2"            : "playCard_2", 
+                    "3"            : "playCard_3", 
+                    "4"            : "playCard_4", 
+                    "5"            : "playCard_5", 
+                    "6"            : "playCard_6", 
+                    "7"            : "playCard_7", 
+                    "8"            : "playCard_8", 
+                    "9"            : "playCard_9", 
+                }
+    }
+
+{
+"actions" : {
+            "showMenuScreen"    : false, 
+            "playCard_1"        : false, 
+            "playCard_2"        : false, 
+            "playCard_3"        : false, 
+            "playCard_4"        : false, 
+            "playCard_5"        : false, 
+            "playCard_6"        : false, 
+            "playCard_7"        : false, 
+            "playCard_8"        : false, 
+            "playCard_9"        : false, 
+            "selectNext"        : false, 
+            "selectPrevious"    : false, 
+            "confirmSelection"  : false,
+        }
+}
+{
+    "keyState": {
+        "Escape"        : false,
+        "ArrowRight"    : false, 
+        "ArrowLeft"     : false, 
+        "Enter"         : false, 
+        " "             : false,
+        "1"             : false, 
+        "2"             : false, 
+        "3"             : false, 
+        "4"             : false, 
+        "5"             : false, 
+        "6"             : false, 
+        "7"             : false, 
+        "8"             : false, 
+        "9"             : false, 
+    }
+}
