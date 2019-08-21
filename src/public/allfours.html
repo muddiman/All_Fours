@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <title>ALL FOURS</title>
     <meta name="description" content="A card game indigenous to the country of Trinidad and Tobago. It is a pastime of Trinbagonians.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport"    content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="w3.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="style.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/src/public/lib/title-style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
 </head>
 
@@ -44,13 +44,13 @@
                  <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
                   <div class="imgcontainer">
                     <!--    Game Logo Here -->
-                    <H4>TWO-MAN ALL FOURS</H4>
+                    <!-- <H4>TWO-MAN ALL FOURS</H4> -->
                   </div>
               
                   <div class="btn menuContainer">            
                     <button type="submit" class="disabled menuButtons" id="button_1" onmousedown="pressBtn('button_1')">Play Game</button>
                     <button type="submit" class="menuButtons" id="button_2"  onmousedown="pressBtn('button_2')" >Settings</button>
-                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login/Animate</button>
+                    <button type="submit" class="menuButtons" id="button_3" onmousedown="pressBtn('button_3')">Login</button>
                     <button id="button_4" class="menuButtons" onmousedown="pressBtn('button_4')">Quit</button>
                   </div>
                   <div class="container" id="progress_section">
@@ -97,12 +97,12 @@
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
-                    <h3>Console</h3>
+                    <h3>Controls</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="homeScreen()">Menu</button>
-                    <button class="w3-btn" onclick="Game.Components.Sound.sndFx[1].play()">Mute</button>
+                    <button class="w3-btn" onclick="Display.video(Game.Components.cutScenes[0])">Video</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
                 <div class="user_input">                    
@@ -126,7 +126,7 @@
             <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
         </div>
     </footer>
-    <script type="text/javascript" src="/src/public/lib/title-script.js"></script>
+    <script type="text/javascript" src="./lib/title-script.js"></script>
     <script type="module" src="allfours.js">
         window.onload = function () {
             //loadAssets();     //  images, sound & video files
@@ -139,7 +139,20 @@
           
         //    mainGameLoop();
         }
-    </script>     
+    </script>
+<!--         <script type="text/javascript" src="game_loaader.js">
+        window.onload = function () {
+           // loadGame();
+           loadAllGameComponents();
+            
+/*             let timeOutID = setTimeout(function () {
+               mainGameLoop();
+               clearTimeout(timeOutID);
+            }, 3000); */
+          
+        //    mainGameLoop();
+        }
+    </script>  -->     
 </body>
 </html>
 

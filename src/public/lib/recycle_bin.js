@@ -5,9 +5,263 @@
                      Code: Main Program                            
 */
 
+function scale(deviceWidth, deviceHeight) {
+    let scale = 1;
+    if (deviceWidth <= WIDTH + 50 || deviceHeight <= HEIGHT + 50) {
+        if (deviceWidth <= deviceHeight) {
+            scale = deviceWidth / (WIDTH + 50);
+        } else { 
+            scale = deviceHeight / (HEIGHT + 50);
+        }        
+    }
+    return scale;
+}
+
+
+function displayCardCache() {
+    for (card in gCardImageCacheObj) {
+        console.log(`${card} : ${gCardImageCacheObj[card].id}`);
+    }
+}
+
+function emphasizeTrump() {
+    /* displays an oversize trumpcard for two secs  */
+    let bigCard = Game.Components.deck.trump;
+    let gsx = Game.Screens.gameScreen.ctx;
+    let posX = 5;
+    let posY = 5;
+    gsx.drawImage(bigCard.image, posX, posY, 1.5 * CARD_W, 1.5 * CARD_H);
+}
+
+function rotateImage(img, x, y, angle) {
+    Game.Screens.gameScreen.ctx.save();
+    Game.Screens.gameScreen.ctx.translate(x, y);
+    Game.Screens.gameScreen.ctx.rotate(angle * this.CONVERT_TO_RADIANS);
+    Game.Screens.gameScreen.ctx.drawImage(img,
+        -(img.width / 2),
+        -(img.height / 2));
+    Game.Screens.gameScreen.ctx.restore();
+}
+
+function selectCard(player) {
+    let hand = player.hand;
+    let card = hand[0];
+    let image = card.image;
+    let c = Game.Screens.gameScreen.canvas;
+    let gsx = Game.Screens.gameScreen.ctx;
+    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H);        
+}
+
+function enlargeCard(cardNo) {
+    let hand = player.hand;
+    let card = hand[cardNo];
+    let image = card.image;
+    let c = Game.Screens.gameScreen.canvas;
+    let gsx = Game.Screens.gameScreen.ctx;
+    gsx.drawImage(image, 350, 300, 1.5 * CARD_W, 1.5 * CARD_H); 
+}
+
+function acquireImage() {
+    let x = Game.Screens.gameScreen.ctx;
+    let imgData = x.getImageData(5, 5, CARD_W, CARD_H);     // capture image from gameboard
+    x.putImageData(imgData, 200, 200);                      // place captured image info elsewhere
+    if (x.getImageData(200, 200, CARD_W, CARD_H)) {
+        return console.log('Pass: image object exists.');
+    } else {
+        return console.log('Fail: image object does NOT exist!');
+    }
+}
+
+function clearMsgBoard() { // garbage collection
+    Game.Components.msgboard.init();
+    document.getElementById("msg_layer").removeEventListener("click", clearMsgBoard);
+    document.getElementById("msg_layer").style.visibility = "hidden";
+}
+
+function gameMenu() {
+    // pass;
+    // menuLayer.init();
+}
+
+function removeGameMenu() {
+    document.getElementById('menu_layer').style.visibility = "hidden";
+}
+
+function cleanBoard() {
+    var c = Game.Background.ctx;
+    Game.Background.clear();
+}
 
 //                    Code NOT USED:
 //----------------------------------------------------------------------------------------------
+
+/*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
+                                this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
+                                this.clickY = event.clientY - TOPOFFSET;    *///  Game.Screens.gameScreen.canvas.offsetTop; //  
+                             /*    canvasLayer.removeEventListener("mousedown", (e) => {
+                                                                                    this.onMouseDown(e, Controller, hand); 
+                                                                                }, true);   */
+   /*                              canvasLayer.addEventListener("mouseup", () => {
+                                                                            this.onMouseUp(Controller, hand); 
+                                                                        }, true);    
+                                debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
+                                return clickEvents(hand);
+                            },
+    onMouseUp:              function (Controller, hand) {
+                                canvasLayer.removeEventListener("mouseup", () => {
+                                                                                                        this.onMouseUp(Controller, hand); 
+                                                                                                    }, true);  
+                                canvasLayer.addEventListener("mousedown", (e) => {
+                                                                                                        this.onMouseDown(e, Controller, hand); 
+                                                                                                    }, true);   
+                                for (let action in Controller.actions) {
+                                    if (Controller.actions[action] == true) {
+                                        Controller.actions[action] = false;
+                                    }
+                                }
+                            }, 
+    onMouseMove:            function (event, hand, gameboard) {
+                                this.currentX = event.clientX - LEFTOFFSET; //  Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
+                                this.currentY = event.clientY - TOPOFFSET; //  Game.Screens.gameScreen.canvas.offsetTop;
+                                debug.console("(", this.currentX, ", ", this.currentY, ")");
+                                debug.display(`(${this.currentX}, ${this.currentY})`);
+                                for (let index = 0; index < hand.length; index++) {
+                                    const card = hand[index];
+                                    if (isMouseOverCard(index, card, hand.length, this.currentX, this.currentY) === true) {
+                                        gameboard.select = card;
+                                    }
+                                }
+                            }     */
+
+/*****************************************************************************************************************************************
+ * 
+ *          AUDIO SECTION
+ * 
+ *****************************************************************************************************************************************/
+/*
+*
+*       WEBKIT AUDIO
+*
+*/
+/* 
+function SoundManager() {
+    this.clips           = {};
+    this.enabled         = true;
+    this._context        = null;
+    this._mainNode       = null;
+}
+
+//--------------------------------------------------------
+   SoundManager.prototype.init              = function()
+                                            {
+                                                try {
+                                                    this._context = new webkitAudioContext();
+                                                }
+                                                catch(e) {
+                                                    alert(e + ": Browser does not support Web Audio API!");
+                                                }
+
+                                                this._mainNode = this._context.createGainNode(0);
+                                                this._mainNode.connect(this._context.destination);
+                                            };
+
+   SoundManager.prototype.loadAsync         = function(path, callbackFcn) {
+                                                if (this.clips[path])
+                                                {
+                                                    callbackFcn(this.clips[path].s);
+                                                    return this.clips[path].s;
+                                                }
+                                                var clip = {s:new Sound(), b:null, l:false};
+                                                this.clips[path] = clip;
+                                                clip.s.path = path;
+
+                                                var request = new XMLHttpRequest();
+                                                request.open('GET', path, true);
+                                                request.responseType = "arraybuffer";
+                                                request.onload = function() {
+                                                    gSM._context.decodeAudioData(request.response,
+                                                        function(buffer)
+                                                        {
+                                                            clip.b = buffer;
+                                                            clip.l = true;
+                                                            callbackFcn(clip.s);
+                                                        },
+                                                        function(data)
+                                                        {
+                                                            console.log("failed");
+                                                            Logger.log("failed");
+                                                        });
+                                                };
+                                                request.send();
+                                                return clip.s;
+
+                                            };
+   //----------------------------------------------
+   SoundManager.prototype.playSound         = function(path, settings)  {
+                                                if (!gSM.enabled)
+                                                    return false;
+
+                                                var looping=false;
+                                                var volume=0.8;
+                                                if (settings)
+                                                {
+                                                    if (settings.looping)
+                                                        looping=settings.looping;
+                                                    if (settings.volume)
+                                                        volume = settings.volume;
+                                                }
+
+                                                var sd = this.clips[path];
+                                                if (sd == null)
+                                                    return false;
+                                                if (sd.l == false) return false;
+                                                // creates a sound source
+                                                var currentClip = gSM._context.createBufferSource();
+
+                                                // tell the source which sound to play
+                                                currentClip.buffer=sd.b;
+                                                currentClip.gain.value= volume;
+                                                currentClip.connect(gSM._mainNode);
+                                                currentClip.loop=looping;
+
+                                                // play the source now
+                                                currentClip.note.On(0);
+                                                return true;
+                                            };
+//-------------------------------------------------------------
+   SoundManager.prototype.togglemute        = function() {
+                                                if (this._mainNode.gain.value>0)
+                                                    this._mainNode.gain.value=0;
+                                                else
+                                                    this._mainNode.gain.value=1;
+                                            };
+//-------------------------------------------------------------
+   SoundManager.prototype.stopAll           = function () {
+                                                this._mainNode.disconnect();
+                                                this._mainNode = this._context.createGainNode(0);
+                                                this._mainNode.connect(this._context.destination);
+                                            };    
+//--------------------------------------------------------------------------------------------------------------------
+
+export var gSM = new SoundManager();
+
+//--------------------------------------------------------------------------------------------------------------------
+
+function Sound() {
+    this.init   = function() {
+
+                };
+//------------------------------------------------------
+    this.play   = function(loop) {                   //  loop: boolean
+                    gSM.playSound(this.path, {looping:loop, volume:1});
+                };
+} */
+
+/* export function playSoundInstance(soundpath) {
+       var sound = gSM.loadAsync(soundpath, function(sObj) {sObj.play(false);}); 
+}   */
+   
+//--------------------------------------------------------------------------------------------------------------------
 
 
 var scoreboard = {          //  object

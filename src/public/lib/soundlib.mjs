@@ -1,5 +1,5 @@
 //  filename:   soundlib.mjs
-//  path:       /lib/sooundlib.mjs
+//  path:       /lib/soundlib.mjs
 
 /*
                                                 Title: THE ALL FOURS GAME
@@ -9,137 +9,6 @@
 */
 
 
-
-/*****************************************************************************************************************************************
- * 
- *          AUDIO SECTION
- * 
- *****************************************************************************************************************************************/
-/*
-*
-*       WEBKIT AUDIO
-*
-*/
-/* 
-function SoundManager() {
-    this.clips           = {};
-    this.enabled         = true;
-    this._context        = null;
-    this._mainNode       = null;
-}
-
-//--------------------------------------------------------
-   SoundManager.prototype.init              = function()
-                                            {
-                                                try {
-                                                    this._context = new webkitAudioContext();
-                                                }
-                                                catch(e) {
-                                                    alert(e + ": Browser does not support Web Audio API!");
-                                                }
-
-                                                this._mainNode = this._context.createGainNode(0);
-                                                this._mainNode.connect(this._context.destination);
-                                            };
-
-   SoundManager.prototype.loadAsync         = function(path, callbackFcn) {
-                                                if (this.clips[path])
-                                                {
-                                                    callbackFcn(this.clips[path].s);
-                                                    return this.clips[path].s;
-                                                }
-                                                var clip = {s:new Sound(), b:null, l:false};
-                                                this.clips[path] = clip;
-                                                clip.s.path = path;
-
-                                                var request = new XMLHttpRequest();
-                                                request.open('GET', path, true);
-                                                request.responseType = "arraybuffer";
-                                                request.onload = function() {
-                                                    gSM._context.decodeAudioData(request.response,
-                                                        function(buffer)
-                                                        {
-                                                            clip.b = buffer;
-                                                            clip.l = true;
-                                                            callbackFcn(clip.s);
-                                                        },
-                                                        function(data)
-                                                        {
-                                                            console.log("failed");
-                                                            Logger.log("failed");
-                                                        });
-                                                };
-                                                request.send();
-                                                return clip.s;
-
-                                            };
-   //----------------------------------------------
-   SoundManager.prototype.playSound         = function(path, settings)  {
-                                                if (!gSM.enabled)
-                                                    return false;
-
-                                                var looping=false;
-                                                var volume=0.8;
-                                                if (settings)
-                                                {
-                                                    if (settings.looping)
-                                                        looping=settings.looping;
-                                                    if (settings.volume)
-                                                        volume = settings.volume;
-                                                }
-
-                                                var sd = this.clips[path];
-                                                if (sd == null)
-                                                    return false;
-                                                if (sd.l == false) return false;
-                                                // creates a sound source
-                                                var currentClip = gSM._context.createBufferSource();
-
-                                                // tell the source which sound to play
-                                                currentClip.buffer=sd.b;
-                                                currentClip.gain.value= volume;
-                                                currentClip.connect(gSM._mainNode);
-                                                currentClip.loop=looping;
-
-                                                // play the source now
-                                                currentClip.note.On(0);
-                                                return true;
-                                            };
-//-------------------------------------------------------------
-   SoundManager.prototype.togglemute        = function() {
-                                                if (this._mainNode.gain.value>0)
-                                                    this._mainNode.gain.value=0;
-                                                else
-                                                    this._mainNode.gain.value=1;
-                                            };
-//-------------------------------------------------------------
-   SoundManager.prototype.stopAll           = function () {
-                                                this._mainNode.disconnect();
-                                                this._mainNode = this._context.createGainNode(0);
-                                                this._mainNode.connect(this._context.destination);
-                                            };    
-//--------------------------------------------------------------------------------------------------------------------
-
-export var gSM = new SoundManager();
-
-//--------------------------------------------------------------------------------------------------------------------
-
-function Sound() {
-    this.init   = function() {
-
-                };
-//------------------------------------------------------
-    this.play   = function(loop) {                   //  loop: boolean
-                    gSM.playSound(this.path, {looping:loop, volume:1});
-                };
-} */
-
-/* export function playSoundInstance(soundpath) {
-       var sound = gSM.loadAsync(soundpath, function(sObj) {sObj.play(false);}); 
-}   */
-   
-//--------------------------------------------------------------------------------------------------------------------
-
 /**********************************************************************************************************************
 *  
 *                                HTML5 Sound Library 
@@ -148,10 +17,16 @@ function Sound() {
 *
 */
 
-// import { SOUND_ON } from "../allfours";
-// export var SOUND_ON=true;
 import { SETTINGS } from "./settings.mjs";
-export const SOUND_ON = SETTINGS.SOUND_ON;
+
+/*  Sound Effects   */
+//  load SOUND effectS list
+export var sndFx = [];
+
+/*  Background Music    */
+//  load background music streams
+export var bkgndMusic = [];
+
 /*  sound constructor/class */
 export function Sound(src) {
     this.sound          = document.createElement("audio");
@@ -159,9 +34,12 @@ export function Sound(src) {
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
     this.sound.style.display = "none";
+    this.audible = true;
+    this.sound.trackVolume = 1.0;
     document.getElementById("game_container").appendChild(this.sound);
     // document.body.appendChild(this.sound);      //   Attach sound to 'canvas' instead of 'body' 
 }
+Sound.prototype.mainVolume      = SETTINGS.MASTER_VOLUME / 10;
 Sound.prototype.mute        = false;
 Sound.prototype.muteAll     = function () {
                                 if (this.mute === false) {
@@ -170,9 +48,17 @@ Sound.prototype.muteAll     = function () {
                                     this.mute = false;
                                 }
                             };
+Sound.prototype.setFxTrackVolume = function (n) {
+                                this.sound.trackVolume = n / 10; // Math.floor((SETTINGS.MASTER_VOLUME / 10) * SETTINGS.SOUNDmixer.sndFx[n]) / 10;
+                            }; 
+Sound.prototype.setMusicTrackVolume = function (n) {
+                                this.sound.trackVolume = n / 10; //  Math.floor((SETTINGS.MASTER_VOLUME / 10) * SETTINGS.SOUNDmixer.Bkgnd[n]) / 10;
+                            };                                                     
 Sound.prototype.play        = function() {
-                                if (this.mute === false) {
-                                    this.sound.play();  
+                                if (this.mute === false && SETTINGS.SOUND === true) {
+                                    if (audible === true) {
+                                        this.sound.play();  
+                                    }
                                 }
                             };
 Sound.prototype.stop        = function() {
@@ -186,14 +72,14 @@ Sound.prototype.loopAudio   = function () {
                             }
                         };
 Sound.prototype.muteTrack   = function () {                 //  toggle the mute function
-                            if (this.mute === false) {
+                            if (this.audible === false) {
                                 // this.sound.setAttribute("muted", "muted");
-                                this.mute = true;
+                                this.audible = true;
                             } else {
                                 // this.sound.removeAttribute("muted", "muted");
-                                this.mute = false;
+                                this.audible = false;
                             }
-                        };
+};
 // Sound.prototype.loop    = false;
 
 export function playSoundInstance(src) {
@@ -203,26 +89,65 @@ export function playSoundInstance(src) {
 
 /************************************************************************************************ */
 
-/*  Sound Effects   */
-//  load effect list
-export var sndFx = [];
-// sndFx[0] = new Sound(`./lib/snd/ui-sound3.oga`);
-// sndFX[1] = new Sound(`./lib/snd/ui-sound-20.oga`);
+/*  load audio tracks  apply settings to each track */
+async function loadTracks(urlOBJ) {
+    for (let index = 0; index < urlOBJ.soundEffects.length; index++) {
+        sndFx[index] = await new Sound(urlOBJ.soundEffects[index]);
+        console.log(urlOBJ.soundEffects[index]);
+        sndFx[index].setFxTrackVolume(SETTINGS.SOUNDmixer.sndFx[index]);        
+    }    
+    for (let index = 0; index < urlOBJ.backgroundMusic.length; index++) {
+        bkgndMusic[index] = await new Sound(urlOBJ.backgroundMusic[index]);
+        bkgndMusic[index].setMusicTrackVolume(SETTINGS.SOUNDmixer.Bkgnd[index]);                
+    }
+}
+/*  manually    */
+const tracks = {
+    soundEffects: [
+        "./lib/snd/ui-sound-19.oga",
+        "./lib/snd/ui-sound-20.oga",
+        "./lib/snd/ui-sound-03.oga"
+    ],
+    backgroundMusic: [
+        "./lib/snd/ui-sound-19.oga",
+        "./lib/snd/ui-sound-20.oga"
+    ],
+};
 
+function getFile(filenameJSON) {
+    let myObj={};
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            myObj = JSON.parse(this.responseText);
+            // return myObj;
+        }
+    };
+    xmlhttp.open("GET", filenameJSON, false);
+    try {
+        xmlhttp.send();
+    } catch (error) {
+      console.log(error);
+      myObj = tracks;  
+    } 
+    return myObj;
+}
 
+/*  retrieve from json  */
+function getTrackListing(url) {
+    // let listingOBJ = getFile(url);
+    loadTracks(tracks);
+}
 
-/*  Background Music    */
-//  load background music streams
-export var bkgndMusic = [];
-bkgndMusic[0] = new Sound(`./lib/snd/ui-sound-19.oga`);
-
+getTrackListing("./soundtracks.json");
+ 
 /** **************************************************************************************************************************************************************
  * 
  *  @copyright (c) 2019 Roger A. Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.4
+ *  @version   0.8.6
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

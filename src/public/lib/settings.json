@@ -1,0 +1,14 @@
+{
+    "SOUND":    "true",
+    "DEBUG":    "false",
+    "MOUSE_OVER": "true",
+    "MASTER_VOLUME": 7,
+    "SOUNDmixer": {
+        "SndFx": [7, 7, 7],
+        "Bkgnd": [5, 5],
+    },
+    "DISPLAY_MODE":    "desktop",
+    "MODE":       "TWO_PLAYER",
+    "DIFFICULTY": "EASY"
+
+}

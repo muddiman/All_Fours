@@ -71,7 +71,33 @@ var strategy = {
                         }
                      }                     
 };
+/* determine the cards in hand that can be played   */
+// scenarios: have the suit, dont have the suit, have trump, dont have trump
+function getCardsInPlay(hand, trump, calledCard) {
+   let cardsInPlay = [];
+   // load cards of called suit  
+   hand.forEach(card => {
+      if (card.suit === calledCard.suit) {
+         cardsInPlay.push(card);
+      }
+   });
+   // no cards of called suit
+   if (cardsInPlay.length === 0) {
+      cardsInPlay = hand;              // All cards in play
+   } else {
+      // Add trump cards
+      if (trump.suit != calledCard.suit) {    //  only if trump wasnt called
+         // load up the trump cards
+         hand.forEach(card => {
+            if (card.suit === trump.suit) {
+               cardsInPlay.push(card);
+            }
+         });
+      }
 
+   }
+   return cardsInPlay;
+}
 /* Search for specific card   */
 function searchHandForCard(cardName, hand) {
    for (let index = 0; index < hand.length; index++) {
@@ -123,10 +149,10 @@ function callJackOut(hand, trump) {
 
 
 
-/*    Play Last   */
 
 
 export function computerAI(hand, trump, calledCard=null) {
+   console.trace('computerAI(hand, trump, calledCard=null):');
    /* Set Strategy before first play  */
    if (hand.length === 6) {
       strategy.init();
@@ -134,14 +160,15 @@ export function computerAI(hand, trump, calledCard=null) {
    }
    /* if playing second */
    if (calledCard) { 
+      let availCards = getCardsInPlay(hand, trump, calledCard);
       // strategy.defendJack:                         
       if (strategy.defendJack === true) {
          if (calledCard.suit != trump.suit || calledCard.rank < 9) {              // pass jack
             return searchHandForCard(`j${trump.suit}`, hand);                                                   
          } else {
-            for (let eachCard in hand) {           // play jack
-               if (hand[eachCard].face != 'j' && hand[eachCard].suit === trump.suit) {
-                  return eachCard;
+            for (let eachCard in getCardsInPlay(hand, trump, calledCard)) {           // play jack
+               if (availCards[eachCard].face != 'j' && availCards[eachCard].suit === trump.suit) {
+                  return searchHandForCard(availCards[eachCard].getCardName(), hand);  
                }
             }
             if (searchHandForCard(`j${trump.suit}`, hand)) {
@@ -149,16 +176,6 @@ export function computerAI(hand, trump, calledCard=null) {
             }
          }
       }
-        /*  if (selectLowerCard(hand, trump, calledCard) != null) {      //   keep off strike 
-            return selectLowerCard(hand, trump, calledCard);
-         }
-         if (searchHandForCard(`t${trump.suit}`, hand) != null) {     //   if not, pass a ten o' trump
-            return searchHandForCard(`t${trump.suit}`, hand);
-         }         
-         if (searchHandForCard(`t${calledCard.suit}`, hand) != null) {  // or a ten                                                                         
-            return searchHandForCard(`t${calledCard.suit}`, hand);
-         }                                       //  change to above                                 
-      } */
       // strategy.goForHangJack: 
       if (strategy.goForHangJack === true) {
          if (calledCard.getCardName() === `j${trump.suit}`) {            //   if jack is thrown in face
@@ -167,8 +184,9 @@ export function computerAI(hand, trump, calledCard=null) {
                return highTrump(hand, trump);                                         // play face trump & hang it
             }
          }
-         if (selectLowerCard(hand, trump, calledCard) != null) {              // lower card in suit
-            return selectLowerCard(hand, trump, calledCard);
+         if (selectLowerCard(availCards, trump, calledCard) != null) {              // lower card in suit
+            let lowerCardName = availCards[selectLowerCard(availCards, trump, calledCard)].getCardName();
+            return searchHandForCard(lowerCardName, hand)
          }
          if (calledCard.rank < 8 || calledCard.suit != trump.suit) {          // ten of suit (if present)
             if (searchHandForCard(`t${calledCard.suit}`, hand)) {
@@ -181,7 +199,8 @@ export function computerAI(hand, trump, calledCard=null) {
             }  
          } 
          /*  play highest face card in suit  */
-         return selectLowestCard(hand, trump);         //  change to above      //   keep off strike   //   ie play lower bush card
+         let lowestCard = availCards[selectLowestCard(availCards, trump)].getCardName();
+         return searchHandForCard(lowestCard, hand);
       }
       // strategy.goForGame:  play ten, take ten, take face cards
       if (strategy.goForGame === true) {
@@ -223,11 +242,13 @@ export function computerAI(hand, trump, calledCard=null) {
             if (tenOfTrump) {
                return tenOfTrump;
             }
-            if (selectLowerCard(hand, trump, calledCard)) {
-               return selectLowerCard(hand, trump, calledCard);
+            if (selectLowerCard(availCards, trump, calledCard)) {    // in higher difficulty mode, computer plays higher bush card (if no ten)
+               let lowerCardName = availCards[selectLowerCard(availCards, trump, calledCard)].getCardName();
+               return searchHandForCard(lowerCardName, hand);
             }
          }
-         return selectLowestCard(hand, trump);                     // else play lowest bush card
+         let lowestBushCard = availCards[selectLowestCard(availCards, trump)].getCardName();
+         return searchHandForCard(lowestBushCard, hand);                     // else play lowest bush card
       }
    }
 
@@ -407,9 +428,9 @@ function isHangJackInPlay(hand, kickCard) {
  *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.4
+ *  @version   0.8.7
  *  @since     2018-10-1
- *  @license   Dual license - MIT & GPL
+ *  @license   Non-commercial
  *  @See:      http://www.gnu.org/licenses/gpl.html
  *             http://www.mit.edu/license
  */

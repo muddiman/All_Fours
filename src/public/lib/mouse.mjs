@@ -1,5 +1,4 @@
 //      /src/public/lib/mouse.mjs
-
 /*
                 Title:  ALL FOURS GAME
                 Language: Javascript
@@ -9,67 +8,30 @@
     DESCRIPTION:    mouse module for All Fours Game
     PURPOSE:        mouse class, handles mouse input for all fours game
 */
-import { debug     } from "./debugging.mjs";
-// import { Game      } from "/allfours.js";
+/*  imports */
+import { Display, USERHAND_Y  } from "./display-interface.mjs";
+import { debug     }            from "./debugging.mjs";
 
 /*  globals  */
-/* const CARD_W=72;
-const CARD_H=96; */
-const LEFTOFFSET =  15;
-const TOPOFFSET  = 160;
+const handLocY = USERHAND_Y;
+const screen   = Display.onCardScreen;
+const scale    = screen.getScale();
+const xOffset  = screen.xOffset;
+const yOffset  = screen.yOffset;
+console.log(`Scale: ${scale}`);
 
+/* mouse controller object  */
 export var Mouse = {
     currentX:           null,
     currentY:           null,
     clickX:             null,
     clickY:             null,
- /*    eventsHandler:     function (Controller, hand) {
-                                clickEvents(Controller, hand);              //  click, dbl click, mouse down, mouse up
-                                mouseMoveEvents(Controller, hand);          //  mousemove, mouseover
-                            },  */
     onClick:            function (event, hand) {
-                            this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
-                            this.clickY = event.clientY - TOPOFFSET;   //  Game.Screens.gameScreen.canvas.offsetTop; //   
+                            this.clickX = event.clientX - xOffset;    
+                            this.clickY = event.clientY - yOffset;     
                             debug.console(`Click location: (${this.clickX}, ${this.clickY})`);
                             return clickEvents(hand);
                         },
-/*     onMouseDown:            function (event, canvasLayer, Controller, hand) {
-                                this.clickX = event.clientX - LEFTOFFSET;  //  Game.Screens.gameScreen.canvas.offsetLeft;   // 
-                                this.clickY = event.clientY - TOPOFFSET;    *///  Game.Screens.gameScreen.canvas.offsetTop; //  
-                             /*    canvasLayer.removeEventListener("mousedown", (e) => {
-                                                                                    this.onMouseDown(e, Controller, hand); 
-                                                                                }, true);   */
-   /*                              canvasLayer.addEventListener("mouseup", () => {
-                                                                            this.onMouseUp(Controller, hand); 
-                                                                        }, true);    
-                                debug.console("Click location: (", this.clickX, ", ", this.clickY, ")");
-                                return clickEvents(hand);
-                            },
-    onMouseUp:              function (Controller, hand) {
-                                canvasLayer.removeEventListener("mouseup", () => {
-                                                                                                        this.onMouseUp(Controller, hand); 
-                                                                                                    }, true);  
-                                canvasLayer.addEventListener("mousedown", (e) => {
-                                                                                                        this.onMouseDown(e, Controller, hand); 
-                                                                                                    }, true);   
-                                for (let action in Controller.actions) {
-                                    if (Controller.actions[action] == true) {
-                                        Controller.actions[action] = false;
-                                    }
-                                }
-                            }, 
-    onMouseMove:            function (event, hand, gameboard) {
-                                this.currentX = event.clientX - LEFTOFFSET; //  Game.Screens.gameScreen.canvas.offsetLeft; // x,y position of the mouse pointer on canvas when event occurs
-                                this.currentY = event.clientY - TOPOFFSET; //  Game.Screens.gameScreen.canvas.offsetTop;
-                                debug.console("(", this.currentX, ", ", this.currentY, ")");
-                                debug.display(`(${this.currentX}, ${this.currentY})`);
-                                for (let index = 0; index < hand.length; index++) {
-                                    const card = hand[index];
-                                    if (isMouseOverCard(index, card, hand.length, this.currentX, this.currentY) === true) {
-                                        gameboard.select = card;
-                                    }
-                                }
-                            }     */
 };
 /********************************************************************************************************************************************** */
 
@@ -87,9 +49,9 @@ function clickEvents(hand) {
 }   
 
 function moveEvents(Controller, hand) {
-/*     let clickX = Controller.clickPosition.X;
+/*  let clickX = Controller.clickPosition.X;
     let clickY = Controller.clickPosition.Y; */
-    for (let index = 0; index < hand.length; index++) {                                 //  cycle through cards in hand
+    for (let index = 0; index < hand.length; index++) {                //  cycle through cards in hand
         const card = hand[index];
         if (isMouseOverCard(index, card, hand.length, Mouse.currentX, Mouse.currentY) === true) {
             index++;
@@ -113,16 +75,16 @@ function didMouseClickOnCard(cardNumber, card, arrayLength, x, y) {
 }
 
 function checkPointerLocation(cardNumber, card, arrayLength, x, y) {
-    let upperLeftCornerX = cardLocation(cardNumber, card, arrayLength);
-    let upperLeftCornerY = 340;
-    if (upperLeftCornerX < x && x < upperLeftCornerX + card.CARD_W / 2) {
-        if (upperLeftCornerY < y && y < upperLeftCornerY + card.CARD_H) {
+    let upperLeftCornerX = scale * cardLocation(cardNumber, card, arrayLength);
+    let upperLeftCornerY = scale * handLocY;
+    if (upperLeftCornerX < x && x < upperLeftCornerX + (scale * card.CARD_W / 2)) {
+        if (upperLeftCornerY < y && y < upperLeftCornerY + (scale * card.CARD_H)) {
             return true;
         }
     }
     if (cardNumber === arrayLength - 1) {           //  LAST CARD
-        if (upperLeftCornerX < x && x < upperLeftCornerX + card.CARD_W) {
-            if (upperLeftCornerY < y && y < upperLeftCornerY + card.CARD_H) {
+        if (upperLeftCornerX < x && x < upperLeftCornerX + (scale * card.CARD_W)) {
+            if (upperLeftCornerY < y && y < upperLeftCornerY + (scale * card.CARD_H)) {
                 return true;
             }
         }    
@@ -140,7 +102,7 @@ function cardLocation(i, card, arrayLength) {
  *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.4
+ *  @version   0.8.7
  *  @since     2018-10-1
  *  @license   NON-Commercial
  *  @See:      http://www.roger-clarke.com/allfours/license.html
