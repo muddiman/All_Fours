@@ -163,18 +163,23 @@ export function computerAI(hand, trump, calledCard=null) {
       let availCards = getCardsInPlay(hand, trump, calledCard);
       // strategy.defendJack:                         
       if (strategy.defendJack === true) {
-         if (calledCard.suit != trump.suit || calledCard.rank < 9) {              // pass jack
-            return searchHandForCard(`j${trump.suit}`, hand);                                                   
-         } else {
-            for (let eachCard in getCardsInPlay(hand, trump, calledCard)) {           // play jack
-               if (availCards[eachCard].face != 'j' && availCards[eachCard].suit === trump.suit) {
-                  return searchHandForCard(availCards[eachCard].getCardName(), hand);  
+         /* jack check  */
+         if (searchHandForCard(`j${trump.suit}`, hand)) {
+            if (calledCard.suit != trump.suit || calledCard.rank < 9) {              // pass jack
+                  return searchHandForCard(`j${trump.suit}`, hand);                                                   
+            } else {             // play bush
+               for (let index; index < availCards.length; index++) {           // play any other card but jack
+                  if (availCards[index].face != 'j' && availCards[index].suit === trump.suit) {
+                     return searchHandForCard(availCards[index].getCardName(), hand);  
+                  }
+               }
+               if (searchHandForCard(`j${trump.suit}`, hand)) {         //  have no choice, play jack
+                  return searchHandForCard(`j${trump.suit}`, hand);
                }
             }
-            if (searchHandForCard(`j${trump.suit}`, hand)) {
-               return searchHandForCard(`j${trump.suit}`, hand);
-            }
          }
+      } else {
+         strategy.changeStrategyToGame();
       }
       // strategy.goForHangJack: 
       if (strategy.goForHangJack === true) {
@@ -186,7 +191,7 @@ export function computerAI(hand, trump, calledCard=null) {
          }
          if (selectLowerCard(availCards, trump, calledCard) != null) {              // lower card in suit
             let lowerCardName = availCards[selectLowerCard(availCards, trump, calledCard)].getCardName();
-            return searchHandForCard(lowerCardName, hand)
+            return searchHandForCard(lowerCardName, hand);
          }
          if (calledCard.rank < 8 || calledCard.suit != trump.suit) {          // ten of suit (if present)
             if (searchHandForCard(`t${calledCard.suit}`, hand)) {
@@ -428,7 +433,7 @@ function isHangJackInPlay(hand, kickCard) {
  *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.7
+ *  @version   0.8.8
  *  @since     2018-10-1
  *  @license   Non-commercial
  *  @See:      http://www.gnu.org/licenses/gpl.html
