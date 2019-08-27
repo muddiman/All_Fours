@@ -13,16 +13,16 @@ ___
  You can  download the card images or get more information here: <http://www.github.com/>.
 
 #### Current Version
-Two-Man All Fours Ver. 0.8.4
+Two-Man All Fours Ver. 0.8.8
 
 
-#### Known Bugs
-- AI bugs
-- Hang-Jack not quite working as it shold
-- 'Mute' function not working
-- Arrow keys input not working correctly
+#### Known Bugs and Deficiencies
+- Hang-Jack not quite working as it should
+- 'Sound' disabled
 - Pause not working
-- Menu Screen not working
-- no debug display 
-- under trump, rekneed, still to be added
-- Computer makes illegal plays
+- Menu Screen incomplete.
+- debug setting disabled.
+- under trump, rekneed, still to be added.
+- illegal plays from player still allowed.
+- 'Settings' adjustment functionality not yet available.
+- 'Beg' subroutines to be added.
