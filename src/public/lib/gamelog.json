@@ -1,0 +1,42 @@
+{
+    "start": "",
+    "end": "",
+    "players": [],
+    "completed": true,
+    "winner": null,
+    "finalScore": {
+        "human": 0,
+        "computer": 0
+    },
+    "rounds": [
+        {
+            "dealer": "",
+            "kickedCards": [],
+            "lift": {
+                "human": [],
+                "computer": []
+            },
+            "points": {
+                "hi": "",
+                "low": "",
+                "jack": "",
+                "hangjack": "",
+                "game": ""
+            },
+            "subRounds": [
+                {
+                    "call": {
+                        "card": null, 
+                        "player": null
+                    },
+                    "play": {
+                        "card": null, 
+                        "player": null
+                    },
+                    "winner": null
+                }
+            ]
+        }
+    ]
+
+}
