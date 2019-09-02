@@ -1,6 +1,6 @@
 {
   "name": "allfours",
-  "version": "0.6.3",
+  "version": "0.8.8",
   "description": "Popular Trinidad & Tobago card game",
   "main": "allfours.js",
   "directories": {

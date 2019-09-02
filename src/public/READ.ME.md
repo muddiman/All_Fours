@@ -10,7 +10,7 @@
 */
 
 /**
-    @Title:         All FOURS GAME 0.8.8    (Pre-candidate release: coming soon)
+    @Title:         All FOURS GAME 0.9.0    (Final Version: coming soon)
     @Description:   Popular Card game played in teams of two players.
     @author:        Roger Clarke (muddiman | .muddicode)
     @license:       Copyright (c) 2018-2019. All Rights Reserved. See license.md.
