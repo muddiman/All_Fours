@@ -78,7 +78,16 @@ export var Display = {
                         .text(players.computer.score, "#ffffff", upperLeftCornerX + 215, 40, false)               
                         .text(players.human.score,    "#ffffff", upperLeftCornerX + 215, 105, false);               
                     return this;
-                },                  
+                }, 
+    adbox:      function (adImage) {
+                    const x = 2 * MARGIN;
+                    const y = HEIGHT - 2 * MARGIN - CARD_H;
+                    const adWidth  = CARD_H;
+                    const adHeight = CARD_H;
+                    this.onBackground.drawRectangle("white", 3, x, y, adWidth, adHeight, "rgba(0, 0, 0, 0)")
+                    .shadow("black", 10, 10, 40); 
+                    this.onBackground.placeImage(adImage, x+2, y+2, adWidth-4, adHeight-4);                  
+                },                             
     trump:      function (card) {
                     const topCornerX = MARGIN;      // 5 pixels in
                     const topCornerY = MARGIN;
@@ -124,8 +133,11 @@ export var Display = {
     message:    function (msgboard) {
                     this.onMsgScreen.canvas.style.visibility = "visible";
                     let fontSize = Math.floor(this.onBackground.scale * 20);    
-                    this.onMsgScreen.setFont(`bold ${fontSize}px Monaco`)
-                        .text(msgboard.text, "rgba(255, 255, 0, 1.0)", WIDTH / 2, 200, true);
+                    this.onMsgScreen.setFont(`bold ${fontSize}px Monaco`);
+                     for (let i=0;i<msgboard.text.length;i++) {
+                         this.onMsgScreen.text(msgboard.text[i], "rgba(0, 255, 0, 1.0)", (WIDTH / 2), 200 + i*25, true);
+                    }
+                        // .text(msgboard.text, "rgba(255, 255, 0, 1.0)", WIDTH / 2, 200, true);
                     this.onMsgScreen.canvas.addEventListener("click", this.clearMsgBoard);
                     let pauseID = setTimeout(()=>{
                         clearTimeout(pauseID);
@@ -203,7 +215,7 @@ function cardLocation(i, arrayLength) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.8
+ *  @version   0.9.0
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
