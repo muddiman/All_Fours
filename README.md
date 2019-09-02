@@ -1,6 +1,6 @@
 # TWO-MAN ALL FOURS GAME
 
-Web version of popular Trinbago card game.
+Web version of the popular Trinbago card game.
 
 ## Coming Soon
 
@@ -13,7 +13,7 @@ ___
  You can  download the card images or get more information here: <http://www.github.com/>.
 
 #### Current Version
-Two-Man All Fours Ver. 0.8.8
+Two-Man All Fours Ver. 0.9.0
 
 
 #### Known Bugs and Deficiencies
@@ -26,3 +26,4 @@ Two-Man All Fours Ver. 0.8.8
 - illegal plays from player still allowed.
 - 'Settings' adjustment functionality not yet available.
 - 'Beg' subroutines to be added.
+- Message array display incorrectly, text alignment off

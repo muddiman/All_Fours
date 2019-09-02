@@ -19,18 +19,18 @@ export function Card(rank, face, suit) {               // Card object constructo
         return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
     };
     this.init =  function () {                   //  load card image
-        if (gCardImageCacheObj[this.getCardName()]) {   // check if card image is loaded to cache
+/*         if (gCardImageCacheObj[this.getCardName()]) {   // check if card image is loaded to cache
             this.image = gCardImageCacheObj[this.getCardName()];
             this.imageLoaded = true;
             // counter++;
-        } else {                // if card image not loaded, create new image and assign it to cache
+        } else {  */               // if card image not loaded, create new image and assign it to cache
+        if (this.imageLoaded === false){
             this.image = new Image();
             this.image.id = this.getCardName();
             this.image.src = `img/${this.getCardName()}.png`;
             this.image.onload =  () => {
-                   this.imageLoaded = true;
-                //    counter++;
-                   console.log(`${this.getCardName()} loaded`);
+                   this.imageLoaded = true;         //    counter++;
+                   console.log(`${this.getCardName()} loaded.`);
             };
             gCardImageCacheObj[this.getCardName()] = this.image;
         }
@@ -53,7 +53,7 @@ Card.prototype.getSuit = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.8
+ *  @version   0.9.0
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
