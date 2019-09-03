@@ -69,7 +69,7 @@ export var Display = {
                     const x = this.onBackground.ctx;
                     const upperLeftCornerX = WIDTH - scoreboardWIDTH - MARGIN;         //   (LxB: 260 x 120 box; x,y => 400,5)
                     const upperLeftCornerY = MARGIN;
-                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, scoreboardWIDTH, scoreboardHEIGHT, "#ff0000")
+                    this.onBackground.drawRectangle("black", 4, upperLeftCornerX, upperLeftCornerY, scoreboardWIDTH, scoreboardHEIGHT, "#663300")
                         .shadow("black", 10, 10, 40);
                     let fontSize = Math.floor(this.onBackground.scale * 30);    
                     this.onBackground.setFont(`bold ${fontSize}px Arial`)
