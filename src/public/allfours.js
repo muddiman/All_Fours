@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.8
+ *  @version   0.9.0
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -77,6 +77,7 @@ import { Controller }               from "./lib/controller.mjs";
 const MAGNIFY_CARD=SETTINGS.MOUSE_OVER;
 const ON=true;
 const OFF=false;
+const ADS=OFF;
 
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
@@ -101,7 +102,8 @@ const PLAYER2_NAME = "You";
 const LEFTOFFSET =  15;
 const TOPOFFSET  = 180;
 
-
+/* IMAGES   */
+const caribLogo = new Image();
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -408,10 +410,10 @@ Game.State = {
 Game.Components.msgboard = {
     visible     : false,
     isUpdated   : false,
-    text        : null,
+    text        : [],
     init        : function () {
                     this.visible = false;
-                    this.text = null;
+                    this.text = [];
                     this.isUpdated = false;
                     return this;
                 },
@@ -424,8 +426,8 @@ Game.Components.msgboard = {
     makeInvisible : function () {
                     this.visible = false;
                 },
-    message     : function (text) {
-                    this.text = text;
+    message     : function (textArr) {
+                    this.text = textArr;
                     return this;
                 }
 };
@@ -715,49 +717,62 @@ function dealHandFcn(dealer) {
 
 function allocatePoints() {
     /*  game  */
+    let textArray = [];
+    let i=0;
     let computerPoints = countForGame(Game.Player.computer);
     let humanPoints    = countForGame(Game.Player.human);
     debug.display(`${Game.Player.computer.getName()} Game Points: ${computerPoints}`);
     debug.display(`${Game.Player.human.getName()} Game Points: ${humanPoints}`);
     if (computerPoints > humanPoints) {
         Game.Player.computer.addPoints(GAME);
-        let text = `${Game.Player.computer.getName()} gets GAME.`;
-        debug.console(text);
-        Game.Components.msgboard.init().message(text).makeVisible();
+        textArray[i] = `${Game.Player.computer.getName()} gets GAME.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components.msgboard.init().message(text).makeVisible();
     } else {
         Game.Player.human.addPoints(GAME);      //   += GAME;
-        let text = `${Game.Player.human.getName()} gets GAME.`;
-        debug.console(text);
-        Game.Components.msgboard.init().message(text).makeVisible();
+        textArray[i] = `${Game.Player.human.getName()} gets GAME.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components.msgboard.init().message(text).makeVisible();
     }
     /*  high  */
     if (Game.GamePlay.whoPlayedHi) {
         Game.GamePlay.whoPlayedHi.addPoints(HIGH);
-        debug.console(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
-        Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`).makeVisible();
+        textArray[i] =`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`).makeVisible();
         // debug.display(`${Game.GamePlay.whoPlayedHi.getName()} played HIGH.`);
     }
     /*  low */
     if (Game.GamePlay.whoPlayedLow) {
         Game.GamePlay.whoPlayedLow.addPoints(LOW);
-        debug.console(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
-        Game.Components. msgboard.init().message(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`).makeVisible();
+        textArray[i] = `${Game.GamePlay.whoPlayedLow.getName()} played LOW.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components. msgboard.init().message(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`).makeVisible();
         // debug.display(`${Game.GamePlay.whoPlayedLow.getName()} played LOW.`);
     }
     /*  jack  */ 
     if (Game.GamePlay.whoPlayedJack) {
         Game.GamePlay.whoPlayedJack.addPoints(JACK);
-        debug.console(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
-        Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`).makeVisible();
+        textArray[i] = `${Game.GamePlay.whoPlayedJack.getName()} played JACK.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components.msgboard.init().message(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`).makeVisible();
         // debug.display(`${Game.GamePlay.whoPlayedJack.getName()} played JACK.`);
     }
     /*  hang jack  */
     if (Game.GamePlay.whoHangedJack) {
         Game.GamePlay.whoHangedJack.addPoints(HANG_JACK);
-        debug.console(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
-        Game.Components.msgboard.init().message(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`).makeVisible();
+        textArray[i] = `${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`;
+        debug.console(textArray[i]);
+        i++;
+        // Game.Components.msgboard.init().message(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`).makeVisible();
         // debug.display(`${Game.GamePlay.whoHangedJack.getName()} hanged JACK.`);
     }
+    Game.Components.msgboard.init().message(textArray).makeVisible();
     Game.GamePlay.init();
 }
 
@@ -819,7 +834,7 @@ function trackCards(player, cardPlayed) {
     }    
     if (cardPlayed.face === 'j') {
         Game.GamePlay.whoPlayedJack = player;
-        debug.console(`${player.getName()} is trying pass for JACK!.`);                
+        debug.console(`${player.getName()} is trying pass JACK!.`);                
     }
     if (Game.GamePlay.whoHangedJack) {
         Game.GamePlay.whoPlayedJack = null;
@@ -873,19 +888,19 @@ function determineWinner(called, played) {
 function kickPoints(card) {
     switch (card.face) {
         case 'a':
-            Game.Components.msgboard.text = "Kick Ace! Dealer gets 1 pt.";
+            Game.Components.msgboard.text[0] = "Kick Ace! Dealer gets 1 pt.";
             Game.Components.msgboard.visible = true;
             return 1;
         case '6':
-            Game.Components.msgboard.text = "Kick Six!! Dealer gets 2 pts.";
+            Game.Components.msgboard.text[0] = "Kick Six!! Dealer gets 2 pts.";
             Game.Components.msgboard.visible = true;
             return 2;
         case 'j':
-            Game.Components.msgboard.text = "Kick Jack!!! Dealer gets 3 pts.";
+            Game.Components.msgboard.text[0] = "Kick Jack!!! Dealer gets 3 pts.";
             Game.Components.msgboard.visible = true;
             return 3;
         default:
-            Game.Components.msgboard.text = "Kicks nothing!! Wham? like yuh toe buss?";
+            Game.Components.msgboard.text[0] = "Kicks nothing!! Wham? like yuh toe buss?";
             Game.Components.msgboard.visible = true;
             return 0;
     }
@@ -997,6 +1012,16 @@ var asset1 = new Promise(function (resolve, reject) {
 });
 var asset2 = new Promise(function (resolve, reject) {
     Game.Components.gameboard.init();
+               // if card image not loaded, create new image and assign it to cache
+        // let logo = new Image();
+        caribLogo.id = `coors_logo`;
+        caribLogo.src = `lib/img/${caribLogo.id}.jpg`;
+        caribLogo.onload =  () => {
+            //    this.imageLoaded = true;
+            //    counter++;
+            console.log(`${caribLogo.id} loaded.`);
+        };
+        // gCardImageCacheObj[logo.id] = logo;
     resolve(`2`);
 });
 var asset3 = new Promise(function (resolve, reject) {
@@ -1093,8 +1118,18 @@ function displayBackground() {
     if (Game.Components.deck.getTrump()) {
         Display.trump(Game.Components.deck.getTrump());
     }
+    if (ADS) {
+        Display.adbox(caribLogo);
+    }
 }
-
+/* 
+function displayAds() {
+    Display.labels(Game.Player.human.hand).scoreboard(Game.Player);
+    if (Game.Components.deck.getTrump()) {
+        Display.trump(Game.Components.deck.getTrump());
+    }
+}
+ */
 function displayGameScreen() {
     if (Game.Components.gameboard.computer) {
         Display.playCard('top', Game.Components.gameboard.computer);
@@ -1437,9 +1472,15 @@ function changePlayerName() {
     if (nameInput.value.length != 0) {
         Game.Player.human.changeName(nameInput.value);
     }
-}
+}const messageArray = [
+            `Play Two-Man All Fours`,
+            `Coors Light, taste the rockies!`,
+            `Stag, a man's beer`,
+            `A beer is a Carib`,
+        ];
+const tempArray = [`Play Two-Man All Fours`,];
 
-tickertape(`Play Two-Man All Fours`);
+tickertape(tempArray);
 // mainGameLoop();
 let pauseID = setTimeout(function () {
     mainGameLoop();
