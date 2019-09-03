@@ -8,9 +8,10 @@
 */
 import { gCanvasLayer } from "./screen.mjs";
 
-export function tickertape(message) {
+export function tickertape(messageArr) {
     const width=window.innerWidth;
     const height=50;
+    let i=0;
     var x=0;
     var y=0;
     var t = new gCanvasLayer("tck_board", 0, "black");      //  , width, height, 1.0, 0, 0, 0, 0);
@@ -29,10 +30,12 @@ export function tickertape(message) {
     let ID = setInterval(function () {       // anonymous function for handling the animation
         if (x<-400) {
             x=width;
+            //  change message index
+            i = (i + 1) % messageArr.length;
         } 
         t.clear();
         x-=2;
-        tbx.fillText(message, x, y);
+        tbx.fillText(messageArr[i], x, y);
     }, 1000/60);
 }
 
