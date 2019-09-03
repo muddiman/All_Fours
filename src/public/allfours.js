@@ -1014,7 +1014,7 @@ var asset2 = new Promise(function (resolve, reject) {
     Game.Components.gameboard.init();
                // if card image not loaded, create new image and assign it to cache
         // let logo = new Image();
-        caribLogo.id = `carib_logo`;
+        caribLogo.id = `coors_logo`;
         caribLogo.src = `lib/img/${caribLogo.id}.jpg`;
         caribLogo.onload =  () => {
             //    this.imageLoaded = true;
@@ -1473,8 +1473,14 @@ function changePlayerName() {
         Game.Player.human.changeName(nameInput.value);
     }
 }
+var messageArray = [
+            `Play Two-Man All Fours`,
+            `Coors Light, taste the rockies!`,
+            `Stag, a man's beer`,
+            `A beer is a Carib`,
+        ];
 
-tickertape(`Play Two-Man All Fours`);
+tickertape(messageArray);
 // mainGameLoop();
 let pauseID = setTimeout(function () {
     mainGameLoop();
