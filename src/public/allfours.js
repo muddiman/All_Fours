@@ -77,7 +77,7 @@ import { Controller }               from "./lib/controller.mjs";
 const MAGNIFY_CARD=SETTINGS.MOUSE_OVER;
 const ON=true;
 const OFF=false;
-const ADS=ON;
+const ADS=OFF;
 
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
@@ -1472,15 +1472,15 @@ function changePlayerName() {
     if (nameInput.value.length != 0) {
         Game.Player.human.changeName(nameInput.value);
     }
-}
-var messageArray = [
+}const messageArray = [
             `Play Two-Man All Fours`,
             `Coors Light, taste the rockies!`,
             `Stag, a man's beer`,
             `A beer is a Carib`,
         ];
+const tempArray = [`Play Two-Man All Fours`,];
 
-tickertape(messageArray);
+tickertape(tempArray);
 // mainGameLoop();
 let pauseID = setTimeout(function () {
     mainGameLoop();
