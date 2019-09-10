@@ -113,7 +113,7 @@
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="homeScreen()">Menu</button>
+                    <button class="w3-btn" onclick="closeCtrlPanel()">Close</button>
                     <button class="w3-btn" onclick="Display.video(Game.Components.cutScenes[0])">Video</button>
                     <button class="w3-btn" id="quitBtn" onclick="start()">Start</button>
                 </div>
@@ -138,11 +138,14 @@
             <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
         </div>
     </footer>
-    <script type="text/javascript" src="./lib/title-script.js"></script>
+    <script type="text/javascript" src="./lib/title-script.js">
+
+    </script>
     <script type="text/javascript" src="./lib/game_loader.js">
-      window.onload = () => {
+  /*     window.onload = () => {
         // loadAllGameComponents();
-      };
+      }; */
+
        /*  scriptArray.forEach(element => {
             loadScript(element);
         }); */
