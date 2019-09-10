@@ -13,7 +13,7 @@ ___
  You can  download the card images or get more information here: <http://www.github.com/>.
 
 #### Current Version
-Two-Man All Fours Ver. 0.9.0
+Two-Man All Fours Ver. 0.9.1
 
 
 #### Known Bugs and Deficiencies
@@ -26,4 +26,4 @@ Two-Man All Fours Ver. 0.9.0
 - illegal plays from player still allowed.
 - 'Settings' adjustment functionality not yet available.
 - 'Beg' subroutines to be added.
-- Message array display incorrectly, text alignment off
+- Message array display some msgs incorrectly, vertical alignment 

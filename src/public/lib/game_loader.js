@@ -8,9 +8,9 @@ const scriptArray = [
     "/src/public/lib/card.js",
     "/src/public/lib/player.js",
     "/src/public/lib/soundlib.js",
+    "/src/public/lib/controller.js",
     "/src/public/lib/tickertape.js",
     // "/src/public/lib/touch.js",
-    "/src/public/lib/controller.js",
 ];
 var cardCount=0;
 
