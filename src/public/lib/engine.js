@@ -1,5 +1,5 @@
-//  filename:   engine.mjs
-//  path:       /lib/engine.mjs
+//  filename:   engine.js
+//  path:       /lib/engine.js
 
 /*
                                                 Title: THE ALL FOURS GAME
@@ -9,12 +9,12 @@
 */
 
 // import { gameLoop } from "../allfours.js";
-import { debug } from "./debugging.mjs";
+// import { debug } from "./debugging.mjs";
 /*  flags   */
 var METHODOLOGY="setInterval";      // or "requestAnimationFrame"
-
+console.log(`Reading Engine script.`);
 /*   Game Engine    */
-export var Engine = function(time_step, render, gameLoop) {
+var Engine = function(time_step, render, gameLoop) {
 //  this.update         = update;                   // update function
     this.time_interval  = time_step;                // related to the games frame rate
     this.render         = render;                   // render function (undefined)
@@ -106,7 +106,7 @@ Engine.prototype.init = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.6
+ *  @version   0.9.1
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

@@ -10,19 +10,21 @@
     PURPOSE:    debug object, generates new screens to display any parameter needed to be tracked
 
 */
+console.log(`Reading the debugging script`);
+
 /* const ON=true;
 const OFF=false; */
 // export var DEBUG_MODE=OFF;
 // document.getElementById("msg_layer").style.visibility = "hidden";
 
 // import { DEBUG_MODE } from "../allfours";
-import { gCanvasLayer } from "./screenOLD.mjs";
+// import { gCanvasLayer } from "./screenOLD.mjs";
 // import { SETTINGS }     from "./settings.mjs";
 // export const DEBUG_MODE = SETTINGS.DEBUG_MODE;
-export const DEBUG_MODE=false;
-export const debug = {
+const DEBUG_MODE=false;
+const debug = {
     isUpdated:  false, 
-    screen:     new gCanvasLayer("debug_screen", 400 + 72, 450, 300 - 72, 150, 0.2, 4, 0, 0, 0),
+    // screen:     new gCanvasLayer("debug_screen", 400 + 72, 450, 300 - 72, 150, 0.2, 4, 0, 0, 0),
     init:       () => {
                     if (DEBUG_MODE === true) {
                         let debugDiv = document.getElementById("debug_section");
@@ -69,3 +71,15 @@ export const debug = {
                             }
                         },
 };
+
+
+/**
+ *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
+ *  @author    Roger Clarke (muddiman | .muddicode)
+ *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
+ *  @version   0.9.1
+ *  @since     2018-10-1
+ *  @license   Non-commercial
+ *  @See:      http://www.gnu.org/licenses/gpl.html
+ *             http://www.mit.edu/license
+ */

@@ -1,4 +1,4 @@
-//      /src/public/lib/screen.mjs
+//      /src/public/lib/screen.js
 
 /*
                 Title:  ALL FOURS GAME
@@ -9,21 +9,16 @@
     DESCRIPTION:    screen module for All Fours Game
     PURPOSE:        screen class, generates new graphics screens for the game, interacts directly with the HTML5 Canvas
 */
-
+console.log(`Reading the 'screens' script`);
 /*  globals  */
 const defaultWIDTH=700;
 const defaultHEIGHT=450;
-const LEFTOFFSET=15;
-const TOPOFFSET=180;
-const MARGIN=50;
-
 /*  mobile width:    300,
     tablet width:    500,
     desktop/laptop width:   700,
 */
-
 /*  screen canvas class */
-export function gCanvasLayer(ID, zIndex, color) {
+function gCanvasLayer(ID, zIndex, color) {
     this.width  =  Math.floor(this.scale * defaultWIDTH);   //  WIDTH;
     this.height =  Math.floor(this.scale * defaultHEIGHT);  //  HEIGHT;
     this.canvas =  document.createElement("canvas");
@@ -115,7 +110,7 @@ function setScale(deviceWidth, deviceHeight) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.9.0
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
