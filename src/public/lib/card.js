@@ -7,10 +7,10 @@
 
 /* globals */
 /*  objects */
-export var gCardImageCacheObj = {};
+// var gCardImageCacheObj = {};
 
 /*  classes */
-export function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
+function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
     this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
     this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
     this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
@@ -19,20 +19,18 @@ export function Card(rank, face, suit) {               // Card object constructo
         return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
     };
     this.init =  function () {                   //  load card image
-/*         if (gCardImageCacheObj[this.getCardName()]) {   // check if card image is loaded to cache
+        if (gCardImageCacheObj[this.getCardName()]) {   // check if card image is loaded to cache
             this.image = gCardImageCacheObj[this.getCardName()];
             this.imageLoaded = true;
-            // counter++;
-        } else {  */               // if card image not loaded, create new image and assign it to cache
-        if (this.imageLoaded === false){
+        } else {  //*/               // if card image not loaded, create new image and assign it to cache
             this.image = new Image();
             this.image.id = this.getCardName();
             this.image.src = `img/${this.getCardName()}.png`;
             this.image.onload =  () => {
+                   gCardImageCacheObj[this.getCardName()] = this.image;
                    this.imageLoaded = true;         //    counter++;
                    console.log(`${this.getCardName()} loaded.`);
             };
-            gCardImageCacheObj[this.getCardName()] = this.image;
         }
     };
 } 
@@ -53,7 +51,7 @@ Card.prototype.getSuit = function () {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.9.0
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.

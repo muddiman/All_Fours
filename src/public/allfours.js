@@ -10,7 +10,7 @@
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.9.0
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.
@@ -57,27 +57,36 @@
 */
 
 /*  imports */
-import { SETTINGS }                 from "./lib/settings.mjs";
-import { Display }                  from "./lib/display-interface.mjs";
-import { Player }                   from "./lib/player.mjs";
-import { Card, gCardImageCacheObj } from "./lib/card.mjs";
-import { Engine }                   from "./lib/engine.mjs";
-import { computerAI }               from "./lib/ai.mjs";
-import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
-import { tickertape }               from "./lib/tickertape.mjs";
-import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
-import { Controller }               from "./lib/controller.mjs";
+// import { SETTINGS }                 from "./lib/settings.mjs";
+// import { Display }                  from "./lib/display-interface.mjs";
+// import { Player }                   from "./lib/player.mjs";
+// import { Card, gCardImageCacheObj } from "./lib/card.mjs";
+// import { Engine }                   from "./lib/engine.mjs";
+// import { computerAI }               from "./lib/ai.mjs";
+// import { sndFx, bkgndMusic }        from "./lib/soundlib.mjs";
+// import { tickertape }               from "./lib/tickertape.mjs";
+// import { debug, DEBUG_MODE }        from "./lib/debugging.mjs";
+// import { Controller }               from "./lib/controller.mjs";
 
 // import { playSoundInstance, Sound }    from "./lib/soundlib.mjs";
 // import { Display } from "/lib/displayInterface.mjs";
 
+/*  replace import statements with a script loader function */
+// loadAllGameComponents();
+/* scriptArray.forEach(element => {
+    loadScript(element);
+}); */
+
+/*  IIFE */
+
 /***************************************     the globals *  ********************************************************/
 
+
 /*  Flags   */
-const MAGNIFY_CARD=SETTINGS.MOUSE_OVER;
 const ON=true;
 const OFF=false;
 const ADS=OFF;
+const MAGNIFY_CARD=ON;   //  SETTINGS.MOUSE_OVER;
 
 /* necessary game dimensions */
 const WIDTH   = 700; //use window.innerWidth;  for fullscreen gaming
@@ -90,7 +99,7 @@ const SUITS = ['c', 'd', 'h', 's'];
 const FACES = ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'];
 
 /* Clear/Opaque */
-const TRANSPARENT = 0;
+const TRANSPARENT =   0;
 const OPAQUE      = 1.0;
 
 
@@ -101,9 +110,13 @@ const PLAYER2_NAME = "You";
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET =  15;
 const TOPOFFSET  = 180;
+const MARGIN=5;
+const USERHAND_Y=340;
+
 
 /* IMAGES   */
 const caribLogo = new Image();
+var gCardImageCacheObj = {};
 
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
@@ -125,12 +138,18 @@ const caribLogo = new Image();
 // var gCardImageCacheObj = {}; // object of cached card images
 
 /* game board object */
-// import gameBoard from '/lib/graphicslib.js';         INCL. score board, trump...
 
-/*  Remove game_board and use game Background instead.
-    there is no need to constantly update the background @ 30 fps.
+/*  NOTE: I Remove game_board and use game Background instead.
+    There was no need to constantly update the background @ 24 fps.
     All game components that are not frequently updated can be placed in the background
 */
+loadAllGameComponents();
+// gWaitState(4);
+//  putting everything in an IIFE
+var pauseGameID = setTimeout(()=>{
+
+(function(){
+
 
 /*  Main Game Object (parent object)    */
 var Game = {
@@ -188,14 +207,15 @@ Game.Background = {
     }
 };
 
-Game.Screens = {
+/* Game.Screens = {
     // pauseScreen : new gCanvasLayer("pause_screen", LEFTOFFSET, TOPOFFSET, WIDTH + 0, HEIGHT + 0, 0.8,         4, 204, 204, 204),        //  to be removed
-};
+}; */
 
 Game.Player = {
     computer    : new Player(PLAYER1_NAME, "Androids"),
     human       : new Player(PLAYER2_NAME, "A-Team")
 };
+
 function setPlayerName() {
     let playerName = document.getElementById("player_name").value;
     Game.Player.human.changeName(playerName);
@@ -249,11 +269,15 @@ Game.Components.deck = {
         console.log(`${this.counter} card images loaded: ${percent}%`);
         let delayID = setTimeout(() => {
             clearTimeout(delayID);
-            this.cards.forEach(element => {
-                if (element.imageLoaded === true) {
-                    this.counter++;
-                }
-             });
+            while (this.counter < 52) {
+                this.cards.forEach(card => {
+                    if (card.imageLoaded === true) {
+                        this.counter++;
+                    } else {
+                        card.init();
+                    }
+                });    
+            }
             percent = Math.floor((this.counter / 52) * 100);
             console.log(`${this.counter} card images loaded: ${percent}%`);          
         }, 3000);
@@ -795,8 +819,8 @@ function play(player) {
         }
     } else {
         Game.Controller.isMyTurn = true; 
-        console.log(`YOUR TURN!`);
-            console.log(`Listening for card!`);
+        // console.log(`YOUR TURN!`);
+            // console.log(`Listening for card!`);
             if (Game.Components.gameboard.user) {
                 Game.Controller.isMyTurn = false;
                 resolve(`${Game.Player.human.getName()} picked a card.`);
@@ -1007,7 +1031,8 @@ function removeUtilityScreens() {
  *  this will be handled by game-loader.js in the final version
  */
 var asset1 = new Promise(function (resolve, reject) {
-    Game.Components.deck.init().cardImagesLoaded().init().cardImagesLoaded();    // .cardImagesLoaded();     //  .isDeckLoaded();
+    getTrackListing("./soundtracks.json");
+    Game.Components.deck.init().cardImagesLoaded();     //  .init().cardImagesLoaded();    // .cardImagesLoaded();     //  .isDeckLoaded();
     resolve(`1`);
 });
 var asset2 = new Promise(function (resolve, reject) {
@@ -1030,7 +1055,7 @@ var asset3 = new Promise(function (resolve, reject) {
     resolve(`3`);
 });
 var asset4 = new Promise(function (resolve, reject) {
-    Game.Controller.init();
+    // Game.Controller.init();
     resolve(`4`);
 });
 var asset5 = new Promise(function (resolve, reject) {
@@ -1131,7 +1156,7 @@ function displayAds() {
 }
  */
 function displayGameScreen() {
-    if (Game.Components.gameboard.computer) {
+/*     if (Game.Components.gameboard.computer) {
         Display.playCard('top', Game.Components.gameboard.computer);
     }
     if (Game.Components.gameboard.user) {
@@ -1142,7 +1167,9 @@ function displayGameScreen() {
     }
     if (Game.Components.gameboard.select) {
         Display.showcaseCard(Game.Components.gameboard.select);
-    }
+    } */
+    Display.hand(Game.Player.human.getHand()).playCard('top', Game.Components.gameboard.computer)
+        .playCard('bottom', Game.Components.gameboard.user).showcaseCard(Game.Components.gameboard.select);
 }
 
 function _drawGameScreen() {
@@ -1225,7 +1252,7 @@ function _clearAllScreens() {
 }
 
 
-export function gameLoop() {
+function gameLoop() {
     /*  A series of 'game states'   */
     // inputUpdate();
     if (Game.State.startOfGame === true) {   
@@ -1393,7 +1420,7 @@ function mainGameLoop() {
         } else {
             gBoard = Empty;
         };
-        Controller.listeners(document.getElementById("card_layer"), Game.Player.human.hand, inputUpdate);
+        Controller.listeners(Display.onCardScreen, Game.Player.human.hand, inputUpdate);
         // debug.init();
         playerNameChangeListener();
         Game.State.startOfGame = true;
@@ -1464,6 +1491,7 @@ function clickEnterButton() {
     function stopBtnListener() {
         nameInput.removeEventListener('input', changePlayerName);
         entBtn.removeEventListener('click', stopBtnListener);
+        nameInput.value = null;
     }
     entBtn.addEventListener('click', stopBtnListener);
 }
@@ -1472,20 +1500,30 @@ function changePlayerName() {
     if (nameInput.value.length != 0) {
         Game.Player.human.changeName(nameInput.value);
     }
-}const messageArray = [
+}
+
+// loadScript(scriptArray[8]);     //  loads the tickertape script
+// loadScript(scriptArray[6]);     //  loads the tickertape screen
+/* scriptArray.forEach(element => {
+    loadScript(element);
+}); */
+const messageArray = [
             `Play Two-Man All Fours`,
             `Coors Light, taste the rockies!`,
             `Stag, a man's beer`,
             `A beer is a Carib`,
         ];
 const tempArray = [`Play Two-Man All Fours`,];
-
-tickertape(tempArray);
+// 
+// tickertape(tempArray);
 // mainGameLoop();
-let pauseID = setTimeout(function () {
-    mainGameLoop();
-    clearTimeout(pauseID);
-}, 3000);
+    let pauseID = setTimeout(function () {
+        tickertape(tempArray);
+        mainGameLoop();
+        clearTimeout(pauseID);
+    }, 5000);
+    })();
+}, 8000);
 //------------------------------------------------------------------------------------------------------------------
 
     //          GARBAGE COLLECTION
@@ -1514,10 +1552,10 @@ BackEnd:
 FrontEnd:
     Display Module
     Controller Module
-    Testing Module          (abandoned)
+    Testing Module          (abandoned: did not use test-driven development)
     Debug Module
     Sound Module
-    Game Module --> components etc... objects & classes
+    Game Module --> game components, objects & classes etc...
 */
 
 

@@ -9,7 +9,7 @@
                      Code: Computer AI Subroutines                             
 */
 /*    FLAGS    */
-const DEBUG_MODE=true;
+// const DEBUG_MODE=true;
 //    Go for Jack
 //    Go for Game 
 //    State Machines
@@ -25,7 +25,8 @@ const DEBUG_MODE=true;
          passJack
          Computer follows rules... cannot re-nead or under-trump (there is no under trump in two-man all fours)
 */
-import { debug } from "./debugging.mjs";
+// import { debug } from "./debugging.mjs";
+console.log(`Reading the AI script`);
 
 /*    STRATEGY    */
 var strategy = {
@@ -151,7 +152,7 @@ function callJackOut(hand, trump) {
 
 
 
-export function computerAI(hand, trump, calledCard=null) {
+function computerAI(hand, trump, calledCard=null) {
    console.trace('computerAI(hand, trump, calledCard=null):');
    /* Set Strategy before first play  */
    if (hand.length === 6) {
@@ -433,7 +434,7 @@ function isHangJackInPlay(hand, kickCard) {
  *  @copyright (c) 2018-2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.8
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @license   Non-commercial
  *  @See:      http://www.gnu.org/licenses/gpl.html

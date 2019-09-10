@@ -29,14 +29,14 @@
                     <H1><span class="primary-text">TWO-MAN</span> All Fours</H1>
                 </div>
                 <div class="col-12">
-                    <p style="color: white">Game playable on latest version of Microsoft Edge only otherwise the game will not load.</p>
+                    <!-- <p style="color: white">Game playable on latest version of Microsoft Edge only otherwise the game will not load.</p> -->
                      <nav id="navbar">                        
-                    <!--    <a href="#">Home</a>
-                        <a href="#">About</a>
+                        <a href="#">Home</a>
+                       <!-- <a href="#">About</a>
                         <a href="#">Documentation</a>
                         <a href="#">Contact</a>
-                        <!-- <a href="../public/lib/title-screen.html">Title Screen</a> -->
-                        <!-- <a href="../public/lib/graphics.html">Graphics</a> -->
+                        <a href="../public/lib/title-screen.html">Title Screen</a> 
+                        <a href="../public/lib/graphics.html">Graphics</a> -->
                     </nav> 
                 </div>
             </div>
@@ -122,7 +122,7 @@
                       <div><h4>Enter your name:</h4>
                         <input id="player_name" name="name" type="text"><br> 
                       </div>
-                      <button class="w3-button w3-round-xlarge w3-border-blue" type="button" id="enter_btn"   >ENTER</button>
+                      <button class="w3-button w3-round-xlarge w3-border-blue" type="button" id="enter_btn">ENTER</button>
                     </form>
                 </div>
                 <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
@@ -139,8 +139,17 @@
         </div>
     </footer>
     <script type="text/javascript" src="./lib/title-script.js"></script>
-    <script type="module" src="allfours.js">
+    <script type="text/javascript" src="./lib/game_loader.js">
+      window.onload = () => {
+        // loadAllGameComponents();
+      };
+       /*  scriptArray.forEach(element => {
+            loadScript(element);
+        }); */
+    </script>
+    <script type="text/javascript" src="allfours.js">
         window.onload = function () {
+
             //loadAssets();     //  images, sound & video files
            // loadGame();
             
@@ -150,7 +159,7 @@
             }, 3000); */
           
         //    mainGameLoop();
-        }
+        };
     </script>
 <!--         <script type="text/javascript" src="game_loaader.js">
         window.onload = function () {

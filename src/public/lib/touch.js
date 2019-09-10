@@ -11,14 +11,14 @@
 */
 
 /*  imports  */
-import { debug } from "./debugging.mjs";
+// import { debug } from "./debugging.mjs";
 
 /*  globals  */
-const LEFTOFFSET =  15;
-const TOPOFFSET  = 160;
+// const LEFTOFFSET =  15;
+// const TOPOFFSET  = 160;
 /*  classes */
 /*  objects  */
-export var Touch = {
+var Touch = {
     touchX:             null,
     touchY:             null,
     eventsHandler:     function (Controller, hand) {
@@ -123,7 +123,7 @@ function cardLocation(i, card, arrayLength) {
  *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
- *  @version   0.8.6
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @license   NON-Commercial
  *  @See:      http://www.roger-clarke.com/allfours/license.html
