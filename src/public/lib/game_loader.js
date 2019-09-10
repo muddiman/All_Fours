@@ -1,15 +1,15 @@
 /*  globals */
 const scriptArray = [
-    "/src/public/lib/settings.js",
-    "/src/public/lib/display-interface.js",    
-    "/src/public/lib/debugging.js",
-    "/src/public/lib/engine.js",    
-    "/src/public/lib/ai.js",
-    "/src/public/lib/card.js",
-    "/src/public/lib/player.js",
-    "/src/public/lib/soundlib.js",
-    "/src/public/lib/controller.js",
-    "/src/public/lib/tickertape.js",
+    "./lib/settings.js",
+    "./lib/display-interface.js",    
+    "./lib/debugging.js",
+    "./lib/engine.js",    
+    "./lib/ai.js",
+    "./lib/card.js",
+    "./lib/player.js",
+    "./lib/soundlib.js",
+    "./lib/controller.js",
+    "./lib/tickertape.js",
     // "/src/public/lib/touch.js",
 ];
 var cardCount=0;
