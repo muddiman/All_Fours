@@ -1,5 +1,5 @@
-//  filename:   soundlib.mjs
-//  path:       /lib/soundlib.mjs
+//  filename:   soundlib.js
+//  path:       /lib/soundlib.js
 
 /*
                                                 Title: THE ALL FOURS GAME
@@ -16,20 +16,19 @@
 ************************************************************************************************************************ 
 *
 */
-console.log(`Reading the 'sound module' script`);
 
 // import { SETTINGS } from "./settings.mjs";
 
 /*  Sound Effects   */
 //  load SOUND effectS list
-export var sndFx = [];
+var sndFx = [];
 
 /*  Background Music    */
 //  load background music streams
-export var bkgndMusic = [];
+var bkgndMusic = [];
 
 /*  sound constructor/class */
-export function Sound(src) {
+function Sound(src) {
     this.sound          = document.createElement("audio");
     this.sound.src      = src;
     this.sound.setAttribute("preload", "auto");
@@ -83,25 +82,12 @@ Sound.prototype.muteTrack   = function () {                 //  toggle the mute 
 };
 // Sound.prototype.loop    = false;
 
-export function playSoundInstance(src) {
+function playSoundInstance(src) {
     let soundObj = new Sound(src);
     soundObj.play();
 }
 
 /************************************************************************************************ */
-
-/*  load audio tracks  apply settings to each track */
-function loadTracks(urlOBJ) {
-    for (let index = 0; index < urlOBJ.soundEffects.length; index++) {
-        sndFx[index] =  new Sound(urlOBJ.soundEffects[index]);
-        console.log(urlOBJ.soundEffects[index]);
-        // sndFx[index].setFxTrackVolume(SETTINGS.SOUNDmixer.sndFx[index]);        
-    }    
-    for (let index = 0; index < urlOBJ.backgroundMusic.length; index++) {
-        bkgndMusic[index] =  new Sound(urlOBJ.backgroundMusic[index]);
-        // bkgndMusic[index].setMusicTrackVolume(SETTINGS.SOUNDmixer.Bkgnd[index]);                
-    }
-}
 /*  manually    */
 const tracks = {
     soundEffects: [
@@ -114,6 +100,20 @@ const tracks = {
         "./lib/snd/ui-sound-20.oga"
     ],
 };
+
+/*  load audio tracks  apply settings to each track */
+ function loadTracks(urlOBJ) {
+    for (let index = 0; index < urlOBJ.soundEffects.length; index++) {
+        sndFx[index] =  new Sound(urlOBJ.soundEffects[index]);
+        console.log(urlOBJ.soundEffects[index]);
+        sndFx[index].setFxTrackVolume(SETTINGS.SOUNDmixer.sndFx[index]);        
+    }    
+    for (let index = 0; index < urlOBJ.backgroundMusic.length; index++) {
+        bkgndMusic[index] =  new Sound(urlOBJ.backgroundMusic[index]);
+        bkgndMusic[index].setMusicTrackVolume(SETTINGS.SOUNDmixer.Bkgnd[index]);                
+    }
+}
+
 
 function getFile(filenameJSON) {
     let myObj={};
@@ -137,10 +137,10 @@ function getFile(filenameJSON) {
 /*  retrieve from json  */
 function getTrackListing(url) {
     // let listingOBJ = getFile(url);
-    loadTracks(tracks);
+    // loadTracks(tracks);
 }
 
-getTrackListing("./soundtracks.json");
+// getTrackListing("./soundtracks.json");
  
 /** **************************************************************************************************************************************************************
  * 
@@ -148,7 +148,7 @@ getTrackListing("./soundtracks.json");
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.8.6
+ *  @version   0.9.1
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute
