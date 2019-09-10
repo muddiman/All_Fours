@@ -9,10 +9,10 @@
     DESCRIPTION:    screen module for All Fours Game
     PURPOSE:        screen class, generates new screens for all fours game
 */
-import { debug } from "./debugging.mjs";
-
-const ON=true;
-const OFF=false;
+// import { debug } from "./debugging.mjs";
+console.log(`Reading the SETTINGS script`);
+// const ON=true;
+// const OFF=false;
 const ENABLED=true;
 const DISABLED=false;
 const displayArr=["desktop", "tablet", "mobile"];
@@ -20,7 +20,7 @@ const playerArr=["TWO_PLAYER", "FOUR_PLAYER"];
 const difficultyArr=["EASY", "HARD", "PRO"];
 
 /*  default    */
-export var SETTINGS = {
+var SETTINGS = {
     SOUND       :   ENABLED,
     DEBUG_MODE  :   DISABLED,
     MOUSE_OVER  :   ENABLED,                //  card-higlight/mouse-over
@@ -143,3 +143,15 @@ function saveFile(settingsObject) {
     "DIFFICULTY": "EASY"
 
 } */
+
+
+/**
+ *  @copyright (c) 2018 - 2019 Roger Clarke. All rights reserved.
+ *  @author    Roger Clarke (muddiman | .muddicode)
+ *  @link      https://www.roger-clarke.com (OR: https://www.muddicode.com)
+ *  @version   0.9.1
+ *  @since     2018-10-1
+ *  @license   NON-Commercial
+ *  @See:      http://www.roger-clarke.com/allfours/license.html
+ *             http://www.roger-clarke.com/allfours/copyright.html
+ */

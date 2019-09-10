@@ -18,7 +18,7 @@ const MAX_CHARACTERS=10;
 
 
 /* Player Class/Object Constructor */
-export function Player(playerName, teamName) {         // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
+function Player(playerName, teamName) {         // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
     /*  Properties  */
     this.hand       = [];
     this.lift       = [];
@@ -159,7 +159,7 @@ function checkTeamName(team) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com  
- *  @version   0.8.4
+ *  @version   0.9.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
  *  @license   NOT for 'commercial use'.

@@ -1,5 +1,5 @@
-//  filename:   display-interface.mjs
-//  path:       /lib/display-interface.mjs
+//  filename:   display-interface.js
+//  path:       /lib/display-interface.js
 
 /*
                                                 Title: THE ALL FOURS GAME
@@ -10,19 +10,19 @@
 /*  globals */
 // const LEFTOFFSET=15;
 // const TOPOFFSET=180;
-const WIDTH=700;
-const HEIGHT=450;
+// const WIDTH=700;
+// const HEIGHT=450;
 // const devWidth=window.innerWidth;
 // const devHeight=window.innerHeight;
+console.log(`Reading the 'Display' script`);
 
-const MARGIN=5;
+// const MARGIN=5;
 const scoreboardWIDTH=260;
 const scoreboardHEIGHT=120;
 // const OPAQUE=1.0;
 // const TRANSPARENT=0;
-const CARD_W=72;
-const CARD_H=96;
-export const USERHAND_Y=340;
+// const CARD_W=72;
+// const CARD_H=96;
 // var displayScale = scale(devWidth, devHeight);
 /* const gameWIDTH  = Math.floor(displayScale * devWidth);
 const gameHEIGHT = Math.floor(displayScale * devHeight);
@@ -37,10 +37,101 @@ const gameScoreboardHEIGHT = Math.floor(displayScale * scoreboardHEIGHT); */
 
 /*  IMPORTS */
 /*  the screens  */
-import { gCanvasLayer } from "./screen.mjs";
+// import { gCanvasLayer } from "./screen.mjs";
+const defaultWIDTH=700;
+const defaultHEIGHT=450;
+/*  mobile width:    300,
+    tablet width:    500,
+    desktop/laptop width:   700,
+*/
+/*  screen canvas class */
+function gCanvasLayer(ID, zIndex, color) {
+    this.width  =  Math.floor(this.scale * defaultWIDTH);   //  WIDTH;
+    this.height =  Math.floor(this.scale * defaultHEIGHT);  //  HEIGHT;
+    this.canvas =  document.createElement("canvas");
+    this.init = function () {
+        this.canvas.width  = this.width;
+        this.canvas.height = this.height;
+        this.canvas.id = ID;
+        this.z = zIndex;
+        this.color = color;
+        this.canvas.setAttribute("class", "screen");
+        this.ctx = this.canvas.getContext('2d');
+        document.getElementById("game_container").appendChild(this.canvas);
+        document.getElementById(ID).style = `position: absolute; left: ${this.xOffset}px; top: ${this.yOffset}px; z-index: ${this.z}; background-color: ${this.color};`;
+        console.log(`New ${this.canvas.id} canvas initialized.`);
+        return this;
+    };
+}
+/*  Prototypes  */
+// universal properties
+gCanvasLayer.prototype.scale    = setScale(window.innerWidth, window.innerHeight);   // 1;
+gCanvasLayer.prototype.getScale = function () {
+                                    return this.scale;
+                                };
+gCanvasLayer.prototype.xOffset  = LEFTOFFSET;  //  Math.floor(this.scale * LEFTOFFSET);
+gCanvasLayer.prototype.yOffset  = TOPOFFSET;  //    Math.floor(this.scale * TOPOFFSET);
+//  universal methods
+gCanvasLayer.prototype.clear    = function () {
+                                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                                    return this;
+                                };
+gCanvasLayer.prototype.clearSection  = function (x, y, width, height) {
+                                    this.ctx.clearRect(this.scale * x, this.scale * y, this.scale * width, this.scale * height);
+                                    return this;
+                                };
+gCanvasLayer.prototype.setFont  = function (fontString) {
+                                     this.ctx.font = fontString;
+                                     return this;
+                                };
+/*  the universal drawing functions    */                            
+gCanvasLayer.prototype.text = function (text, color, x, y, centered) {
+                                    if (centered === true){
+                                        this.ctx.textAlign    = "center";
+                                        this.ctx.textBaseline = "middle";
+                                    }
+                                    this.ctx.fillStyle = color;         //  in rgb or rgba string
+                                    this.ctx.fillText(text, this.scale * x, this.scale * y);
+                                    return this;
+                                };
+gCanvasLayer.prototype.placeImage = function (image, x, y, width, height) {
+                                    this.ctx.drawImage(image, this.scale * x, this.scale * y, this.scale * width, this.scale * height);
+                                    return this;
+                                };
+gCanvasLayer.prototype.drawRectangle = function (strokeStyle, lineWidth, x, y, width, height, color) {
+                                    this.ctx.beginPath();
+                                    this.ctx.lineWidth = lineWidth; //  4
+                                    this.ctx.strokeStyle = strokeStyle; //  "black";
+                                    this.ctx.rect(this.scale * x, this.scale * y, this.scale * width, this.scale * height);
+                                    this.ctx.stroke();
+                                    this.ctx.fillStyle = color;
+                                    this.ctx.fillRect(this.scale * x, this.scale * y, this.scale * width, this.scale * height); 
+                                    return this;
+                                };
+gCanvasLayer.prototype.shadow = function (color, xOffset, yOffset, blur) {
+                                    this.ctx.shadowBlur = blur;
+                                    this.ctx.shadowOffsetX = this.scale * xOffset;
+                                    this.ctx.shadowOffsetY = this.scale * yOffset;
+                                    this.ctx.shadowColor = color;
+                                    return this;
+                                }; 
+
+function setScale(deviceWidth, deviceHeight) {
+    let scale = 1;
+    if (deviceWidth <= defaultWIDTH + MARGIN || deviceHeight <= defaultHEIGHT + MARGIN) {
+        if (deviceWidth <= deviceHeight) {
+            scale = deviceWidth /  (defaultWIDTH + MARGIN);
+        } else { 
+            scale = deviceHeight / (defaultHEIGHT + MARGIN);
+        }        
+    }
+    console.log(`Screen Scale = ${scale}.`);
+    return scale;
+}
+                                
 
 /*  The Display OBJECT  */
-export var Display = {
+var Display = {
     onBackground:          new gCanvasLayer("game_board",    0, "rgba( 68, 102, 210, 1.0)"),
     onCardScreen:          new gCanvasLayer("card_layer",    1, `rgba(  0,   0,   0, 0.0)`),
     onMsgScreen:           new gCanvasLayer("msg_layer",     2, `rgba(255, 255, 255, 0.0)`),
@@ -52,6 +143,7 @@ export var Display = {
                     this.onMsgScreen.init();
                     this.onMenuScreen.init();
                     this.onVideoScreen.init();
+                    // this.onMsgScreen.canvas.style.visibility = "hidden";     
                     this.onVideoScreen.canvas.style.visibility = "hidden";     
                     return this;
                 },
@@ -95,48 +187,68 @@ export var Display = {
                     return this;
                 },
     playCard:   function (playPosition, card) {
-                    const c = this.onCardScreen.canvas;
-                    const x = this.onCardScreen.ctx;
+                    // const c = this.onCardScreen.canvas;
+                    // const x = this.onCardScreen.ctx;
                     const xCenter = WIDTH  / 2;
                     const yCenter = HEIGHT / 2;
                     switch (playPosition) {
                         case "left":
-                            this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
+                            if (card) { 
+                                this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
+                            }
                             break;
                         case "top":
-                            this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 50, CARD_W, CARD_H);
+                            if (card) {
+                                this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 50, CARD_W, CARD_H);
+                            }
                             break;
                         case "right":
-                            this.onCardScreen.placeImage(card.image, xCenter - 20, yCenter - 30, CARD_W, CARD_H);
+                            if (card) {
+                                this.onCardScreen.placeImage(card.image, xCenter - 20, yCenter - 30, CARD_W, CARD_H);
+                            }
                             break;
                         case "bottom":
-                            this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 10, CARD_W, CARD_H);
+                            if (card) {
+                                this.onCardScreen.placeImage(card.image, xCenter - 40, yCenter - 10, CARD_W, CARD_H);
+                            }
                             break;
                         default:
-                            this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
+                         /*    if (card) {
+                                this.onCardScreen.placeImage(card.image, xCenter - 60, yCenter - 30, CARD_W, CARD_H);
+                            } */
                     }
+                    return this;
                 },
     hand:       function (hand) {
-                        let coordX;
+                    // console.log(`${hand[0]}`);
+                    if (hand) {
+                        let coordX=0;
                         const coordY = USERHAND_Y;
                         for (let i = 0; i < hand.length; i++) {
-                            coordX = cardLocation(i, hand.length);
+                            // coordX = cardLocation(i, hand.length);
+                            coordX = (WIDTH/2) - Math.ceil(hand.length / 2) * CARD_W/2 +  i * CARD_W/2 ;
+                            // cardLocation(i, hand.length);
+                            // console.log(`X: ${coordX}.  Y: ${coordY}`);
                             this.onCardScreen.placeImage(hand[i].image, coordX, coordY, CARD_W, CARD_H);
                         }
-                        return this;
+                    }
+                    return this;
                 },
     showcaseCard:   function (bigCard) {
-                    // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
-                    const c = Display.onCardScreen.canvas;
-                    this.onCardScreen.placeImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
+                    if (bigCard) {
+                        // poll the Gameboard object for a card in the select-property and displays it 1.5x its normal size
+                        const c = Display.onCardScreen.canvas;
+                        this.onCardScreen.placeImage(bigCard.image, WIDTH / 2 - 0.75 * CARD_W, HEIGHT - 1.5 * CARD_H, 1.5 * CARD_W, 1.5 * CARD_H);
+                    }
+                    return this;
                 },                                   
     message:    function (msgboard) {
                     this.onMsgScreen.canvas.style.visibility = "visible";
                     let fontSize = Math.floor(this.onBackground.scale * 20);    
                     this.onMsgScreen.setFont(`bold ${fontSize}px Monaco`);
-                     for (let i=0;i<msgboard.text.length;i++) {
+                      for (let i=0;i<msgboard.text.length;i++) {
                          this.onMsgScreen.text(msgboard.text[i], "rgba(0, 255, 0, 1.0)", (WIDTH / 2), 200 + i*25, true);
-                    }
+                      }
                         // .text(msgboard.text, "rgba(255, 255, 0, 1.0)", WIDTH / 2, 200, true);
                     this.onMsgScreen.canvas.addEventListener("click", this.clearMsgBoard);
                     let pauseID = setTimeout(()=>{
@@ -204,9 +316,9 @@ export var Display = {
 };
 
 function cardLocation(i, arrayLength) {
-    let xCenter = WIDTH/2;                      //  Display.onBackground.canvas.width/2;
-    let xLocation = xCenter - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2 ;
-    return xLocation; 
+    // console.log(i +", "+ arrayLength);
+    // let xCenter = (WIDTH/2);                      //  Display.onBackground.canvas.width/2;
+    return (WIDTH/2) - Math.ceil(arrayLength / 2) * CARD_W/2 +  i * CARD_W/2;
 }
 
 /** **************************************************************************************************************************************************************
@@ -215,7 +327,7 @@ function cardLocation(i, arrayLength) {
  *  @author    Roger Clarke (muddiman | .muddicode)
  *  @link      https://www.roger-clarke.com |   https://www.muddicode.com
  *  @email     rogerclarke00@hotmail.com    |   muddiman@hotmail.com             (muddi@muddicode.com | rclarke@roger-clarke.com) 
- *  @version   0.9.0
+ *  @version   0.9.1
  *  @since     2019-02-7
  *  @download  https://www.github.com/muddiman/AllFours
  *  @license   NOT for 'commercial use', otherwise free to use, free to distribute

@@ -6,9 +6,9 @@
                      Programmer: .muddicode 
                      Code: Informational Tickertape Library                             
 */
-import { gCanvasLayer } from "./screen.mjs";
+// import { gCanvasLayer } from "./screen.mjs";
 
-export function tickertape(messageArr) {
+function tickertape(messageArr) {
     const width=window.innerWidth;
     const height=50;
     let i=0;
