@@ -256,6 +256,10 @@ var Display = {
                         this.clearMsgBoard(msgboard);
                     }, 3000);
                 },
+    msgBox:     function (message) {
+                    this.onMsgScreen.canvas.style.visibility = "visible";
+                    this.onMsgScreen.drawImage("solid", "2px", 200, 150, 200, 150, "rgb(0, 255, 0)");
+                },
     clearMsgBoard:  function (msgboard) {
                     msgboard.init();
                     this.onMsgScreen.clear();
