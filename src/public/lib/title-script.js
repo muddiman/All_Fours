@@ -113,7 +113,10 @@
             }
         }, 20);
     }
-
+    function closeCtrlPanel() {
+        /*    removes game control panel */
+      document.getElementById("controlPanel").style.visibility = "hidden";
+    }
 // windows.onload = 
 (function () {
     let timeOutID = setTimeout(() => {
