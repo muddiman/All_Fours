@@ -81,11 +81,12 @@
 
 /***************************************     the globals *  ********************************************************/
 
-
-/*  Flags   */
+/*  boolean settings    */
 const ON=true;
 const OFF=false;
-const ADS=OFF;
+
+/*  Flags   */
+const ADS=ON;
 const MAGNIFY_CARD=ON;   //  SETTINGS.MOUSE_OVER;
 
 /* necessary game dimensions */
@@ -107,6 +108,11 @@ const OPAQUE      = 1.0;
 const PLAYER1_NAME = "Computer";
 const PLAYER2_NAME = "You";
 
+const MAX_CARDS_IN_HAND=12;
+const MAX_POINTS=14;
+const MAX_CARDS_IN_LIFT=48;
+const MAX_CHARACTERS=10;
+
 /* Canvas top-left corner coords (in px) */
 const LEFTOFFSET =  15;
 const TOPOFFSET  = 180;
@@ -115,7 +121,7 @@ const USERHAND_Y=340;
 
 
 /* IMAGES   */
-const caribLogo = new Image();
+const advertisement = new Image();
 var gCardImageCacheObj = {};
 
 /* Animation Constants */
@@ -143,7 +149,127 @@ var gCardImageCacheObj = {};
     There was no need to constantly update the background @ 24 fps.
     All game components that are not frequently updated can be placed in the background
 */
+
 loadAllGameComponents();
+
+function Card(rank, face, suit) {               // Card object constructor (TODO: Change to a Class)
+    this.suit = suit; // ['c', 'd', 'h', 's'],  MAX_SUITS=4
+    this.face = face; // ['2', '3', '4', '5', '6', '7', '8', '9', 't', 'j', 'q', 'k', 'a'],     MAX_FACES=13
+    this.rank = rank; // [0, 1,.. 12], to assist in determining who played the higher card
+    this.imageLoaded = false;
+    this.getCardName = function () {
+        return this.face + this.suit; // string of two letters uniquely identifying the card (like a 'key')    MAX_CHARACTERS=2
+    };
+    this.init =  function () {                   //  load card image
+        if (gCardImageCacheObj[this.getCardName()]) {   // check if card image is loaded to cache
+            this.image = gCardImageCacheObj[this.getCardName()];
+            this.imageLoaded = true;
+        } else {  //*/               // if card image not loaded, create new image and assign it to cache
+            this.image = new Image();
+            this.image.id = this.getCardName();
+            this.image.src = `img/${this.getCardName()}.png`;
+            this.image.onload =  () => {
+                   gCardImageCacheObj[this.getCardName()] = this.image;
+                   this.imageLoaded = true;         //    counter++;
+                   console.log(`${this.getCardName()} loaded.`);
+            };
+        }
+    };
+} 
+Card.prototype.CARD_W=72;
+Card.prototype.CARD_H=96;
+Card.prototype.getFace = function () {
+                            return this.face;
+                        };
+Card.prototype.getSuit = function () {
+                            return this.suit;
+                        };
+
+/* Player Class/Object Constructor */
+function Player(playerName, teamName) {         // Add a "Team" constructor when coding the 4-player version: function Team(playerA, playerB)
+    /*  Properties  */
+    this.hand       = [];
+    this.lift       = [];
+    this.score      = 0;
+    this.name       = playerName;
+    this.team       = teamName;
+    //  Methods
+    this.addCardToHand  = (card) => {
+                        this.hand.push(card); 
+                     };
+    this.addPoints  = (points) => {
+                        this.score += points;
+                    };
+    this.getPoints  = () => {
+                        return this.score;
+                    };
+                    
+}
+/*  Prototypes  */
+Player.prototype.init           = function () {
+                                    this.hand   = [];       // MAX_CARDS_IN_HAND=12;
+                                    this.score  =  0;       // MAX_POINTS=14;
+                                    this.lift   = [];       // MAX_CARDS_IN_LIFT=48;
+                                    // this.name   = "";       // MAX_CHARACTERS=12;
+                                };
+
+Player.prototype.getHand        = function () {
+                                    return this.hand;
+                                };
+Player.prototype.getName        = function () {
+                                    return this.name;
+                                };
+Player.prototype.changeName        = function (name) {
+                                    /*  Triggered by function setPlayerName   */
+                                    this.name = name;    //  
+                                    // return this.name;
+                                };                                
+Player.prototype.getLift        = function () {
+                                    return this.lift;
+                                };
+Player.prototype.pointsInit     = function () {
+                                    this.points = 0;            
+                                };
+Player.prototype.liftInit       = function () {
+                                    this.lift = [];            
+                                };
+Player.prototype.handInit       = function () {
+                                    this.hand = [];            
+                                };
+Player.prototype.removeCardFromHand = function (card) {
+                                    for (let index = 0; index < this.hand.length; index++) {
+                                        if (this.hand[index] === card) {
+                                            this.hand = this.hand.splice(index, 1);
+                                            // callback();
+                                        }                                        
+                                    }
+                                }; 
+Player.prototype.addCardsToLift = function (cardArr) {
+                                    this.lift = this.lift.concat(cardArr);
+                                };                               
+Player.prototype.setTeamName    =   function (name) {
+                                      try {
+                                        if (name.length >= MAX_CHARACTERS) throw (`Invalid input: name has too many characters.`);
+                                        this.team = name;                                
+                                      } 
+                                      catch(err) {
+                                            console.log(err);
+                                      }
+                                    };
+Player.prototype.setPlayerName  =   function (name) {
+                                        try {
+                                            if (name.length >= MAX_CHARACTERS) throw (`Invalid input: name has too many characters.`);
+                                            this.name = name;                                
+                                        } 
+                                        catch(err) {
+                                                console.log(err);
+                                        } 
+                                        // callback();       // callback may not be necessary                            
+                                    };
+
+//-----------------------------------------------------------------------------------------------------------------------------------
+
+
 // gWaitState(4);
 //  putting everything in an IIFE
 var pauseGameID = setTimeout(()=>{
@@ -530,7 +656,7 @@ Game.Controller = {
         'ArrowRight': 'selectNext',
         'ArrowLeft' : 'selectPrevious',
         'Enter'     : 'confirmSelection',
-        ' '         : 'confirmSelection',
+        ' '         : 'confirmSelection',           //  spacebar
         'p'         : 'pause',
         'm'         : 'mute'
     },
@@ -971,7 +1097,7 @@ function isHangJack(playedCard, calledCard) {
     if (playedCard.suit === Game.Components.deck.trump.suit && calledCard.suit === Game.Components.deck.trump.suit) {
         if (playedCard.face === 'j' || calledCard.face === 'j') {
             if (playedCard.rank > 9 || calledCard.rank > 9) { // rank of jack = 9, (check)
-                Game.Components.msgboard.message("HANG JACK!!!");
+                Game.Components.msgboard.message(["HANG JACK!!!",]);
                 Game.Components.msgboard.makeVisible();
                 /*  play video  */
                 let twoSecPause = setTimeout(() => {
@@ -1039,12 +1165,12 @@ var asset2 = new Promise(function (resolve, reject) {
     Game.Components.gameboard.init();
                // if card image not loaded, create new image and assign it to cache
         // let logo = new Image();
-        caribLogo.id = `coors_logo`;
-        caribLogo.src = `lib/img/${caribLogo.id}.jpg`;
-        caribLogo.onload =  () => {
+        advertisement.id = `coors_logo`;
+        advertisement.src = `lib/img/${advertisement.id}.jpg`;
+        advertisement.onload =  () => {
             //    this.imageLoaded = true;
             //    counter++;
-            console.log(`${caribLogo.id} loaded.`);
+            console.log(`${advertisement.id} loaded.`);
         };
         // gCardImageCacheObj[logo.id] = logo;
     resolve(`2`);
@@ -1144,7 +1270,7 @@ function displayBackground() {
         Display.trump(Game.Components.deck.getTrump());
     }
     if (ADS) {
-        Display.adbox(caribLogo);
+        Display.adbox(advertisement);
     }
 }
 /* 
@@ -1370,7 +1496,7 @@ function gameLoop() {
             } else {
                 gameWinner = Game.Player.computer;
             }
-            let text = `${gameWinner.getName()} WON!!!`;
+            let text = [`${gameWinner.getName()} WON!!!`,];
             Game.Engine.stop();
             debug.console(`Engine Stopped!`);
             debug.console(`Game has ended!`);
@@ -1510,15 +1636,15 @@ function changePlayerName() {
 const messageArray = [
             `Play Two-Man All Fours`,
             `Coors Light, taste the rockies!`,
-            `Stag, a man's beer`,
-            `A beer is a Carib`,
+            // `Stag, a man's beer`,
+            // `A beer is a Carib`,
         ];
 const tempArray = [`Play Two-Man All Fours`,];
 // 
 // tickertape(tempArray);
 // mainGameLoop();
     let pauseID = setTimeout(function () {
-        tickertape(tempArray);
+        tickertape(messageArray);
         mainGameLoop();
         clearTimeout(pauseID);
     }, 5000);
