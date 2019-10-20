@@ -16,6 +16,7 @@
     <meta name="viewport"    content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="w3.css">
     <link rel="stylesheet" type="text/css" media="screen" href="./css/style.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/chat.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
 </head>
@@ -31,12 +32,10 @@
                 <div class="col-12">
                     <!-- <p style="color: white">Game playable on latest version of Microsoft Edge only otherwise the game will not load.</p> -->
                      <nav id="navbar">                        
-                        <a href="#">Home</a>
-                       <!-- <a href="#">About</a>
-                        <a href="#">Documentation</a>
-                        <a href="#">Contact</a>
-                        <a href="../public/lib/title-screen.html">Title Screen</a> 
-                        <a href="../public/lib/graphics.html">Graphics</a> -->
+                        <a href="allfours.html">Home</a>
+                        <a href="pages/documentation.html">Documentation</a>
+                        <a href="pages/contact.html">Contact</a>
+                        <a href="pages/about.html">About</a>
                     </nav> 
                 </div>
             </div>
@@ -114,8 +113,9 @@
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
                     <button class="w3-btn" onclick="closeCtrlPanel()">Close</button>
-                    <button class="w3-btn" onclick="Display.video(Game.Components.cutScenes[0])">Beg</button>
-                    <button class="w3-btn" id="quitBtn" onclick="start()">Restart</button>
+                    <button class="w3-btn" >Beg</button>
+                    <!-- onclick="Display.video(Game.Components.cutScenes[0])" -->
+                    <button class="w3-btn" id="chat-btn" onclick="openForm()">Chat</button>
                 </div>
                 <div class="user_input">                    
                     <form>
@@ -131,6 +131,31 @@
         <!--    Menu Screen     -->       
     </div>
 <!--        Home/Title Screen               -->
+
+<!--        Chat Box            -->
+<!-- <button class="open-button" onclick="openForm()">Chat</button> -->
+
+<div class="chat-popup" id="myForm">
+  <form action="/action_page.php" class="form-container">
+    <h1>Chat</h1>
+
+    <label for="msg"><b>Message</b></label>
+    <textarea placeholder="Type message.." name="msg" required></textarea>
+
+    <button type="submit" class="btn">Send</button>
+    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+  </form>
+</div>
+<script>
+    function openForm() {
+      document.getElementById("myForm").style.display = "block";
+    }
+    
+    function closeForm() {
+      document.getElementById("myForm").style.display = "none";
+    }
+</script>
+<!--        Chat Box            -->
 
     <!-- Footer -->
     <footer>
@@ -152,6 +177,7 @@
     </script>
     <script type="text/javascript" src="allfours.js">
         window.onload = function () {
+        //    loadAllGameComponents();
 
             //loadAssets();     //  images, sound & video files
            // loadGame();
@@ -167,7 +193,6 @@
 <!--         <script type="text/javascript" src="game_loaader.js">
         window.onload = function () {
            // loadGame();
-           loadAllGameComponents();
             
 /*             let timeOutID = setTimeout(function () {
                mainGameLoop();

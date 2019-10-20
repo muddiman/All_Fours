@@ -56,7 +56,7 @@ h3 {
 }
 .w3-sidebar {
     width: 30%;
-    right: 0;
+    left: 800px;
     /*padding-right: 250px; */
     margin-right: 15px; 
 }

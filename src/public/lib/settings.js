@@ -129,20 +129,6 @@ function saveFile(settingsObject) {
     jsonhttp.send("settings.json");
 }
 
-/* {
-    "SOUND":    "true",
-    "DEBUG":    "false",
-    "MOUSE_OVER": "true",
-    "MASTER_VOLUME": 7,
-    "SOUND_MIXER": {
-        "SndFx": [7, 7, 7],
-        "Bkgnd": [5, 5],
-    },
-    "DISPLAY":    "desktop",
-    "MODE":       "TWO_PLAYER",
-    "DIFFICULTY": "EASY"
-
-} */
 
 
 /**
