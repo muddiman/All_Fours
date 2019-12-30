@@ -1,0 +1,4 @@
+2019-12-30T08:34:33.893Z - info:   [43744] *** FOLDER: c:\Users\roger\Documents\Personal\dev\AllFours\All_Fours ***
+2019-12-30T08:34:33.894Z - info:   [43744] AzureReposVSCode/1.161.0 (VSCode 1.41.1; Windows_NT 10.0.18362; Node 12.4.0)
+2019-12-30T08:34:33.974Z - warn:   [43744] TFVC Couldn't find where the TF command lives on disk.
+2019-12-30T08:34:33.975Z - error:  [43744] The path to the TFVC command line (including filename) was not found in the user settings. Please set this value (tfvc.location) and try again.
