@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8" />
     <!--    Google Adsense script   -->
-<!--     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <!--     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     <script>
-    (adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-9132065189505644",
-        enable_page_level_ads: true
-    });
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-pub-9132065189505644",
+            enable_page_level_ads: true
+        });
     </script> -->
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
     <title>ALL FOURS</title>
@@ -19,6 +19,9 @@
     <link rel="stylesheet" type="text/css" media="screen" href="./css/chat.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <!--  <script src="/socket.io/socket.io.js"></script> --> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -34,12 +37,14 @@
                      <nav id="navbar">                        
                         <a href="allfours.html">Home</a>
                         <a href="pages/documentation.html">Documentation</a>
+                        <a href="pages/license.html">license</a>
                         <a href="pages/contact.html">Contact</a>
                         <a href="pages/about.html">About</a>
+                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')">Control Panel (on/off)</a>
                     </nav> 
                 </div>
             </div>
-        </div>
+        </div>  
     </header>
     <div>   
     <!--    TICKER      -->   
@@ -81,7 +86,7 @@
                 <!-- <form class="modal-content animate" method="POST"> -->
                  <!-- <input name="csrfmiddlewaretoken" type="hidden" value="p1aA4U01fPND1PLlKb5uLkdx1CkiLMvsv9mIs31qDYLI1uZsHzIN0S9BuDzbTkDa"> -->
                 <div class="imgcontainer">
-                    <!--    Game Logo Here -->
+                    <!--    Game Logo Here  -->
                     <H4>SETTINGS/OPTIONS</H4>
                 </div>
               
@@ -108,19 +113,19 @@
         <div class="w3-sidebar w3-bar-block" id="controlPanel">
             <div class="w3-card-4 w3-bar-item">
                 <div>
-                    <h3>Login</h3>
+                    <h3>Control Panel</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
                 <div class="function-buttons">
-                    <button class="w3-btn" onclick="closeCtrlPanel()">Close</button>
-                    <button class="w3-btn" >Beg</button>
+                    <button class="w3-btn" onclick="close('controlPanel')">Close</button>
+                    <button class="w3-btn">Beg</button>
                     <!-- onclick="Display.video(Game.Components.cutScenes[0])" -->
-                    <button class="w3-btn" id="chat-btn" onclick="openForm()">Chat</button>
+                    <button class="w3-btn" id="chat-btn" onclick="toggle('myChat')">Chat</button>
                 </div>
                 <div class="user_input">                    
                     <form>
                       <div><h4>Enter your name:</h4>
-                        <input id="player_name" name="name" type="text"><br> 
+                        <input id="player_name" class="usernameInput" maxlength="7" name="name" type="text"><br> 
                       </div>
                       <button class="w3-button w3-round-xlarge w3-border-blue" type="button" id="enter_btn">ENTER</button>
                     </form>
@@ -130,42 +135,53 @@
         </div>
         <!--    Menu Screen     -->       
     </div>
-<!--        Home/Title Screen               -->
+<!--        Home/Title Screen   -->
 
 <!--        Chat Box            -->
 <!-- <button class="open-button" onclick="openForm()">Chat</button> -->
+<section id="chat_box">
+    <div class="chat-popup" id="myChat">
+        <h1 id="chat-heading">Chat</h1>
+        <div class="chatArea" id="chat-window">
+            <ul class="messages" id="chat-messages"></ul>
+        </div>
+        <div  class="form-container">
+            <form action="">
+                <label for="msg"><b>Message</b></label>
+                <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required></input>
 
-<div class="chat-popup" id="myForm">
-  <form action="/action_page.php" class="form-container">
-    <h1>Chat</h1>
+                <button class="btn" id="sendBtn">Send</button>
+                <button type="button" class="btn cancel" onclick="close('myChat')">Close</button>
+            </form>
+        </div>
+    </div>
 
-    <label for="msg"><b>Message</b></label>
-    <textarea placeholder="Type message.." name="msg" required></textarea>
+    <!--        chat script     -->
+    <!-- <script src="./scripts/chat.js"> -->
+    <script>        
+        $(function () {
+            var socket = io();
+            $('#sendBtn').onclick(function(){
+                socket.emit('chat message', $('#msg').val());
+                $('#msg').val('');
+                return false;
+            });
+            socket.on('chat message', function(msg){
+                $('#chat-messages').append($('<li>').text(msg));
+                window.scrollTo(0, document.body.scrollHeight);
+            });
 
-    <button type="submit" class="btn">Send</button>
-    <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-  </form>
-</div>
-<script>
-    function openForm() {
-      document.getElementById("myForm").style.display = "block";
-    }
-    
-    function closeForm() {
-      document.getElementById("myForm").style.display = "none";
-    }
-</script>
-<!--        Chat Box            -->
+        });
+    </script>
+</section>  <!--        End of Chat Box section        -->
 
     <!-- Footer -->
     <footer>
         <div class="container" id="copyright">
-            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by Prodigy Engineering LLC.</p>
+            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by RMC Labs, Inc. (New York)</p>
         </div>
     </footer>
-    <script type="text/javascript" src="./lib/title-script.js">
-
-    </script>
+    <script type="text/javascript" src="./lib/title-script.js"></script>
     <script type="text/javascript" src="./lib/game_loader.js">
   /*     window.onload = () => {
         // loadAllGameComponents();
@@ -218,7 +234,7 @@
 
 
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2019 Roger A. Clarke. All Rights Reserved                 */
+/*                 Copyright (c) 2018-2020 Gallatin Engineering Ltd. All Rights Reserved        */
 /********************************************************************************************** */
 
 -->

@@ -84,7 +84,7 @@ footer div p {
 #controlPanel {
     margin-right: 5px;
     position: fixed;
-    left: 20px;
+    right: 400px;
     top: 150px;
     height: 350px;
     width: 250px;
