@@ -1,291 +1,222 @@
-// connect to chat server 
-//  chat.twomanallfours.com
-// authenticate
-// enter chat room
-// create chat room
-// retrieve all chats
-// send msg 
-//  IIFE
-$(function() {
-    var FADE_TIME = 150; // ms
-    var TYPING_TIMER_LENGTH = 400; // ms
-    var COLORS = [
-      '#e21400', '#91580f', '#f8a700', '#f78b00',
-      '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-      '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
-    ];
+/*
+*   Chat Client (Browser version)
+*
+*   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.0.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
+*
+*   @COMMIT: working chat client w/known bugs demarked below. Fixed bugs on server end.
+*   
+*/
+
+
+const HEADER_LEN=3;
+const MAX_MSG_LENGTH=140;
+const MAX_MSG_LIST_LEN=8;
+const STAGE='dev'
+const HOST='chat.twomanallfours.com'
+const CHATSERVER='wss://chat.twomanallfours.com/dev';         // development/testing stage. remove '/dev' when production stage is deployed.
+
+
+/**
+ * Chat Object - preserves the script's namespace in larger web applications.
+ * 
+ */
+var Chat = {
+    wSocket: null,
+    room: "",
+    username: "User",
+};      
+
+Chat.wSocket = new WebSocket(CHATSERVER);
+let outgoingMsg = JSON.stringify({
+                    'route': '',
+                    // 'room': "",
+                    'userid': '',
+                    'text': ''
+                })
+// let incomingMsg = {
+//             'timestamp': '',
+//             'userid': '',
+//             'text': ''
+//         }
+
+
+
+// dbase(chat table) --> lambda --> client
+function encryptMsg(msg) {
+    // SHA
+    let encryptionKey = "abcdef";
+}
+function getEncryptionKey() {
+    // retrieve key from database containing key
+}
   
-    // Initialize variables
-    var $window = $(window);
-    var $usernameInput = $('.usernameInput'); // Input for username
-    var $messages = $('.messages'); // Messages area
-    var $inputMessage = $('.inputMessage'); // Input message input box
-  
-    var $loginPage = $('.login.page'); // The login page
-    var $chatPage = $('.chat.page'); // The chatroom page
-  
-    // Prompt for setting a username
-    var username;
-    var connected = false;
-    var typing = false;
-    var lastTypingTime;
-    var $currentInput = $usernameInput.focus();
-  
-    var socket = io();
-  
-    function addParticipantsMessage (data) {
-      var message = '';
-      if (data.numUsers === 1) {
-        message += "there's 1 participant";
-      } else {
-        message += "there are " + data.numUsers + " participants";
-      }
-      log(message);
+function responseHandler(responseFromServer) {
+    let response = JSON.parse(responseFromServer);
+    if (response.body.userid === 'SERVER MESSAGE') {
+        console.log(response.body.userid);
     }
-  
-    // Sets the client's username
-    function setUsername () {
-      username = cleanInput($usernameInput.val().trim());
-  
-      // If the username is valid
-      if (username) {
-        $loginPage.fadeOut();
-        $chatPage.show();
-        $loginPage.off('click');
-        $currentInput = $inputMessage.focus();
-  
-        // Tell the server your username
-        socket.emit('add user', username);
-      }
+    switch (responseFromServer['statusCode']) {
+        case 200:
+            // display in chat window
+            break;
+        case 400:
+            // display in console only (for debugging purposes)
+            break;    
+        case 500:
+            // display in console only (for debugging purposes)
+            break;
+        default:
+            break;
     }
-  
-    // Sends a chat message
-    function sendMessage () {
-      var message = $inputMessage.val();
-      // Prevent markup from being injected into the message
-      message = cleanInput(message);
-      // if there is a non-empty message and a socket connection
-      if (message && connected) {
-        $inputMessage.val('');
-        addChatMessage({
-          username: username,
-          message: message
-        });
-        // tell server to execute 'new message' and send along one parameter
-        socket.emit('new message', message);
-      }
+}
+
+function incomingMsgHandler(data) {
+    console.log('Message Received!');
+    let incomingMsg = JSON.parse(data);
+    console.log(incomingMsg);
+    if (msgList.length >= MAX_MSG_LIST_LEN) {
+        msgList.shift();
     }
-  
-    // Log a message
-    function log (message, options) {
-      var $el = $('<li>').addClass('log').text(message);
-      addMessageElement($el, options);
+    // add broadcast from chat server to msg list
+    if (incomingMsg['message']){
+        incomingMsg['text'] = incomingMsg['message'];
+        incomingMsg['userid'] = 'ATTN';
     }
-  
-    // Adds the visual chat message to the message list
-    function addChatMessage (data, options) {
-      // Don't fade the message in if there is an 'X was typing'
-      var $typingMessages = getTypingMessages(data);
-      options = options || {};
-      if ($typingMessages.length !== 0) {
-        options.fade = false;
-        $typingMessages.remove();
-      }
-  
-      var $usernameDiv = $('<span class="username"/>')
-        .text(data.username)
-        .css('color', getUsernameColor(data.username));
-      var $messageBodyDiv = $('<span class="messageBody">')
-        .text(data.message);
-  
-      var typingClass = data.typing ? 'typing' : '';
-      var $messageDiv = $('<li class="message"/>')
-        .data('username', data.username)
-        .addClass(typingClass)
-        .append($usernameDiv, $messageBodyDiv);
-  
-      addMessageElement($messageDiv, options);
+    msgList.push(incomingMsg);       
+    viewMsgList(msgList);           
+}
+
+function onSendingChatMsg(event) {
+    let msg = $('#msg').val();
+    document.getElementById("msg").value = "";
+    console.log(`Typed Message: ${msg}`);
+    sendMsg(msg);
+    event.preventDefault();
+}
+
+function sendMsg(chatMsg) {
+    // build message object
+    let newMsgObj = {
+        route: 'sendMessageRequest',
+        userid: Chat.username,
+        text: chatMsg
+    };
+    addMsgToList(newMsgObj);
+    viewMsgList(msgList);
+    let jsonMsg = JSON.stringify(newMsgObj);
+    Chat.wSocket.send(jsonMsg);
+};
+
+function addMsgToList(latestMsg) {
+    if (msgList.length >= 8) {
+        msgList.shift();
     }
-  
-    // Adds the visual chat typing message
-    function addChatTyping (data) {
-      data.typing = true;
-      data.message = 'is typing';
-      addChatMessage(data);
+    msgList.push(latestMsg);  
+}
+
+function parse(msg) {
+    // turn chat string into a message object
+    return {
+        timestamp : "",
+        user: "",
+        text: ""
     }
-  
-    // Removes the visual chat typing message
-    function removeChatTyping (data) {
-      getTypingMessages(data).fadeOut(function () {
-        $(this).remove();
-      });
-    }
-  
-    // Adds a message element to the messages and scrolls to the bottom
-    // el - The element to add as a message
-    // options.fade - If the element should fade-in (default = true)
-    // options.prepend - If the element should prepend
-    //   all other messages (default = false)
-    function addMessageElement (el, options) {
-      var $el = $(el);
-  
-      // Setup default options
-      if (!options) {
-        options = {};
-      }
-      if (typeof options.fade === 'undefined') {
-        options.fade = true;
-      }
-      if (typeof options.prepend === 'undefined') {
-        options.prepend = false;
-      }
-  
-      // Apply options
-      if (options.fade) {
-        $el.hide().fadeIn(FADE_TIME);
-      }
-      if (options.prepend) {
-        $messages.prepend($el);
-      } else {
-        $messages.append($el);
-      }
-      $messages[0].scrollTop = $messages[0].scrollHeight;
-    }
-  
-    // Prevents input from having injected markup
-    function cleanInput (input) {
-      return $('<div/>').text(input).html();
-    }
-  
-    // Updates the typing event
-    function updateTyping () {
-      if (connected) {
-        if (!typing) {
-          typing = true;
-          socket.emit('typing');
-        }
-        lastTypingTime = (new Date()).getTime();
-  
-        setTimeout(function () {
-          var typingTimer = (new Date()).getTime();
-          var timeDiff = typingTimer - lastTypingTime;
-          if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
-            socket.emit('stop typing');
-            typing = false;
-          }
-        }, TYPING_TIMER_LENGTH);
-      }
-    }
-  
-    // Gets the 'X is typing' messages of a user
-    function getTypingMessages (data) {
-      return $('.typing.message').filter(function (i) {
-        return $(this).data('username') === data.username;
-      });
-    }
-  
-    // Gets the color of a username through our hash function
-    function getUsernameColor (username) {
-      // Compute hash code
-      var hash = 7;
-      for (var i = 0; i < username.length; i++) {
-         hash = username.charCodeAt(i) + (hash << 5) - hash;
-      }
-      // Calculate color
-      var index = Math.abs(hash % COLORS.length);
-      return COLORS[index];
-    }
-  
-    // Keyboard events
-  
-    $window.keydown(function (event) {
-      // Auto-focus the current input when a key is typed
-      if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-        $currentInput.focus();
-      }
-      // When the client hits ENTER on their keyboard
-      if (event.which === 13) {
-        if (username) {
-          sendMessage();
-          socket.emit('stop typing');
-          typing = false;
-        } else {
-          setUsername();
-        }
-      }
+};
+function receiveMsg(msg) {
+    // process received data into a message object
+    let decryptedMsg = decryptMsg(msg);
+    return parse(decryptedMsg);
+}
+
+function viewMsgList(msgArr) {
+    // message list: an array of message objects
+    let ul = document.getElementById("message-list");
+    while (ul.firstChild) {
+        ul.removeChild(ul.firstChild)
+    }    
+    // populate chat area with recent msgs
+    msgArr.forEach(chatMsg => {
+        let listElement = document.createElement("li");
+        listElement.setAttribute("class", "chat-message");
+        listElement.innerHTML = `<span class="msg-handle">[${chatMsg.userid}]:</span> ${chatMsg.text}`;
+        ul.appendChild(listElement);       
     });
-  
-    $inputMessage.on('input', function() {
-      updateTyping();
-    });
-  
-    // Click events
-  
-    // Focus input when clicking anywhere on login page
-    $loginPage.click(function () {
-      $currentInput.focus();
-    });
-  
-    // Focus input when clicking on the message input's border
-    $inputMessage.click(function () {
-      $inputMessage.focus();
-    });
-  
-    // Socket events
-  
-    // Whenever the server emits 'login', log the login message
-    socket.on('login', function (data) {
-      connected = true;
-      // Display the welcome message
-      var message = "Welcome to Socket.IO Chat – ";
-      log(message, {
-        prepend: true
-      });
-      addParticipantsMessage(data);
-    });
-  
-    // Whenever the server emits 'new message', update the chat body
-    socket.on('new message', function (data) {
-      addChatMessage(data);
-    });
-  
-    // Whenever the server emits 'user joined', log it in the chat body
-    socket.on('user joined', function (data) {
-      log(data.username + ' joined');
-      addParticipantsMessage(data);
-    });
-  
-    // Whenever the server emits 'user left', log it in the chat body
-    socket.on('user left', function (data) {
-      log(data.username + ' left');
-      addParticipantsMessage(data);
-      removeChatTyping(data);
-    });
-  
-    // Whenever the server emits 'typing', show the typing message
-    socket.on('typing', function (data) {
-      addChatTyping(data);
-    });
-  
-    // Whenever the server emits 'stop typing', kill the typing message
-    socket.on('stop typing', function (data) {
-      removeChatTyping(data);
-    });
-  
-    socket.on('disconnect', function () {
-      log('you have been disconnected');
-    });
-  
-    socket.on('reconnect', function () {
-      log('you have been reconnected');
-      if (username) {
-        socket.emit('add user', username);
-      }
-    });
-  
-    socket.on('reconnect_error', function () {
-      log('attempt to reconnect has failed');
-    });
-  
-  });
-  
+}
+
+// function clearChatArea() {
+//     let ul = document.getElementById("chat-messages");
+//     // clear chat-area
+//     while (ul.firstChild) {
+//         ul.removeChild(ul.firstChild)
+//     }
+//     if (document.getElementsByClassName("chat-message")) {
+//         let oldMsgs = document.getElementsByClassName("chat-message");
+//         oldMsgs[0].setAttribute("hidden", "");
+//         oldMsgs.forEach(element => {
+//             ul.removeChild(element);
+//         });        
+//     }
+// }
+
+/**
+ * OPEN a websocket connection to the chat API.  
+ * Loads the necessary websocket handlers.
+ * @param: ipAddress (str)
+ * @returns: void
+ */
+function connectToChatServer() {
+    Chat.wSocket.onopen     = function (event) {sendConnectionMsg();};
+    Chat.wSocket.onmessage  = function (event) {incomingMsgHandler(event.data);};
+    Chat.wSocket.onerror    = function (event) {displaySocketError(event.data);};
+    Chat.wSocket.onclose    = function (event) {displayClosedConnectionMsg();};
+    // Chat.wSocket.OPEN();
+    // Chat.wSocket.send(msg);
+}
+
+/**
+ * SENDS json message object to chat server.
+ * @param {*} username userid or chat handle
+ * @param {*} chatroom chatroom on server to join
+ * @returns void
+ */
+function sendConnectionMsg() {
+    systemAlert('Connected to chat server...');    
+    console.log('Connection OPENED!');
+    let connectionMsg = JSON.stringify({
+                "route": "applyUserId",
+                "userid": Chat.username,
+                // "text": `Hi, this is ${Chat.username}.`
+            });
+    Chat.wSocket.send(connectionMsg);
+}
+
+function displaySocketError(err) {
+    console.log('ERROR!!!');
+    systemAlert(err);    
+}
+
+function displayClosedConnectionMsg() {
+    let alertMsg = 'Connection closed by server!';
+    console.log(alertMsg);
+    systemAlert(alertMsg);
+}
+
+function systemAlert(localSystemMsg) {
+    // let svrMsg = JSON.parse(localSystemMsg);
+    let alertObject = {
+        userid: `ATTN`,
+        text: `<span class="system-alert"> ****** ${localSystemMsg} ******</span>`,
+    };
+    msgList.push(alertObject);
+}
+
+
+/*
+*                             ################ MAIN ################
+*/
+
+connectToChatServer();
+console.log("Loading chat application...");
+var msgList = [];
+viewMsgList(msgList);
+

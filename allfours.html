@@ -19,9 +19,6 @@
     <link rel="stylesheet" type="text/css" media="screen" href="./css/chat.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <!--  <script src="/socket.io/socket.io.js"></script> --> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -37,10 +34,10 @@
                      <nav id="navbar">                        
                         <a href="allfours.html">Home</a>
                         <a href="pages/documentation.html">Documentation</a>
-                        <a href="pages/license.html">license</a>
+                        <a href="pages/license.html">License</a>
                         <a href="pages/contact.html">Contact</a>
                         <a href="pages/about.html">About</a>
-                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')">Control Panel (on/off)</a>
+                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')">Control Panel (toggle)</a>
                     </nav> 
                 </div>
             </div>
@@ -97,7 +94,7 @@
                     <button id="button_8" class="menuButtons" onmousedown="pressBtn('button_8')">Back</button>
                 </div>
                         
-                <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2019. Roger Clarke. All rights reserved. </p></div>
+                <div class="copy"><p class="copyright">Copyright &copy; 2018 - 2020. Gallatin Engineering Ltd. All rights reserved. </p></div>
             </div>  <!-- </animation div> -->
         </div> <!-- end of menu_screen  --> 
 
@@ -123,11 +120,11 @@
                     <button class="w3-btn" id="chat-btn" onclick="toggle('myChat')">Chat</button>
                 </div>
                 <div class="user_input">                    
-                    <form>
-                      <div><h4>Enter your name:</h4>
+                    <form onsubmit="usernameHandler(event)">
+                      <div><h4>Enter your name:</h4> <!-- ADD: an onsubmit function giving name both to allfours & chat -->
                         <input id="player_name" class="usernameInput" maxlength="7" name="name" type="text"><br> 
                       </div>
-                      <button class="w3-button w3-round-xlarge w3-border-blue" type="button" id="enter_btn">ENTER</button>
+                      <button class="w3-button w3-round-xlarge w3-border-blue" type="submit" id="enter_btn">ENTER</button>
                     </form>
                 </div>
                 <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
@@ -140,25 +137,27 @@
 <!--        Chat Box            -->
 <!-- <button class="open-button" onclick="openForm()">Chat</button> -->
 <section id="chat_box">
-    <div class="chat-popup" id="myChat">
+    <div class="chat-popup chatArea" id="myChat">
         <h1 id="chat-heading">Chat</h1>
         <div class="chatArea" id="chat-window">
-            <ul class="messages" id="chat-messages"></ul>
+            <ul class="messages" id="message-list">
+                <!-- <li>COOL</li> -->
+            </ul>
         </div>
         <div  class="form-container">
-            <form action="">
-                <label for="msg"><b>Message</b></label>
-                <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required></input>
-
-                <button class="btn" id="sendBtn">Send</button>
-                <button type="button" class="btn cancel" onclick="close('myChat')">Close</button>
+            <form id="chat-form"  onsubmit="onSendingChatMsg(event)">
+                <label for="msg"><b>Type your message here:</b></label>
+                <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
+                <input type="submit" class="btn" id="sendBtn" value="SEND MESSAGE">
             </form>
+            <button type="button" class="btn cancel" onclick="close('myChat')">Close Chat</button>
         </div>
     </div>
 
     <!--        chat script     -->
     <!-- <script src="./scripts/chat.js"> -->
-    <script>        
+        
+    <!-- <script>        
         $(function () {
             var socket = io();
             $('#sendBtn').onclick(function(){
@@ -172,26 +171,29 @@
             });
 
         });
-    </script>
+
+    </script> -->
 </section>  <!--        End of Chat Box section        -->
 
     <!-- Footer -->
     <footer>
         <div class="container" id="copyright">
-            <p>Copyright &copy; 2018-2019 Gallatin Engineering Ltd. Powered by RMC Labs, Inc. (New York)</p>
+            <div id="legal"><a href="legal.html">Legal</a></div>
+            <p>Copyright &copy; 2018-2020 Gallatin Engineering Ltd. Powered by RMC Labs, Inc. (New York)</p>
         </div>
-    </footer>
-    <script type="text/javascript" src="./lib/title-script.js"></script>
-    <script type="text/javascript" src="./lib/game_loader.js">
-  /*     window.onload = () => {
-        // loadAllGameComponents();
-      }; */
+    </footer>           <!---   End of Page Content  -->
 
-       /*  scriptArray.forEach(element => {
-            loadScript(element);
-        }); */
-    </script>
+    <!--            ******** Scripts & Large files  ********        -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./lib/title-script.js"></script>
+    <script type="text/javascript" src="/scripts/allfours-page-script.js"></script>
+    <script type="text/javascript" src="./lib/game_loader.js"></script>
+
+    <!-- <script type="text/javascript" src="game-client.js"></script> -->
+    
     <script type="text/javascript" src="allfours.js">
+    
         window.onload = function () {
         //    loadAllGameComponents();
 
@@ -218,8 +220,26 @@
         //    mainGameLoop();
         }
     </script>  -->     
+    <script type="text/javascript" src="/scripts/chat.js">
+/*         function usernameHandler(ev) {
+            let name = document.getElementById("player_name").value;
+            document.getElementById("player_name").value = "";
+            console.log(`Player Name: ${name}`);
+            Chat.username = name;
+            ev.preventDefault();
+        } */
+    </script>
 </body>
+<!--   
+    *   @PROJECT NAME:  "KAITY"
+    *   @MODULE:    CHAT MODULE
+    *   @TITLE:     OLE TALK
+    *   @VERSION: 0.2.0
+    *   This commit udates the Chat Module: to connect with the server and 
+    *   and maintains that web socket connection until page closes. 
+ -->
 </html>
+
 
 <!--
 

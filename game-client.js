@@ -1,26 +1,26 @@
 /*
-                Title:      TWO-MAN ALL FOURS GAME
-                Language:   Javascript
+                Title:  TWO-MAN ALL FOURS GAME
+                Language: Javascript
                 Programmer: .muddicode 
-                Code:       Main Program
-                Note:       "No updates to the source code here in this commit."                            
+                Code: Main Program                            
 */
 
 /**
- *  @copyright (c) 2018-2020 Gallatin Engineering Ltd. All rights reserved.
- *  @publisher Gallatin Engineering Ltd
- *  @programmer Roger Clarke (muddiman | .muddicode)
- *  @link      https://www.twomanallfours.com |   https://www.gallatinengineering.com/pages/twomanallfours.html
- *  @email     support@gallatinengineering.com    |   support@twomanallfours.com  
- *  @version   0.9.2 (RC2: Release Candidate #2)
+ *  @copyright (c) 2018-2020 Roger Clarke. All rights reserved.
+ *  @developer RMC Labs, Inc (NY)
+ *  @author    Roger A. Clarke (muddiman | .muddicode)
+ *  @distributor Gallatin Engineering Ltd
+ *  @link      https://www.gallatinengineering.com/twomanallfours.html |   https://www.muddicode.com
+ *  @email     support@gallatinengineering.com    |   muddiman@hotmail.com  
+ *  @version   1.0.1
  *  @since     2018-10-1
  *  @download  https://www.github.com/muddiman/All_Fours
- *  @license   Exclusive commercial license.
- *  @See:      http://www.twomanallfours.com/license.html
- *             Free to use and/or distribute for personal or academic purposes ONLY.
+ *  @license   commercial license exclusive to Gallatin Engineering.
+ *  @See:      https://www.gallatinengineering.com/twomanallfours.html
+ *             Free to use and/or distribute for personal or academic purposes.
  *             Must site the source code using the following format at beginning or end of source code file where it was used:
- *             "Clarke, Roger A. (2018) All Fours Game (ver. 0.9.2) [Source Code]. New York, 
- *             NY. http://www.twomanallfours.com, https://www.github.com/gallatinengineering". 
+ *             "Clarke, Roger A. (2018) All Fours Game (ver. 0.6.6) [Source Code]. New York, 
+ *             NY. http://www.gallatinengineering.com, https://www.github.com/muddiman". 
  */
 
 /**
@@ -52,8 +52,8 @@
 
 /*  Programming Note:
     Assets Outstanding: Back of cards, background music, sound effects.
-    Because the fisrt letter of every suit AND face of all cards are unique letters
-    i can simplify the id of each card to a 'two-letter' string.
+    Because the first letter of every suit AND face of all cards are unique letters
+    i simplified the id of each card to a 'two-letter' string.
     ie: ace of heart is simply 'ah', ten of clubs is 'tc' and nine of diamonds is '9d'
     This simplifies coding tremendously. All filenames of card images were adjusted accordingly. ie: 2d.png is the 'two of diamonds' image file.
 */
@@ -78,6 +78,12 @@
 /* scriptArray.forEach(element => {
     loadScript(element);
 }); */
+
+
+// i reduced the number of modules tremendously and condensed all the game parts 
+// to a game loader and the main code
+
+// Employing a client-server paradigm: Using either 'sockets' or an 'API'
 
 /*  IIFE */
 
@@ -145,6 +151,10 @@ var bkgndMusic = [];        //  load background music streams into array
 /* Animation Constants */
 // const CONVERT_TO_RADIANS = Math.PI / 180;
 
+/*  GAME SERVER */
+const SERVER_ADDR="192.168.1.100";
+const PORT=7550
+
 //------------------------------------------------------------------------------------------------------------------
 /*  THE CLASSES/OBJECT CONSTRUCTORS  */
 
@@ -168,7 +178,6 @@ var bkgndMusic = [];        //  load background music streams into array
     All game components that are not frequently updated can be placed in the background
 */
 /*  default  SETTINGS  */
-//  place in local json file or cookie.
 var SETTINGS = {
     SOUND       :   ENABLED,
     DEBUG_MODE  :   DISABLED,
@@ -279,6 +288,48 @@ function saveFile(settingsObject) {
 }
 
 /*
+======================================================================================================================================================= 
+        API Connector Class
+*/
+function API(SERVER, PORT) {
+    this.SERVER=SERVER;
+    this.PORT=PORT;
+    this.sendGameStateChange = function (gameStateChange) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                newGameState = this.responseText;
+            }
+        };
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.setRequestHeader("token", ACCESS_TOKEN);
+        xhttp.open("POST", this.SERVER, true);
+        xhttp.send(gameStateChange);
+    }
+    this.getGameStateUpdate = function () {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                newGameState = this.responseText;
+            }
+        };
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.setRequestHeader("token", ACCESS_TOKEN);
+        xhttp.open("GET", this.SERVER, true);
+        xhttp.send();
+    }
+}
+
+/*
+=================================================================================================================================================================
+        Socket.io
+*/
+
+function ConnectToGameServer() {
+    
+}
+
+/*
 ================================================================================================================================
 */
 /*  screen canvas class */
@@ -372,7 +423,7 @@ function setScale(deviceWidth, deviceHeight) {
 */
 /*  The Display OBJECT  */
 console.log(`Reading the 'Display' script`);
-
+ 
 var Display = {
     onBackground:          new gCanvasLayer("game_board",    0, "rgba( 68, 102, 210, 1.0)"),
     onCardScreen:          new gCanvasLayer("card_layer",    1, `rgba(  0,   0,   0, 0.0)`),
@@ -1003,6 +1054,8 @@ function getTrackListing(url) {
 
 /*
 &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+                                                            START OF AI
 */
 
 /*  GAME AI */
@@ -1407,7 +1460,8 @@ function isHangJackInPlay(hand, kickCard) {
    return true;                        // jack is in play
 }
 
-
+//                                                                                      END OF AI
+//                      ===============================================================================================================================================================
 
 
 
@@ -1479,7 +1533,7 @@ function Player(playerName, teamName) {         // Add a "Team" constructor when
     //  Methods
     this.addCardToHand  = (card) => {
                         this.hand.push(card); 
-                    };
+                     };
     this.addPoints  = (points) => {
                         this.score += points;
                     };
@@ -1907,7 +1961,7 @@ Game.Components.gameboard = {                       // the gameplay board
     }
 
 };
-
+/*      ***CLIENT***      */
 /**
  *  Manages ALL user input (mouse, touch and keyboard) as an Object
  */
@@ -1995,6 +2049,7 @@ function cardLocation(i, arrayLength) {
     return xLocation; 
 }
 
+/*      ***CLIENT***      */
 function togglePause(action) {
     //  probe all game keys
     if (action === 'togglePause') {
@@ -2009,6 +2064,7 @@ function togglePause(action) {
     }
 }
 
+/*      ***CLIENT***      */
 function toggleMenuScreen(action) {
     //  probe all game keys
     if (action === 'toggleMenuScreen') {           // toggle menu screen
@@ -2020,6 +2076,8 @@ function toggleMenuScreen(action) {
         // Game.Controller.init();
     }
 }
+
+/*      ***CLIENT***      */
 /*  toggle mute */
 function toggleMute(action) {
     if (action === 'toggleMute') {           // toggle menu screen
@@ -2029,6 +2087,7 @@ function toggleMute(action) {
     }
 }
 
+/*      ***CLIENT***      */
 function inputUpdate(action) {
     debug.console(`controller callback:`);
     toggleMenuScreen(action);                                 // Esc returns player to the Menu Screen where he can 'quit game', adjust game options, etc
@@ -2103,7 +2162,7 @@ function inputUpdate(action) {
 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*  game play functions   */
+        /*  game play functions   */
 
 function gWaitState(secs) {                       // institutes a wait state for specified time interval
     return new Promise((resolve, reject) => {
@@ -2117,6 +2176,7 @@ function gWaitState(secs) {                       // institutes a wait state for
     console.log(`Computer: ${Game.Background.computer.getCardName()}`);
 } */
 
+/*      ***SERVER***      */
 function firstJackDeal() {
     let flipACoin = Math.floor(Math.random() * 2); // temporaily use coin flip to simulate firtsJackDeal between two players
     if (flipACoin == 0) {
@@ -2126,6 +2186,7 @@ function firstJackDeal() {
     }
 }
 
+/*      ***CLIENT***      */
 function dealHandFcn(dealer) {
     /*  Deal Cards  */
     //assign dealer -->      TODO: animation
@@ -2148,6 +2209,7 @@ function dealHandFcn(dealer) {
     return whoPlaysFirst;
 }
 
+/*      ***SERVER***      */
 function allocatePoints() {
     /*  game  */
     let textArray = [];
@@ -2209,7 +2271,7 @@ function allocatePoints() {
     Game.GamePlay.init();
 }
 
-
+/*      ***SERVER***      */
 function play(player) {
     return new Promise((resolve, reject) => {
         // Game.Components.Sound.sndEffect[1].play();
@@ -2245,7 +2307,7 @@ function play(player) {
 }
 
 
-
+/*      ***SERVER***      */
 function trackCards(player, cardPlayed) {
     if (!Game.GamePlay.HI) {
         Game.GamePlay.HI = cardPlayed;
@@ -2275,7 +2337,7 @@ function trackCards(player, cardPlayed) {
     }
 }
 
-
+/*      ***SERVER***      */
 /**
  * 
  * @param {int} i integer [0 .. length of computer's hand]
@@ -2288,6 +2350,7 @@ function computerPlay(i) {
     Game.Player.computer.hand.splice(i, 1);
 }
 
+/*      ***SERVER***      */
 /**
  * Compares compares cards from both players and returns who won.
  * @param {*} called  Card
@@ -2317,6 +2380,7 @@ function determineWinner(called, played) {
     }
 }
 
+/*      ***SERVER***      */
 //  Points associated with KickCard
 function kickPoints(card) {
     switch (card.face) {
@@ -2338,6 +2402,8 @@ function kickPoints(card) {
             return 0;
     }
 }
+
+/*      ***SERVER***      */
 /**
  * 
  * @param {*} player 
@@ -2374,7 +2440,7 @@ function countForGame(player) {
     return points;
 }
 
-
+/*      ***SERVER***      */
 // Hang Jack --> player.points += HANG_JACK
 function isHangJack(playedCard, calledCard) {
     if (playedCard.suit === Game.Components.deck.trump.suit && calledCard.suit === Game.Components.deck.trump.suit) {
@@ -2435,6 +2501,9 @@ function removeUtilityScreens() {
     return playerArr; // an array of ALL game players
 }
  */
+
+ /*      ***SERVER***      */
+ /*      ***CLIENT***      */
 /**
  *  to make sure all the games assets are fully loaded before the game runs
  *  this will be handled by game-loader.js in the final version
@@ -2497,7 +2566,7 @@ var asset7 = new Promise(function (resolve, reject) {
     };
 }
     */ 
-
+/*      ***CLIENT***      */
 /*  INITIALIZE GRAPHICS OBJECTS */
 function _initializeScreens() {
     let s = [];
@@ -2509,6 +2578,7 @@ function _initializeScreens() {
     });
 }
 
+/*      ***CLIENT***      */
 function loadCutScenes() {                  //  load array of video clips in memory, not on the DOM
     Game.Components.cutScenes[0] = document.createElement("video");
     Game.Components.cutScenes[0].setAttribute("id", "hangjack_video");
@@ -2532,6 +2602,7 @@ function loadScreenCache() {                    //  screen cache, used in debugg
     return screens;                             // screens array
 }
 */
+/*      ***CLIENT***      */
 function displayDebugScreen() {
     //  Game.debug
     let c = Game.debug.screen.canvas;
@@ -2546,7 +2617,7 @@ function updateGameScreen() {
     Game.Components.gameboard.isUpdated = true;
 }
 */
-
+/*      ***CLIENT***      */
 function displayBackground() {
     Display.labels(Game.Player.human.hand).scoreboard(Game.Player);
     if (Game.Components.deck.getTrump()) {
@@ -2564,6 +2635,7 @@ function displayAds() {
     }
 }
  */
+/*      ***CLIENT***      */
 function displayGameScreen() {
 /*     if (Game.Components.gameboard.computer) {
         Display.playCard('top', Game.Components.gameboard.computer);
@@ -2581,6 +2653,7 @@ function displayGameScreen() {
         .playCard('bottom', Game.Components.gameboard.user).showcaseCard(Game.Components.gameboard.select);
 }
 
+/*      ***CLIENT***      */
 function _drawGameScreen() {
     if (Game.Components.gameboard.isUpdated === true) {
         Display.onCardScreen.clear();
@@ -2591,6 +2664,7 @@ function _drawGameScreen() {
     displayGameScreen();
 }
 
+/*      ***SERVER***      */
 function updateMsgboard() {
     Game.Components.msgboard. isUpdated = true;
 }
@@ -2599,6 +2673,7 @@ function updateMsgboard() {
     Display.onVideoScreen.clear();
 } */
 
+/*      ***CLIENT***      */
 function _drawMsgScreen() {
     if (Game.Components.msgboard.visible === true) {
         Display.onMsgScreen.clear();
@@ -2606,22 +2681,26 @@ function _drawMsgScreen() {
     }
 }
 
+/*      ***CLIENT***      */
 function _drawMenuScreen() {
     Display.onMenuScreen.clear();
     Display.menu();
     // displayMenuScreen();
 }
 
+/*      ***CLIENT***      */
 function _drawPauseScreen() {
     Game.Screens.pauseScreen.clear();
     // displayPauseScreen();
 }
 
+/*      ***CLIENT***      */
 function _drawBackground() {
     Display.onBackground.clear();
     displayBackground(); 
 }
 
+/*      ***CLIENT***      */
 function _drawDebugScreen() {
     if (Game.debug.isUpdated === true) {
         Game.debug.screen.clear();
@@ -2631,7 +2710,7 @@ function _drawDebugScreen() {
     }
 }
 
-
+/*      ***CLIENT***      */
 function _renderAllScreens() {   
     _drawBackground();              //      Display.onBackground.labels()       //  .trump(state).scoreboard(score);
     _drawGameScreen();
@@ -2644,7 +2723,7 @@ function _renderAllScreens() {
     } */
 }
     
-
+/*      ***SERVER***      */
 function _startEngine() {
     Game.Engine.start();
 }
@@ -2654,18 +2733,19 @@ function _stopEngine() {
   Game.Engine.stop();
 }
 
+/*      ***CLIENT***      */
 function _clearAllScreens() {
     for (var screen in screens) {
         screen.clear();
     }
 }
 
-
+/*      ***SERVER***      */
 function gameLoop() {
     /*  A series of 'game states'   */
     // inputUpdate();
     if (Game.State.startOfGame === true) {   
-        Game.State.startOfGame = false;
+        Game.State.startOfGame   = false;
         console.log(`Start of game is true. Set it to false.`);
         if (!Game.State.dealer) {
             Game.State.dealer = firstJackDeal();
@@ -2802,6 +2882,8 @@ const HANG_JACK = 3;
 var Empty = {
     select: null,
 };
+
+/*      ***CLIENT***      */
 /** 
  *   
  *   @param: null
@@ -2832,8 +2914,8 @@ function mainGameLoop() {
         Controller.listeners(Display.onCardScreen, Game.Player.human.hand, inputUpdate);
         // debug.init();
         playerNameChangeListener();
-        Game.State.startOfGame = true;
-        Game.Engine.start();
+        Game.State.startOfGame = true;  // SEND TO SERVER
+        Game.Engine.start();            // Game.Engine.animate()
     })  
 /*     .then(() => { 
         // displayCutScene();
@@ -2852,6 +2934,7 @@ function mainGameLoop() {
     });
 }
 
+/*      ***CLIENT***      */
 function pauseGame() {
     // Game.Engine.stop();
     let bgx = Display.onBackground.ctx;
@@ -2870,6 +2953,7 @@ function pauseGame() {
     // msx.putImageData(grayGameScreen, 0, 0);
 }
 
+/*      ***CLIENT***      */
 function grayScale(dataFile) {
     for (let i = 0; i < dataFile.data.length/4; i+=4) {
             let r = dataFile.data[i];
@@ -2884,16 +2968,19 @@ function grayScale(dataFile) {
     return dataFile;
 }
 
+/*      ***CLIENT***      */
 function unPauseGame() {
     Game.Engine.start();
 }
 
+/*      ***CLIENT***      */
 function playerNameChangeListener() {
     clickEnterButton();
     let nameInput = document.getElementById("player_name");
     nameInput.addEventListener('input', changePlayerName);
 }
 
+/*      ***CLIENT***      */
 function clickEnterButton() {
     let entBtn = document.getElementById("enter_btn");
     let nameInput = document.getElementById("player_name");
@@ -2916,6 +3003,8 @@ function changePlayerName() {
 /* scriptArray.forEach(element => {
     loadScript(element);
 }); */
+
+/*      ***CLIENT***      */
 const messageArray = [
             `Play Two-Man All Fours`,
             `Coors Light, taste the rockies!`,
@@ -3005,5 +3094,5 @@ FrontEnd:
 
 
 /********************************************************************************************** */
-/*                 Copyright (c) 2018-2020 Gallatin Engineering Ltd, T&T. All Rights Reserved.  */
+/*                 Copyright (c) 2018-2020 RMC LABS INC, NY. All Rights Reserved                 */
 /********************************************************************************************** */
