@@ -5,8 +5,13 @@
     .gMenu {
         font-family: "Microsoft YaHei UI Light",'Times New Roman', Times, serif;
     }
+    .hidden {
+        visibility: hidden;
+    }
     #controlPanel {
         top: 200px;
+        visibility: "visible";
+        float: right;
     }
     #loading {
         font-size: 15px;
