@@ -36,6 +36,7 @@
                         <a href="pages/documentation.html">Documentation</a>
                         <a href="pages/license.html">License</a>
                         <a href="pages/contact.html">Contact</a>
+                        <a href="pages/chat.html">Chat</a>
                         <a href="pages/about.html">About</a>
                         <a href="#" id="togglePanel" onclick="toggle('controlPanel')">Control Panel (toggle)</a>
                     </nav> 
@@ -120,11 +121,11 @@
                     <button class="w3-btn" id="chat-btn" onclick="toggle('myChat')">Chat</button>
                 </div>
                 <div class="user_input">                    
-                    <form onsubmit="usernameHandler(event)">
+                    <form>
                       <div><h4>Enter your name:</h4> <!-- ADD: an onsubmit function giving name both to allfours & chat -->
                         <input id="player_name" class="usernameInput" maxlength="7" name="name" type="text"><br> 
                       </div>
-                      <button class="w3-button w3-round-xlarge w3-border-blue" type="submit" id="enter_btn">ENTER</button>
+                      <button class="w3-button w3-round-xlarge w3-border-blue" onclick="usernameHandler(event)" type="button" id="enter_btn">ENTER</button>
                     </form>
                 </div>
                 <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
@@ -145,10 +146,10 @@
             </ul>
         </div>
         <div  class="form-container">
-            <form id="chat-form"  onsubmit="onSendingChatMsg(event)">
+            <form id="chat-form"  onsubmit="onSendingChatMsg(event)>
                 <label for="msg"><b>Type your message here:</b></label>
                 <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
-                <input type="submit" class="btn" id="sendBtn" value="SEND MESSAGE">
+                <button type="submit" class="btn" id="sendBtn" onclick="onSendingChatMsg(event)">SEND MESSAGE<button>
             </form>
             <button type="button" class="btn cancel" onclick="close('myChat')">Close Chat</button>
         </div>
@@ -221,20 +222,22 @@
         }
     </script>  -->     
     <script type="text/javascript" src="/scripts/chat.js">
-/*         function usernameHandler(ev) {
+        function usernameHandler(ev) {
+            ev.preventDefault();
             let name = document.getElementById("player_name").value;
             document.getElementById("player_name").value = "";
-            console.log(`Player Name: ${name}`);
-            Chat.username = name;
-            ev.preventDefault();
-        } */
+            // console.log(`Player Name Set = ${name}`);
+            Chat.setUsername(name);
+            Chat.init();
+            // Chat.init();
+        }
     </script>
 </body>
 <!--   
     *   @PROJECT NAME:  "KAITY"
     *   @MODULE:    CHAT MODULE
     *   @TITLE:     OLE TALK
-    *   @VERSION: 0.2.0
+    *   @VERSION: 0.3.0
     *   This commit udates the Chat Module: to connect with the server and 
     *   and maintains that web socket connection until page closes. 
  -->
@@ -242,6 +245,8 @@
 
 
 <!--
+    @AUTHOR/PROGRAMMER: muddicode/sauceCode
+    @VERSION: 1.0.0
 
 ==================================================================
 |                                                                |
