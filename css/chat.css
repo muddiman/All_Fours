@@ -36,6 +36,31 @@
   padding: 2px 15px 15px 15px;
 }
 
+.hide-section {
+  visibility: hidden;
+}
+#openChatBtn {
+  background-color: rgba(0, 0, 255, 0.788);
+  width: 125px;
+  height: 40px;
+  color: white;
+  font-weight: bold;
+  border: none;
+  bottom: 65px;
+  right: 150px;
+}
+#openChatBtn:hover {
+  background-color: rgb(0, 0, 255);
+  width: 155px;
+  height: 50px;
+}
+.chat-minimize {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 10;
+}
+
 #chat-window {
   border: 2px solid #f1f1f1;
   width: 100%;
@@ -123,7 +148,7 @@
 /* 
     Project Code Name:    'Kaity'
     Title:                'Ole Talk'
-    Version:               0.3.0
+    Version:               1.1.0
     
 
  */

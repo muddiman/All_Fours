@@ -138,7 +138,9 @@
 <!--        Chat Box            -->
 <!-- <button class="open-button" onclick="openForm()">Chat</button> -->
 <section id="chat_box">
-    <div class="chat-popup chatArea" id="myChat">
+    <!-- <button class="chat-minimize btn">Hide Chat</button>  -->
+    <button class="chat-minimize btn" id="openChatBtn" onclick="showChatWindow()">Open Chat <i class="far fa-comments"></i></button>
+    <div class="chat-popup chatArea" style="visibility: hidden;" id="myChat">
         <h1 id="chat-heading">Chat</h1>
         <div class="chatArea" id="chat-window">
             <ul class="messages" id="message-list">
@@ -151,7 +153,7 @@
                 <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
                 <button type="submit" class="btn" id="sendBtn" onclick="onSendingChatMsg(event)">SEND MESSAGE<button>
             </form>
-            <button type="button" class="btn cancel" onclick="close('myChat')">Close Chat</button>
+            <button type="button" class="btn cancel" onclick="hideChatWindow()">HIDE CHAT</button>
         </div>
     </div>
 
@@ -188,8 +190,8 @@
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="./lib/title-script.js"></script>
-    <script type="text/javascript" src="/scripts/allfours-page-script.js"></script>
     <script type="text/javascript" src="./lib/game_loader.js"></script>
+    <!-- <script type="text/javascript" src="/scripts/allfours-page-script.js"></script> -->
 
     <!-- <script type="text/javascript" src="game-client.js"></script> -->
     

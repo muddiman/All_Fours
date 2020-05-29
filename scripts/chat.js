@@ -4,33 +4,46 @@
 *   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.0.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
 *
 *    @AUTHOR/PROGRAMMER: muddicode/sauceCode
-*    @VERSION: 1.0.0  
+*    @VERSION: 1.1.0  
 *
-*   @NEXT_COMMIT:
-* 
+*    @NEXT_COMMIT:
+*       @VERSION: 1.1.0
+*       
 */
 
 
-/* 
-const ON=true;
-const OFF=false;
-
-
-
 //  ***FLAGS***
-const DEBUG=OFF;
- */
-const DEBUG=false;
+const DEBUGGING=true;
+// const SOUND_MODE=INACTIVE;
+
+var msgList = [];
+
 
 //  ***CONSTANTS***
 const HEADER_LEN=3;
-const MAX_MSG_LENGTH=140;
+const MAX_MSG_LENGTH=140;   
 const MAX_MSG_LIST_LEN=8;
-const STAGE='dev';// dev
+const STAGE='prod';         // dev
 const HOST='chat.twomanallfours.com';
-const CHATSERVER=`wss://chat.twomanallfours.com/${STAGE}`;         // development/testing stage. remove '/dev' when production stage is deployed.
-const altSERVER=`wss://ljy888l5y0.execute-api.us-east-1.amazonaws.com/${STAGE}`;
+const CHATSERVER=`wss://${HOST}/${STAGE}`;         // development/testing stage. remove '/dev' when production stage is deployed.
+const altSERVER_ADDR=`wss://ljy888l5y0.execute-api.us-east-1.amazonaws.com/${STAGE}`;
 
+
+// Debug Object
+/**
+ * DEBUGGING OBJECT
+ */
+var DEBUG = {
+    mode: DEBUGGING,
+    msg: function (variable) {
+            if (this.mode === true) {
+                console.log(variable);
+            }        
+          },
+    sendSystemCommand: function () {
+
+    }
+};
 
 
 /**
@@ -44,86 +57,92 @@ var Chat = {
     connectionID: "",
     messages: [],
     init: function () {
-            console.log("initializing...");
+            console.log("Initializing Chat Object...");
             // setup callbacks;
             this.wSocket.onopen     = function (event) {this.sendClientDetails(event);};
-            this.wSocket.onmessage  = function (event) {incomingMsgHandler(event.data);};
+            this.wSocket.onmessage  = function (event) {incomingDataHandler(event.data);};
             this.wSocket.onerror    = function (event) {this.ErrorHandler(event.data);};
             this.wSocket.onclose    = function (event) {this.autoReconnect(event);};
-            // Chat.wSocket.OPEN();
-            // Chat.wSocket.send(msg);
             return this;
         },
     setUsername: function (name) {
-            Chat.username = name;
-            return this;
-            // setupChatClient();
-            // setupWebSocket();
-        },
-    messageHandler:   (data) => {
-            incomingMsgObj = JSON.parse(data.data);
-            console.log(incomingMsgObj);
-            if (msgList.length >= MAX_MSG_LIST_LEN) {
-                msgList.shift();
-            }
-            msgList.push(incomingMsgObj);
-            return this;
-        },
+                    Chat.username = name;
+                    return this;
+                },
+    getUsername: function () {
+                    return Chat.username;
+                },
+    messageHandler: function (data) {
+                        incomingMsgObj = JSON.parse(data.data);
+                        console.log(incomingMsgObj);
+                        if (msgList.length >= MAX_MSG_LIST_LEN) {
+                            msgList.shift();
+                        }
+                        msgList.push(incomingMsgObj);
+                        return this;
+                    },
     sendClientDetails: function () {
-        systemAlert('Connecting to chat server...');    
-        console.log('Sending connection details...');
-        let clientDetails = {
-                "route": "$connect",                
-                "userid": Chat.username,
-                "text": `${Chat.username} entered the chat.`
-                };
-        Chat.wSocket.send(JSON.stringify(clientDetails));
-    },
+                        systemAlert('Connecting to chat server...');    
+                        DEBUG.msg('Sending connection details...');
+                        let clientDetails = {
+                                "route": "$connect",                
+                                "userid": Chat.username,
+                                "text": `${Chat.username} entered the chat.`
+                                };
+                        Chat.wSocket.send(JSON.stringify(clientDetails));
+                    },
     sendMsg: function (text) {
-        let msg = {
-            "route": "sendMessageRequest",
-            "userid": Chat.username,
-            "text": text
-        };
-        this.wSocket.send(msg);
-    },
+                let msg = {
+                    "route": "message",
+                    "userid": Chat.username,
+                    "text": text
+                };
+                this.wSocket.send(msg);
+            },
     ErrorHandler: function (data) {
-        console.log("WebSocketError occurred.");
+        DEBUG.msg("WebSocketError occurred.");
     },
     closeConnection: function (ev) {
-        console.log("Connection to chat server closed.");
+        DEBUG.msg("Connection to chat server closed.");
     },
     addMsg: function (msg) {
-
+        //  ADD msg to msg list
+        if (this.messages.length === MAX_MSG_LIST_LEN) {
+            this.messages.shift();
+        }
+        this.messages.push();
     },
     displayMessages: function (msg) {
-
+                            // message list: an array of message objects
+                        let ul = document.getElementById("message-list");
+                        while (ul.firstChild) {
+                            ul.removeChild(ul.firstChild);
+                        }    
+                        // populate chat area with recent msgs
+                        msgArr.forEach(chatMsg => {
+                            let listElement = document.createElement("li");
+                            listElement.setAttribute("class", "chat-message");
+                            listElement.innerHTML = `<span class="msg-handle">[${chatMsg.userid}]:</span> ${chatMsg.text}`;
+                            ul.appendChild(listElement);       
+                        });
     },
+    displayChatApp: function() {
+                        let x = document.getElementById("myChat");
+                        x.style.visibility = "visible";
+                        document.getElementById("openChatBtn").style.display = "none";
+                        return this;
+                    },
+    hideChatApp:    function () {
+                        let x = document.getElementById("myChat");
+                        x.style.visibility = "hidden";
+                        document.getElementById("openChatBtn").style.display = "block";
+                    },               
     autoReconnect: function (ev) {
         systemAlert("reconnecting...");
         this.wSocket.OPEN();
     }
 };  
 
-/* 
-function setUsername(name) {
-    Chat.username = name;
-    // connectToChatServer();
-}  */
-
-
-// SETUP web socket
-/* function setupWebSocket() {
-    Chat.wSocket = new WebSocket(CHATSERVER);
-    Chat.wSocket.onopen     = function (event) {sendConnectionMsg();};
-    Chat.wSocket.onmessage  = function (event) {incomingMsgHandler(event);};
-    Chat.wSocket.onerror    = function (event) {displaySocketError(event.data);};
-    Chat.wSocket.onclose    = function (event) {displayClosedConnectionMsg();};
-    // Chat.wSocket.OPEN();
-    // Chat.wSocket.send(msg);
-} */
-
-// Chat.wSocket = new WebSocket(CHATSERVER);
 
 // SETUP Chat Client
 function setupChatClient() {    
@@ -142,35 +161,63 @@ let outgoingMsg = JSON.stringify({
                     'userid': '',
                     'text': ''
                 });
-// let incomingMsg = {
-//             'timestamp': '',
-//             'userid': '',
-//             'text': ''
-//         }
-/* 
-//  message object
-let message = {
-    "route": route,
-    "timestamp": null,
-    "userid": userid, 
-    "text": text,
-};
 
- */
 
-// dbase(chat table) --> lambda --> client
 function encryptMsg(msg) {
-    // SHA
+    // encrypts outgoing messages
     let encryptionKey = "abcdef";
 }
-function getEncryptionKey() {
-    // retrieve key from database containing key
+
+function decryptMsg(msg) {
+    // decrypts incoming messages
+    let decryptionKey = "abcdef";
 }
-  
-function responseHandler(responseFromServer) {
+
+function getEncryptionKey() {
+    // retrieve a fresh key from database containing key
+}
+
+function incomingDataHandler(incomingData) {
+    let data = JSON.parse(incomingData);
+    // let data = incomingData;
+    // console.log(incomingData);
+    DEBUG.msg(incomingData);
+    DEBUG.msg(data);
+    if (data.message) {
+        //  errorResponseHandler(data.message);
+        // console.log(data.message);
+        DEBUG.msg(data.message);
+        return;
+    }
+
+    if (data.userid) {
+        if (data.userid === 'SERVER MESSAGE') {
+            //  serverResponseHandler(data.body);
+            return;
+        } else {
+            incomingMsgHandler(data);
+            return;
+        }
+    }
+}
+
+function incomingMsgHandler(msgObject) {
+    // console.log('Received: Chat Message!');
+    DEBUG.msg('Received: Chat Message!');
+    let msg = {
+        "userid":   msgObject.userid,
+        "text":     msgObject.text
+    };
+    if (msgList.length >= MAX_MSG_LIST_LEN) {
+        msgList.shift();
+    }    
+    msgList.push(msg);       
+}
+
+function serverResponseHandler(responseFromServer) {
     let response = JSON.parse(responseFromServer);
     if (response.body.userid === 'SERVER MESSAGE') {
-        console.log(response.body.userid);
+        DEBUG.msg(response.body.userid);
     }
     switch (responseFromServer['statusCode']) {
         case 200:
@@ -187,14 +234,13 @@ function responseHandler(responseFromServer) {
     }
 }                                     
 
+/* 
 function incomingMsgHandler(wSocketPacket) {
     // extract JSON object
     console.log(wSocketPacket);
     let msgObject = JSON.parse(wSocketPacket);
     
     console.log(msgObject);
-    // let msgObject = JSON.parse(wSocketPacket);
-    // let msgObject = wSocketPacket['body'];
     if ( msgObject['userid'] === "SERVER MESSAGE") {
         // system message from server
         console.log('Received: System Message from Server!');  
@@ -221,18 +267,8 @@ function incomingMsgHandler(wSocketPacket) {
     }
 
     // viewMsgList(msgList);  
-}
+} */
 
-    // let incomingMsg =  data; //  
- /*   Chat.connectionID = data['connectionId'];
-    let serverResponse = {
-        // 'connectionId': data['connectionId'],
-        "userid": data['userid'],
-        "text": data["text"]
-    };
-    console.log(serverResponse);
-    console.log(data); */
-         
 
 function onSendingChatMsg(event) {
     event.preventDefault();
@@ -242,10 +278,10 @@ function onSendingChatMsg(event) {
         let msg = $('#msg').val();
         document.getElementById("msg").value = "";
         console.log(`Typed Message: ${msg}`);
-        // Chat.sendMsg(msg);
         sendMsg(msg);
     }
 }
+
 
 function sendMsg(chatMsg) {
     // build message object
@@ -255,10 +291,7 @@ function sendMsg(chatMsg) {
             "userid": Chat.username,
             "text": chatMsg
     };
-    // addMsgToList(newMsgObj);
-    // viewMsgList(msgList);
     Chat.wSocket.send(JSON.stringify(newMsgObj));
-    // Chat.wSocket.send(newMsgObj);
 }
 
 
@@ -269,6 +302,7 @@ function addMsgToList(latestMsg) {
     msgList.push(latestMsg);  
 }
 
+
 function parse(msg) {
     // turn chat string into a message object
     return {
@@ -278,11 +312,13 @@ function parse(msg) {
     };
 }
 
+
 function receiveMsg(msg) {
     // process received data into a message object
     let decryptedMsg = decryptMsg(msg);
     return parse(decryptedMsg);
 }
+
 
 function viewMsgList(msgArr) {
     // message list: an array of message objects
@@ -299,20 +335,6 @@ function viewMsgList(msgArr) {
     });
 } 
 
-// function clearChatArea() {
-//     let ul = document.getElementById("chat-messages");
-//     // clear chat-area
-//     while (ul.firstChild) {
-//         ul.removeChild(ul.firstChild)
-//     }
-//     if (document.getElementsByClassName("chat-message")) {
-//         let oldMsgs = document.getElementsByClassName("chat-message");
-//         oldMsgs[0].setAttribute("hidden", "");
-//         oldMsgs.forEach(element => {
-//             ul.removeChild(element);
-//         });        
-//     }
-// }
 
 /**
  * OPEN a websocket connection to the chat API.  
@@ -320,74 +342,82 @@ function viewMsgList(msgArr) {
  * @param: ipAddress (str)
  * @returns: void
  */
-function connectToChatServer() {
+/* function connectToChatServer() {
     Chat.wSocket.onopen     = function (event) {sendConnectionMsg();};
     Chat.wSocket.onmessage  = function (event) {incomingMsgHandler(event.data);};
     Chat.wSocket.onerror    = function (event) {displaySocketError(event.data);};
     Chat.wSocket.onclose    = function (event) {displayClosedConnectionMsg();};
-    // Chat.wSocket.OPEN();
-    // Chat.wSocket.send(msg);
 }
+ */
 
 /**
- * SENDS json message object to chat server.
- * @param {*} username userid or chat handle
- * @param {*} chatroom chatroom on server to join
- * @returns void
+ * Displays websocket exceptions.   
+ * @param {*} err captured error message 
+ * @returns void 
  */
-/* function sendConnectionMsg() {
-    systemAlert('Connected to chat server...');    
-    console.log('Applying userid...');
-    let connectionMsg = {
-        "route": "sendMessageRequest",                
-        "body": {
-                    "userid": Chat.username,
-                    // "connectionId": Chat.connectionID,
-                    "text": `${Chat.username} entered the chat.`
-                }
-            };
-    Chat.wSocket.send(JSON.stringify(connectionMsg));
-} */
-
-/* function connectToChatServer() {
-    console.log("Connecting to the chat server...");
-    let connectionObject = {
-        "route": "connect",
-        "body": JSON.stringify({
-            "userid": Chat.username,  
-        })
-    };
-    Chat.wSocket.send(connectionObject);
-} */
-
 function displaySocketError(err) {
-    console.log('ERROR!!!');
+    DEBUG.msg('ERROR!!!');
     systemAlert(err);    
 }
 
+
+/**
+ * Displays a custom alert message when the connection is closed by the server. 
+ * @returns void    
+ */
 function displayClosedConnectionMsg() {
     let alertMsg = 'Connection closed by server!';
-    console.log(alertMsg);
+    DEBUG.msg(alertMsg);
     systemAlert(alertMsg);
 }
 
+
 function systemAlert(localSystemMsg) {
-    // let svrMsg = JSON.parse(localSystemMsg);
     let alertObject = {
         userid: `SYSTEM`,
         text: `<span class="system-alert"> ****** ATTN: ${localSystemMsg} ******</span>`,
     };
     msgList.push(alertObject);
-    // addMsgToList(newMsgObj);
     viewMsgList(msgList);
 }
+
+
+/* function debugMsg(text_) {
+    if (DEBUG === true) {
+        console.log(text_);
+    }
+}
+ */
+function showChatWindow() {
+    document.getElementById("myChat").style.visibility = "visible";
+    document.getElementById("openChatBtn").style.display = "none";
+}
+
+
+function hideChatWindow() {
+    let x = document.getElementById("myChat");
+    x.style.visibility = "hidden";
+    document.getElementById("openChatBtn").style.display = "block";
+}
+
+
+function usernameHandler(ev) {
+    let name = document.getElementById("player_name").value;
+    document.getElementById("player_name").value = "";
+    DEBUG.msg(`Player Name: ${name}`);
+    Chat.setUsername(name).init();
+    Chat.sendClientDetails();
+    ev.preventDefault();
+}
+
+
 
 
 /*
 *                             ################ MAIN ################
 */
 
-console.log("Loading chat application...");
+// debugMsg("Loading chat application...");
 // SETUP
 // Chat.setup();
 // OPEN WEB SOCKET
@@ -398,8 +428,8 @@ console.log("Loading chat application...");
 // RECEIVE CONFIRMATION FROM SERVER
 // SEND MESSAGES
 // LISTEN FOR MESSAGES
-var msgList = [];
+// var msgList = [];
 const display = setInterval(() => {
-        viewMsgList(msgList);    
-    }, 500);
+                                viewMsgList(msgList);    
+                            }, 500);
 
