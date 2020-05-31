@@ -1,13 +1,13 @@
 /**
 *   Chat Client (Browser version)
 *   __author__ = 'sauce_code, sauceCode'
-*   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.0.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
+*   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.2.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
 *
 *    @AUTHOR/PROGRAMMER: muddicode/sauceCode
-*    @VERSION: 1.1.0  
+*    @VERSION: 1.2.0  
 *
 *    @NEXT_COMMIT:
-*       @VERSION: 1.1.0
+*       @VERSION: 1.2.0
 *       
 */
 
@@ -29,7 +29,6 @@ const CHATSERVER=`wss://${HOST}/${STAGE}`;         // development/testing stage.
 const altSERVER_ADDR=`wss://ljy888l5y0.execute-api.us-east-1.amazonaws.com/${STAGE}`;
 
 
-// Debug Object
 /**
  * DEBUGGING OBJECT
  */
@@ -163,18 +162,20 @@ let outgoingMsg = JSON.stringify({
                 });
 
 
-function encryptMsg(msg) {
+function encryptMsg(key, msg) {
     // encrypts outgoing messages
     let encryptionKey = "abcdef";
 }
 
-function decryptMsg(msg) {
+function decryptMsg(key, msg) {
     // decrypts incoming messages
     let decryptionKey = "abcdef";
 }
 
 function getEncryptionKey() {
     // retrieve a fresh key from database containing key
+    let encryptionKey = 'UserSecret';
+    return encryptionKey;
 }
 
 function incomingDataHandler(incomingData) {
@@ -185,11 +186,10 @@ function incomingDataHandler(incomingData) {
     DEBUG.msg(data);
     if (data.message) {
         //  errorResponseHandler(data.message);
-        // console.log(data.message);
+        // DEBUG.msg(data.message);
         DEBUG.msg(data.message);
         return;
     }
-
     if (data.userid) {
         if (data.userid === 'SERVER MESSAGE') {
             //  serverResponseHandler(data.body);
@@ -202,7 +202,6 @@ function incomingDataHandler(incomingData) {
 }
 
 function incomingMsgHandler(msgObject) {
-    // console.log('Received: Chat Message!');
     DEBUG.msg('Received: Chat Message!');
     let msg = {
         "userid":   msgObject.userid,
@@ -234,40 +233,7 @@ function serverResponseHandler(responseFromServer) {
     }
 }                                     
 
-/* 
-function incomingMsgHandler(wSocketPacket) {
-    // extract JSON object
-    console.log(wSocketPacket);
-    let msgObject = JSON.parse(wSocketPacket);
-    
-    console.log(msgObject);
-    if ( msgObject['userid'] === "SERVER MESSAGE") {
-        // system message from server
-        console.log('Received: System Message from Server!');  
-    } else {
-        // chat message
-        console.log('Received: Chat Message!');
-    }
-    let msg = {
-        "userid": msgObject['userid'],
-        "text": msgObject['text']
-    };
-    console.log(msgObject);
-    console.log(msg['userid']);
-    console.log(msg['text']);
-    if (msgList.length >= MAX_MSG_LIST_LEN) {
-        msgList.shift();
-    }    
-    if (DEBUG===true) {
-        msgList.push(msg);       
-    } else {
-        if (msgObject['userid'] != 'SERVER MESSAGE') {
-            msgList.push(msg);       
-        }
-    }
 
-    // viewMsgList(msgList);  
-} */
 
 
 function onSendingChatMsg(event) {
@@ -277,7 +243,7 @@ function onSendingChatMsg(event) {
     } else {
         let msg = $('#msg').val();
         document.getElementById("msg").value = "";
-        console.log(`Typed Message: ${msg}`);
+        DEBUG.msg(`Typed Message: ${msg}`);
         sendMsg(msg);
     }
 }
@@ -320,6 +286,10 @@ function receiveMsg(msg) {
 }
 
 
+/**
+ * Displays list of last 10 messages in chat window
+ * @param {array} msgArr List of last 10 messages
+ */
 function viewMsgList(msgArr) {
     // message list: an array of message objects
     let ul = document.getElementById("message-list");
@@ -352,7 +322,7 @@ function viewMsgList(msgArr) {
 
 /**
  * Displays websocket exceptions.   
- * @param {*} err captured error message 
+ * @param {string} err captured error message 
  * @returns void 
  */
 function displaySocketError(err) {
@@ -372,6 +342,10 @@ function displayClosedConnectionMsg() {
 }
 
 
+/**
+ * 
+ * @param {string} localSystemMsg - displays system message in chat window. 
+ */
 function systemAlert(localSystemMsg) {
     let alertObject = {
         userid: `SYSTEM`,
