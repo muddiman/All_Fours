@@ -11,7 +11,7 @@ function usernameHandler(ev) {
 
 /* 
     
-    @AUTHOR/PROGRAMMER: muddicode/sauceCode
+    @AUTHOR/PROGRAMMER: .muddicode/sauceCode
     @VERSION: 1.0.0
 
 */

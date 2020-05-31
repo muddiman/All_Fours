@@ -1,29 +1,28 @@
-/*
-==================================================================
-|                                                                |
-|                                                                |
-|                       ALL FOURS                                |
-|                     BY: .muddicode                             |
-|                                                                |
-|                                                                |
-==================================================================
-*/
+ALL FOURS (.muddicode)
+=========
 
-/**
+Contents
+-----------
+
+1. Meta-Data Card
+2. About the Author
+3. About the Game
+
+I. Meta-Data Card
+-----------------
+
     @Title:         All FOURS GAME 0.9.0    (Final Version: coming soon)
     @Description:   Popular Card game played in teams of two players.
     @author:        Roger Clarke (muddiman | .muddicode)
-    @license:       Copyright (c) 2018-2019. All Rights Reserved. See license.md.
-
+    @license:       Copyright (c) 2018-2020. All Rights Reserved. See license.md.
     Card images:    ANONYMOUS
     @author:        Prodigy Engineering LLC (New York).
     @link:          http://www.twomanallfours.com/allfours/
     @Source Code:   https://www.github/muddiman/All_Fours/
     @license:       http://www.twomanallfours.com/allfours/license.html
 
-*/
-
-## About the author
+II. About the Author
+-------------------
 
 Roger Clarke AKA .muddicode
 Chemical Engineer working for a large water utility.
@@ -36,7 +35,8 @@ Frameworks:
     Javascript - React, Node.js
     Python - pygame, kivy, django, numpy, matplotlib, pandas, scipy.
 
-### About the Game
+III. About the Game
+-------------------
 
 Written in Javascript
 Intend to port it to Python (using pygame). As code base grows, I intend to separate the code into conceptual
