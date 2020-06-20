@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="./css/chat.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="./lib/title-style.css" />
     <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous"> 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
 <body>
@@ -32,13 +33,13 @@
                 <div class="col-12">
                     <!-- <p style="color: white">Game playable on latest version of Microsoft Edge only otherwise the game will not load.</p> -->
                      <nav id="navbar">                        
-                        <a href="allfours.html">Home</a>
-                        <a href="pages/documentation.html">Documentation</a>
-                        <a href="pages/license.html">License</a>
-                        <a href="pages/contact.html">Contact</a>
-                        <a href="pages/chat.html">Chat</a>
-                        <a href="pages/about.html">About</a>
-                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')">Control Panel (toggle)</a>
+                        <a href="allfours.html"><button class="navbutton"><i class="material-icons">home</i><br>Home</button></a>
+                        <a href="pages/contact.html"><button class="navbutton"><i class="material-icons">mail_outline</i><br>Contact</button></a>
+                        <a href="#"><button class="navbutton" onclick="toggle('myChat')"><i class="material-icons">question_answer</i><br>Chat</button></a>
+                        <a href="pages/about.html"><button class="navbutton"><br>About</button></a>
+                        <a href="pages/documentation.html"><button class="navbutton"><br>Documentation</button></a>
+                        <a href="pages/license.html"><button class="navbutton"><i class='far fa-id-card'></i><br>License</button></a>                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')"><button class="navbutton"><br>Control Panel (toggle)</button></a>
+                        <!-- <i class='fas fa-toggle-off' style='font-size:48px;color:rgb(255, 255, 255)'></i><i style='font-size:24px' class='fas'>&#xf205;</i> -->
                     </nav> 
                 </div>
             </div>
@@ -114,18 +115,20 @@
                     <h3>Control Panel</h3>
                 </div>
                 <!-- Calls any function assign to the button via onclick -->
-                <div class="function-buttons">
+                <!-- <div class="function-buttons">
                     <button class="w3-btn" onclick="close('controlPanel')">Close</button>
                     <button class="w3-btn">Beg</button>
-                    <!-- onclick="Display.video(Game.Components.cutScenes[0])" -->
                     <button class="w3-btn" id="chat-btn" onclick="toggle('myChat')">Chat</button>
-                </div>
+                </div> -->
                 <div class="user_input">                    
-                    <form>
-                      <div><h4>Enter your name:</h4> <!-- ADD: an onsubmit function giving name both to allfours & chat -->
-                        <input id="player_name" class="usernameInput" maxlength="7" name="name" type="text"><br> 
+                    <form class="chat register">
+                      <div><h4>Enter your Username:</h4> <!-- ADD: an onsubmit function giving name both to allfours & chat -->
+                        <input id="player_name" class="userInput" maxlength="7" name="username" type="text"><br> 
                       </div>
-                      <button class="w3-button w3-round-xlarge w3-border-blue" onclick="usernameHandler(event)" type="button" id="enter_btn">ENTER</button>
+                      <div><h4>Chat Room:</h4> <!-- ADD: an onsubmit function giving name both to allfours & chat -->
+                        <input id="room_name" class="userInput" placeholder="#default" maxlength="7" name="chatroom" type="text"><br> 
+                      </div>
+                      <button class="w3-button w3-round-xlarge w3-border-blue"  type="button"  onclick="joinChat(event)"  id="enter_btn">JOIN</button>
                     </form>
                 </div>
                 <div id="debug_section"></div> <!--section of the DOM reserved for debugging output -->
@@ -139,21 +142,21 @@
 <!-- <button class="open-button" onclick="openForm()">Chat</button> -->
 <section id="chat_box">
     <!-- <button class="chat-minimize btn">Hide Chat</button>  -->
-    <button class="chat-minimize btn" id="openChatBtn" onclick="showChatWindow()">Open Chat <i class="far fa-comments"></i></button>
-    <div class="chat-popup chatArea" style="visibility: hidden;" id="myChat">
-        <h1 id="chat-heading">Chat</h1>
+    <button type="button" class="chat-minimize btn" id="openChatBtn" onclick="showChatWindow()">Open Chat <i class="far fa-comments"></i></button>
+    
+    <div class="chat-popup chatArea" style="visibility: hidden;" id="myChat"> 
+        <h3 id="chat-heading">Ole Talk 1.1.1</h3>
         <div class="chatArea" id="chat-window">
             <ul class="messages" id="message-list">
                 <!-- <li>COOL</li> -->
             </ul>
         </div>
         <div  class="form-container">
-            <form id="chat-form"  onsubmit="onSendingChatMsg(event)>
-                <label for="msg"><b>Type your message here:</b></label>
+            <form id="chat-form" onsubmit="Chat.sendMsg(event)">
                 <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
-                <button type="submit" class="btn" id="sendBtn" onclick="onSendingChatMsg(event)">SEND MESSAGE<button>
+                <button type="button" class="btn cancel" id="hideChatBtn" onclick="hideChatWindow()">HIDE CHAT</button>
+                <button type="submit" class="btn send"   id="sendBtn">SEND  <i class='far fa-paper-plane'></i><button><br>
             </form>
-            <button type="button" class="btn cancel" onclick="hideChatWindow()">HIDE CHAT</button>
         </div>
     </div>
 
@@ -181,7 +184,7 @@
     <!-- Footer -->
     <footer>
         <div class="container" id="copyright">
-            <div id="legal"><a href="legal.html">Legal</a></div>
+            <!-- <div id="legal"><a href="legal.html">Legal</a></div> -->
             <p>Copyright &copy; 2018-2020 Gallatin Engineering Ltd. Powered by RMC Labs, Inc. (New York)</p>
         </div>
     </footer>           <!---   End of Page Content  -->
@@ -192,63 +195,33 @@
     <script type="text/javascript" src="./lib/title-script.js"></script>
     <script type="text/javascript" src="./lib/game_loader.js"></script>
     <!-- <script type="text/javascript" src="/scripts/allfours-page-script.js"></script> -->
-
     <!-- <script type="text/javascript" src="game-client.js"></script> -->
     
-    <script type="text/javascript" src="allfours.js">
-    
-        window.onload = function () {
-        //    loadAllGameComponents();
-
-            //loadAssets();     //  images, sound & video files
-           // loadGame();
-            
-/*             let timeOutID = setTimeout(function () {
-               mainGameLoop();
-               clearTimeout(timeOutID);
-            }, 3000); */
-          
-        //    mainGameLoop();
-        };
-    </script>
-<!--         <script type="text/javascript" src="game_loaader.js">
-        window.onload = function () {
-           // loadGame();
-            
-/*             let timeOutID = setTimeout(function () {
-               mainGameLoop();
-               clearTimeout(timeOutID);
-            }, 3000); */
-          
-        //    mainGameLoop();
-        }
-    </script>  -->     
+    <script type="text/javascript" src="allfours.js"></script>
     <script type="text/javascript" src="/scripts/chat.js">
-        function usernameHandler(ev) {
+/*         function joinChat(ev) {
             ev.preventDefault();
             let name = document.getElementById("player_name").value;
+            let room = document.getElementById("room_name").value;
             document.getElementById("player_name").value = "";
-            // console.log(`Player Name Set = ${name}`);
-            Chat.setUsername(name);
-            Chat.init();
-            // Chat.init();
-        }
+            document.getElementById("room_name").value = "";
+            Chat.setUsername(name).setChatRoom(room).init();
+        } */
     </script>
 </body>
 <!--   
     *   @PROJECT NAME:  "KAITY"
     *   @MODULE:    CHAT MODULE
     *   @TITLE:     OLE TALK
-    *   @VERSION: 0.3.0
-    *   This commit udates the Chat Module: to connect with the server and 
-    *   and maintains that web socket connection until page closes. 
+    *   @VERSION:   1.1.1
+    *   This commit fixes some of the known bugs in the Chat Module. 
  -->
 </html>
 
 
 <!--
     @AUTHOR/PROGRAMMER: muddicode/sauceCode
-    @VERSION: 1.0.0
+    @VERSION: 1.1.1
 
 ==================================================================
 |                                                                |

@@ -21,17 +21,20 @@
   text-align: center;
   padding: 0;
   margin: 0;
-  font-size: 35px;
+  font-size: 20px;
   font-weight: bold;
-  color: #555;
+  color: white;
+  background-color: blue;
 }
 /* The popup chat - hidden by default */
 .chat-popup {
   display: block;
   position: fixed;
-  bottom: 52px;
-  right: 15px;
-  border: 3px solid #f1f1f1;
+  bottom: 80px;
+  right: 35px;
+  border: 2px solid black;
+  border-radius: 15px;
+  box-shadow: 15px 15px grey;
   z-index: 9;
   padding: 2px 15px 15px 15px;
 }
@@ -46,13 +49,18 @@
   color: white;
   font-weight: bold;
   border: none;
+  border-radius: 5px;
   bottom: 65px;
   right: 150px;
+  position: fixed;
+  z-index: 15;
+  box-shadow: 24, 24, gray;
 }
 #openChatBtn:hover {
   background-color: rgb(0, 0, 255);
   width: 155px;
   height: 50px;
+  box-shadow: 2px 2px 2px 2px grey;
 }
 .chat-minimize {
   position: fixed;
@@ -126,12 +134,14 @@
 .form-container .btn {
   background-color: #4CAF50;
   color: white;
-  padding: 16px 20px;
+  padding: auto;
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  width: 100%;
+  width: 49%;
+  height: 50px;
   margin-bottom:10px;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 
@@ -139,7 +149,9 @@
 .form-container .cancel {
   background-color: red;
 }
-
+.send {
+  background-color: rgb(5, 158, 5);
+}
 /* Add some hover effects to buttons */
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
@@ -148,7 +160,5 @@
 /* 
     Project Code Name:    'Kaity'
     Title:                'Ole Talk'
-    Version:               1.1.0
-    
-
- */
+    Version:               1.1.1
+*/
