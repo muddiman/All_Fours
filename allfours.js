@@ -281,6 +281,7 @@ function saveFile(settingsObject) {
 /*
 ================================================================================================================================
 */
+                        /* VISUAL  */
 /*  screen canvas class */
 console.log(`Reading the 'Screen' script`);
 function gCanvasLayer(ID, zIndex, color) {
@@ -2722,6 +2723,7 @@ function gameLoop() {
     }
     if (Game.State.userPlayed === true && Game.State.computerPlayed === true) {
         Game.Engine.stop();
+        // save game state
         console.log(`Engine Stopped!`);
         Game.State.userPlayed     = false;
         Game.State.computerPlayed = false;
