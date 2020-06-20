@@ -2,16 +2,24 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;   
 }
-.col-12 {width:100%;}
+.col-12 {
+    padding: 0;
+    margin: 0;
+    width:100%;
+}
+.menuContainer {
+    margin-top: 0;
+    padding-top: 0;
+}
 #heading {
-    background-color: blue;
-    padding-top: 0px;
+    background-color: white;
+    padding-top: 0;
     margin: 0;
     border: 0;
-    margin-bottom: 0;
+    /* margin-bottom: 0; */
 }
 h1 {
-    color: aliceblue;
+    color: blue;
     padding-left: 50px;
     padding-top: 0;
     padding-bottom:0;
@@ -41,13 +49,16 @@ nav {
 #game-container {
     /* margin-right: 30%;  */
     width: 70%;
+    /* margin-top: 100px; */
 }
 .screen {
     border: 5px solid black;
+    /* margin-top: 75px; */
         /* margin-left: 15px; */
 }
 #game_board {
     border: 5px solid black; 
+    /* margin-top: 75px; */
     /* background-color: darkolivegreen; */
     /* margin-left: 15px; */
 }
@@ -56,6 +67,7 @@ h3 {
 }
 .w3-sidebar {
     width: 30%;
+    /* top: 400px; */
     left: 800px;
     /*padding-right: 250px; */
     margin-right: 15px; 
@@ -63,7 +75,17 @@ h3 {
 .w3-card-4 {
     width: 100%;
 }
-
+.navbutton {
+    background-color: white;
+    color: blue;
+    border: none;
+}
+.navbutton:hover {
+    /* font-weight: bold; */
+    background-color: white;
+    color: blue;
+    border-bottom: 2px solid blue;
+}
 .function-buttons {
     margin-bottom: 5px;
 }
