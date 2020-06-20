@@ -8,6 +8,13 @@
 *    @LICENSE: SAAS, ChaaS --> Chat as a Service register, get a key for website & user w/30 day expiry date.
 *    @NEXT_COMMIT:
 *       @VERSION: 1.1.1
+*   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.2.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
+*
+*    @AUTHOR/PROGRAMMER: muddicode/sauceCode
+*    @VERSION: 1.2.0  
+*
+*    @NEXT_COMMIT:
+*       @VERSION: 1.2.0
 *       
 */
 
@@ -207,18 +214,22 @@ var ChatRoom = {
 */
 
 
-function encryptMsg(msg) {
+function encryptMsg(key, msg) {
     // encrypts outgoing messages
     let encryptionKey = "abcdef";
 }
 
-function decryptMsg(msg) {
+function decryptMsg(key, msg) {
     // decrypts incoming messages
     let decryptionKey = "abcdef";
 }
 
 function generateSessionEncryptionKey() {
     // create a fresh public/private key pair for this session
+function getEncryptionKey() {
+    // retrieve a fresh key from database containing key
+    let encryptionKey = 'UserSecret';
+    return encryptionKey;
 }
 
 /* function incomingDataHandler(incomingData) {
@@ -229,6 +240,17 @@ function generateSessionEncryptionKey() {
         if (data.message === 'Internal server error') {
             Chat.errorMessage('Remote Server', data.message);
             DEBUG.msg(data.message);
+        //  errorResponseHandler(data.message);
+        // DEBUG.msg(data.message);
+        DEBUG.msg(data.message);
+        return;
+    }
+    if (data.userid) {
+        if (data.userid === 'SERVER MESSAGE') {
+            //  serverResponseHandler(data.body);
+            return;
+        } else {
+            incomingMsgHandler(data);
             return;
         }
     } else {
@@ -255,6 +277,7 @@ function serverResponseHandler(data) {
 }
 
 function messageHandler(msgObject) {
+function incomingMsgHandler(msgObject) {
     DEBUG.msg('Received: Chat Message!');
     let msg = {
         "userid":   msgObject.userid,
@@ -285,6 +308,8 @@ function serverResponseHandler(responseFromServer) {
 }                                     
 
 
+
+
 /* function onSendingChatMsg(event) {
     event.preventDefault();
     if (Chat.username == null) {
@@ -294,6 +319,7 @@ function serverResponseHandler(responseFromServer) {
         document.getElementById("msg").value = "";
         DEBUG.msg(`Typed Message: ${msg}`);
         Chat.wSocket.send(JSON.stringify(buildChatMsg(msg)));
+        sendMsg(msg);
     }
 } */
 
@@ -337,6 +363,12 @@ function receiveMsg(msg) {
  */
 
 /* function viewMsgList(msgArr) {
+
+/**
+ * Displays list of last 10 messages in chat window
+ * @param {array} msgArr List of last 10 messages
+ */
+function viewMsgList(msgArr) {
     // message list: an array of message objects
     let ul = document.getElementById("message-list");
     while (ul.firstChild) {
@@ -350,10 +382,56 @@ function receiveMsg(msg) {
         ul.appendChild(listElement);       
     });
 }  */
+} 
+
+
+/**
+ * OPEN a websocket connection to the chat API.  
+ * Loads the necessary websocket handlers.
+ * @param: ipAddress (str)
+ * @returns: void
+ */
+/* function connectToChatServer() {
+    Chat.wSocket.onopen     = function (event) {sendConnectionMsg();};
+    Chat.wSocket.onmessage  = function (event) {incomingMsgHandler(event.data);};
+    Chat.wSocket.onerror    = function (event) {displaySocketError(event.data);};
+    Chat.wSocket.onclose    = function (event) {displayClosedConnectionMsg();};
+}
+ */
+
+/**
+ * Displays websocket exceptions.   
+ * @param {string} err captured error message 
+ * @returns void 
+ */
+function displaySocketError(err) {
+    DEBUG.msg('ERROR!!!');
+    systemAlert(err);    
+}
 
 
 
 
+/**
+ * 
+ * @param {string} localSystemMsg - displays system message in chat window. 
+ */
+function systemAlert(localSystemMsg) {
+    let alertObject = {
+        userid: `SYSTEM`,
+        text: `<span class="system-alert"> ****** ATTN: ${localSystemMsg} ******</span>`,
+    };
+    msgList.push(alertObject);
+    viewMsgList(msgList);
+}
+
+
+/* function debugMsg(text_) {
+    if (DEBUG === true) {
+        console.log(text_);
+    }
+}
+ */
 function showChatWindow() {
     document.getElementById("myChat").style.visibility = "visible";
     document.getElementById("openChatBtn").style.display = "none";
