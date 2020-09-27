@@ -1,20 +1,15 @@
 /**
 *   Chat Client (Browser version)
 *   __author__ = 'sauce_code, sauceCode'
-*   src="https://cdn.gallatinengineering.com/code/libs/js/oletalk/v1.1.1/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
 *
-*    @AUTHOR/PROGRAMMER: muddicode/sauceCode
-*    @VERSION: 1.1.1  
 *    @LICENSE: SAAS, ChaaS --> Chat as a Service register, get a key for website & user w/30 day expiry date.
-*    @NEXT_COMMIT:
-*       @VERSION: 1.1.1
-*   src="https://cdn.twomanallfours.com/code/libs/js/chatjs/v1.2.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
+*   src="https://cdn.gallatinengineering.com/code/libs/kaity/js/v1.2.0/kaity.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
 *
 *    @AUTHOR/PROGRAMMER: muddicode/sauceCode
-*    @VERSION: 1.2.0  
+*    @VERSION: 1.3.0  
 *
 *    @NEXT_COMMIT:
-*       @VERSION: 1.2.0
+*       @VERSION: 1.4.0
 *       
 */
 
@@ -30,8 +25,9 @@ var msgList = [];
 const HEADER_LEN=3;
 const MAX_MSG_LENGTH=140;   
 const MAX_MSG_LIST_LEN=8;
-const STAGE='prod';         // OR dev
+const STAGE='dev';         // OR PROD
 const HOST='chat.twomanallfours.com';
+const HOST_B='chat.gallatinengineering.com';
 const ALT_HOST='ljy888l5y0.execute-api.us-east-1.amazonaws.com';
 const CHATSERVER=`wss://${HOST}/${STAGE}`;         // development/testing stage. remove '/dev' when production stage is deployed.
 const altSERVER_ADDR=`wss://${ALT_HOST}/${STAGE}`;
@@ -59,18 +55,23 @@ var DEBUG = {
  * 
  */
 var Chat = {
-    wSocket: new WebSocket(CHATSERVER),
-    room: "",
-    username: "",
+    wSocket: new WebSocket(altSERVER_ADDR),
+    // wSocket: new WebSocket(CHATSERVER),
+    // wSocket: io(altSERVER_ADDR),
+    room: "default",
+    server: "twomanallfours.com",
+    username: "Me",
     connectionID: "",
-    messages: [],
+    messages: [],       // Array of message objects
     init: function () {
             DEBUG.msg("Initializing Chat Object...");
+            
             /* setup callbacks  */
-            this.wSocket.onopen     = function (event) {this.sendClientDetails(event);};
-            this.wSocket.onmessage  = function (event) {Chat.messageHandler(event);};
-            this.wSocket.onerror    = function (event) {this.errorHandler(event.data);};
-            this.wSocket.onclose    = function (event) {this.autoReconnect(event);};
+            this.wSocket.onopen     = (event) => this.sendClientDetails(event);
+            this.wSocket.onmessage  = (event) => this.messageHandler(event);
+            this.wSocket.onerror    = (event) => this.errorHandler(event);
+            this.wSocket.onclose    = (event) => this.displayClosedConnectionMsg(event);
+            // this.wSocket.OPEN();
             return this;
         },
     setUsername: function (name) {
@@ -88,24 +89,30 @@ var Chat = {
                     return Chat.room;
                 },
     sendClientDetails: function () {
-                        Chat.errorMessage('System', 'Connecting to chat server...');    
+                        DEBUG.msg('System: Connecting to chat server...');    
                         DEBUG.msg('Sending connection details...');
                         let clientDetails = {
-                                "route": "$connect", 
-                                "room": Chat.getChatRoom(),               
-                                "userid": Chat.getUsername(),
-                                "text": `${Chat.getUsername()} entered the chat.`
-                                };
-                        Chat.wSocket.send(JSON.stringify(clientDetails));
-                    },
+                            "body": {
+                                    "route": "$connect", 
+                                    "server": "twomanallfours.com",
+                                    "timestamp": "",
+                                    "room": Chat.getChatRoom(),               
+                                    "userid": Chat.getUsername(),
+                                    "text": `${Chat.getUsername()} entered the chat.`
+                                }
+                            };
+                        Chat.wSocket.send(JSON.stringify(clientDetails['body']));
+                        // Chat.wSocket.send(clientDetails['body']);
+                            },
     sendMsg: function (event) {
                 event.preventDefault();
                 if (Chat.getUsername() === "") {
-                    Chat.errorMessage('System', 'Please enter your name.');
+                    DEBUG.msg('System', 'Please enter your name.');
                 } else {
                     let msgText = document.getElementById('msg').value;
                     let msg = {
                         "route": "message",
+                        "server": "twomanallfours.com",
                         "room": Chat.getChatRoom(),
                         "timestamp": "",
                         "userid": Chat.getUsername(),
@@ -130,6 +137,7 @@ var Chat = {
                     this.messages.push(msg);
                 },
     messageHandler: function (ev) {
+                    //  error, system or chat message
                     let data = JSON.parse(ev.data);
                     DEBUG.msg(ev);
                     DEBUG.msg(data);
@@ -142,14 +150,16 @@ var Chat = {
                     } else {
                         if (data.userid) {
                             if (data.userid === 'SERVER MESSAGE') {
-                                Chat.systemMessage('Remote Server', data.text);
-                                return;
+                                // Chat.systemMessage('Remote Server', data.text);
+                                console.log(data.text);
+                                return this;
                             } else {
-                                messageHandler(data);
-                                return;
+                                // messageHandler(data);
+                                Chat.addMsg(data);
+                                return this;
                             }
                         }
-                    return;
+                    return this;
                     }
                 }, 
     displayMessages: function () {
@@ -161,8 +171,14 @@ var Chat = {
                     // populate chat area with recent msgs
                     this.messages.forEach(chatMsg => {
                         let listElement = document.createElement("li");
-                        listElement.setAttribute("class", "chat-message");
+                        listElement.classList.add("chat-message");
                         listElement.innerHTML = `<span class="msg-handle">[${chatMsg.userid}]:</span> ${chatMsg.text}`;
+                        if (chatMsg.userid === Chat.username) {
+                            listElement.classList.add("myMsgs");                           
+                        }                        
+                        if (chatMsg.userid === 'Remote Server') {
+                            listElement.classList.add("systmMsgs");                           
+                        }
                         ul.appendChild(listElement);       
                     });
                 },
@@ -190,6 +206,7 @@ var Chat = {
                         text: `<span class="system-alert"> ****** ATTN: ${systmMsg} ******</span>`,
                     };
                    DEBUG.msg(msgObj);
+                   this.messages.push(msgObj);
                 },                         
     autoReconnect: function (ev) {
                     Chat.errorMessage('System', 'reconnecting...');
@@ -207,6 +224,7 @@ var ChatRoom = {
     enterChatRoom: () => {},
     leaveChatroom: () => {},
 };
+
 
 /*
                             ****** SUPPORTING FUNCTIONS: ******     
@@ -226,46 +244,10 @@ function decryptMsg(key, msg) {
 
 function generateSessionEncryptionKey() {
     // create a fresh public/private key pair for this session
-function getEncryptionKey() {
-    // retrieve a fresh key from database containing key
     let encryptionKey = 'UserSecret';
     return encryptionKey;
 }
 
-/* function incomingDataHandler(incomingData) {
-    let data = JSON.parse(incomingData);
-    DEBUG.msg(incomingData);
-    DEBUG.msg(data);
-    if (data.message) {
-        if (data.message === 'Internal server error') {
-            Chat.errorMessage('Remote Server', data.message);
-            DEBUG.msg(data.message);
-        //  errorResponseHandler(data.message);
-        // DEBUG.msg(data.message);
-        DEBUG.msg(data.message);
-        return;
-    }
-    if (data.userid) {
-        if (data.userid === 'SERVER MESSAGE') {
-            //  serverResponseHandler(data.body);
-            return;
-        } else {
-            incomingMsgHandler(data);
-            return;
-        }
-    } else {
-        if (data.userid) {
-            if (data.userid === 'SERVER MESSAGE') {
-                Chat.errorMessage('Remote Server', data.text);
-                return;
-            } else {
-                messageHandler(data);
-                return;
-            }
-        }
-    return;
-    } 
-} */
 
 function serverResponseHandler(data) {
     // server responses
@@ -277,8 +259,8 @@ function serverResponseHandler(data) {
 }
 
 function messageHandler(msgObject) {
-function incomingMsgHandler(msgObject) {
     DEBUG.msg('Received: Chat Message!');
+    // let message = JSON.parse(msgObject);
     let msg = {
         "userid":   msgObject.userid,
         "text":     msgObject.text
@@ -308,21 +290,6 @@ function serverResponseHandler(responseFromServer) {
 }                                     
 
 
-
-
-/* function onSendingChatMsg(event) {
-    event.preventDefault();
-    if (Chat.username == null) {
-        systemAlert("Please enter your name in the CONTROL PANEL and click on ENTER.");
-    } else {
-        let msg = $('#msg').val();
-        document.getElementById("msg").value = "";
-        DEBUG.msg(`Typed Message: ${msg}`);
-        Chat.wSocket.send(JSON.stringify(buildChatMsg(msg)));
-        sendMsg(msg);
-    }
-} */
-
 /* function buildChatMsg(chatMsg) {
     // build message object
     return {
@@ -344,24 +311,6 @@ function serverResponseHandler(responseFromServer) {
     Chat.wSocket.send(JSON.stringify(newMsgObj));
 } */
 
-
-/* function addMsgToList(latestMsg) {
-    if (msgList.length >= 8) {
-        msgList.shift();
-    }
-    msgList.push(latestMsg);  
-}
- */
-
-
-/* 
-function receiveMsg(msg) {
-    // process received data into a message object
-    let decryptedMsg = decryptMsg(msg);
-    return parse(decryptedMsg);
-}
- */
-
 /* function viewMsgList(msgArr) {
 
 /**
@@ -381,23 +330,9 @@ function viewMsgList(msgArr) {
         listElement.innerHTML = `<span class="msg-handle">[${chatMsg.userid}]:</span> ${chatMsg.text}`;
         ul.appendChild(listElement);       
     });
-}  */
+  
 } 
 
-
-/**
- * OPEN a websocket connection to the chat API.  
- * Loads the necessary websocket handlers.
- * @param: ipAddress (str)
- * @returns: void
- */
-/* function connectToChatServer() {
-    Chat.wSocket.onopen     = function (event) {sendConnectionMsg();};
-    Chat.wSocket.onmessage  = function (event) {incomingMsgHandler(event.data);};
-    Chat.wSocket.onerror    = function (event) {displaySocketError(event.data);};
-    Chat.wSocket.onclose    = function (event) {displayClosedConnectionMsg();};
-}
- */
 
 /**
  * Displays websocket exceptions.   
@@ -426,12 +361,6 @@ function systemAlert(localSystemMsg) {
 }
 
 
-/* function debugMsg(text_) {
-    if (DEBUG === true) {
-        console.log(text_);
-    }
-}
- */
 function showChatWindow() {
     document.getElementById("myChat").style.visibility = "visible";
     document.getElementById("openChatBtn").style.display = "none";
@@ -446,16 +375,15 @@ function hideChatWindow() {
 
 function joinChat(ev) {
     ev.preventDefault();
-    console.log(ev);
-    let playerName = document.getElementById("player_name").value;
-    let room = document.getElementById("room_name").value;
+    let playerName = document.getElementById("username").value;
+    let room = document.getElementById("room").value;
     Chat.setUsername(playerName).setChatRoom(room).init();
     DEBUG.msg(`Player Name: ${Chat.getUsername()}`);
     DEBUG.msg(`Chat Room: ${Chat.getChatRoom()}`);
     playerName.value = "";
     room.value = "";
     showChatWindow();
-    close('controlPanel');
+    close('signonbox');
 }
 
 
@@ -477,7 +405,11 @@ function joinChat(ev) {
 // SEND MESSAGES
 // LISTEN FOR MESSAGES
 // var msgList = [];
+
+
+// Chat.addMsg(welcomeMsg); 
+Chat.systemMessage("System Message", "Welcome to OleTalk 1.2!")
 const display = setInterval(() => {
                                 Chat.displayMessages();
-                            }, 500);
-
+                            }, 200);
+                        

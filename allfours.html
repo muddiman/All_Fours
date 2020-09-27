@@ -38,7 +38,8 @@
                         <a href="#"><button class="navbutton" onclick="toggle('myChat')"><i class="material-icons">question_answer</i><br>Chat</button></a>
                         <a href="pages/about.html"><button class="navbutton"><br>About</button></a>
                         <a href="pages/documentation.html"><button class="navbutton"><br>Documentation</button></a>
-                        <a href="pages/license.html"><button class="navbutton"><i class='far fa-id-card'></i><br>License</button></a>                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')"><button class="navbutton"><br>Control Panel (toggle)</button></a>
+                        <a href="pages/license.html"><button class="navbutton"><i class='far fa-id-card'></i><br>License</button></a>                        
+                        <a href="#" id="togglePanel" onclick="toggle('controlPanel')"><button class="navbutton"><br>Control Panel (toggle)</button></a>
                         <!-- <i class='fas fa-toggle-off' style='font-size:48px;color:rgb(255, 255, 255)'></i><i style='font-size:24px' class='fas'>&#xf205;</i> -->
                     </nav> 
                 </div>
@@ -48,6 +49,7 @@
     <div>   
     <!--    TICKER      -->   
         <div  id="ticker"></div>
+        
     <!--    HOMESCREEN      -->   
         <div class="modal gMenu" id="home_screen" style="display: none;"> 
                 <span title="Close Title Screen" class="close" onclick="document.getElementById('home_screen').style.display='none'">×</span>
@@ -139,18 +141,38 @@
 <!--        Home/Title Screen   -->
 
 <!--        Chat Box            -->
-<!-- <button class="open-button" onclick="openForm()">Chat</button> -->
 <section id="chat_box">
+
+            <!--    Menu Screen     -->   
     <!-- <button class="chat-minimize btn">Hide Chat</button>  -->
     <button type="button" class="chat-minimize btn" id="openChatBtn" onclick="showChatWindow()">Open Chat <i class="far fa-comments"></i></button>
     
     <div class="chat-popup chatArea" style="visibility: hidden;" id="myChat"> 
-        <h3 id="chat-heading">Ole Talk 1.1.1</h3>
+        <div id="chat-heading">Ole Talk 1.2</div>
+        <!-- Sign On Box -->
+        <div class="chat-popup chatArea form-container" id="signonbox">
+            <div>
+                <h3>Enter Chat Room</h3>
+            </div>
+            <div class="user_input">                    
+                <form class="chat register" onsubmit="joinChat(event)">
+                    <div><h4>Enter your Username:</h4> 
+                    <input id="username" class="inputMessage joinChatInput" maxlength="10 name="username" type="text"><br> 
+                    </div>
+                    <div><h4>Chat Room:</h4> 
+                    <input id="room" class="userInput inputMessage joinChatInput" placeholder="#default" maxlength="7" name="chatroom" type="text"><br> 
+                    </div>
+                    <button class="btn send"  type="submit"    id="enter_btn">JOIN</button>
+                </form>
+            </div>
+        </div>
+        <!--    Chat Window    -->
         <div class="chatArea" id="chat-window">
             <ul class="messages" id="message-list">
-                <!-- <li>COOL</li> -->
+                <!-- eg. <li>COOL</li> -->
             </ul>
         </div>
+        <!--    Chat Input Forms    -->
         <div  class="form-container">
             <form id="chat-form" onsubmit="Chat.sendMsg(event)">
                 <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
@@ -158,27 +180,9 @@
                 <button type="submit" class="btn send"   id="sendBtn">SEND  <i class='far fa-paper-plane'></i><button><br>
             </form>
         </div>
+        <div style="text-align: center;">Powered by <a href="https://gallatinengineering.com/oletalk">Gallatin</a></div>
     </div>
 
-    <!--        chat script     -->
-    <!-- <script src="./scripts/chat.js"> -->
-        
-    <!-- <script>        
-        $(function () {
-            var socket = io();
-            $('#sendBtn').onclick(function(){
-                socket.emit('chat message', $('#msg').val());
-                $('#msg').val('');
-                return false;
-            });
-            socket.on('chat message', function(msg){
-                $('#chat-messages').append($('<li>').text(msg));
-                window.scrollTo(0, document.body.scrollHeight);
-            });
-
-        });
-
-    </script> -->
 </section>  <!--        End of Chat Box section        -->
 
     <!-- Footer -->
@@ -191,15 +195,16 @@
 
     <!--            ******** Scripts & Large files  ********        -->
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha512-v8ng/uGxkge3d1IJuEo6dJP8JViyvms0cly9pnbfRxT6/31c3dRWxIiwGnMSWwZjHKOuY3EVmijs7k1jz/9bLA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/scripts/chat.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script> -->
     <script type="text/javascript" src="./lib/title-script.js"></script>
     <script type="text/javascript" src="./lib/game_loader.js"></script>
     <!-- <script type="text/javascript" src="/scripts/allfours-page-script.js"></script> -->
     <!-- <script type="text/javascript" src="game-client.js"></script> -->
     
     <script type="text/javascript" src="allfours.js"></script>
-    <script type="text/javascript" src="/scripts/chat.js">
-/*         function joinChat(ev) {
+<!-- /*         function joinChat(ev) {
             ev.preventDefault();
             let name = document.getElementById("player_name").value;
             let room = document.getElementById("room_name").value;
@@ -207,13 +212,13 @@
             document.getElementById("room_name").value = "";
             Chat.setUsername(name).setChatRoom(room).init();
         } */
-    </script>
+     -->
 </body>
 <!--   
     *   @PROJECT NAME:  "KAITY"
     *   @MODULE:    CHAT MODULE
     *   @TITLE:     OLE TALK
-    *   @VERSION:   1.1.1
+    *   @VERSION:   1.2.0
     *   This commit fixes some of the known bugs in the Chat Module. 
  -->
 </html>
@@ -227,7 +232,7 @@
 |                                                                |
 |                                                                |
 |                       ALL FOURS                                |
-|                     BY: .muddicode                             |
+|                     BY: .muddicode/sauceCode                   |
 |                                                                |
 |                                                                |
 ==================================================================

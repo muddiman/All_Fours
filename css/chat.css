@@ -1,6 +1,6 @@
 /* style for the chat box   */
 #chat_box {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, Helvetica, sans-serif;
     box-sizing: border-box;
 }
 
@@ -18,12 +18,17 @@
   width: 280px;
 }
 #chat-heading {
+  /* border: solid 2px red; */
   text-align: center;
   padding: 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
   margin: 0;
-  font-size: 20px;
-  font-weight: bold;
-  color: white;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  font-size: 30px;
+  /* font-weight: bold; */
+  color: rgba(255, 255, 255, 1.0);
   background-color: blue;
 }
 /* The popup chat - hidden by default */
@@ -37,10 +42,21 @@
   box-shadow: 15px 15px grey;
   z-index: 9;
   padding: 2px 15px 15px 15px;
+  width: 400px;
+}
+#signonbox {
+  background-color: rgba(255, 255, 255, 1.0);
+  width: 250px;
+  border: none;
+  width: 400px;
+
 }
 
 .hide-section {
   visibility: hidden;
+}
+#chat-window {
+  width: 75%;
 }
 #openChatBtn {
   background-color: rgba(0, 0, 255, 0.788);
@@ -60,7 +76,7 @@
   background-color: rgb(0, 0, 255);
   width: 155px;
   height: 50px;
-  box-shadow: 2px 2px 2px 2px grey;
+  
 }
 .chat-minimize {
   position: fixed;
@@ -68,27 +84,37 @@
   right: 25px;
   z-index: 10;
 }
-
+#myChat {
+  background-color: rgba(242, 242, 242, 0.7);
+  padding: 0;
+  border: none;
+  box-shadow: 0px 0px 10px 0px rgba(128, 128, 128, 0.5);
+}
 #chat-window {
-  border: 2px solid #f1f1f1;
+  /* border: 2px solid #f1f1f1; */
   width: 100%;
-  background-color: #d4d4d4;
   color: black;
   height: 200px;
-  font-size: 10px;
+  /* font-size: 12px; */
 }
 .msg-handle {
   overflow: hidden;
   /* text-align: right; */
   /* padding-right: 10px; */
   font-weight: bold; 
-  font-size: 11px;
+  font-size: 14px;
   color: green; 
+}
+.systmMsgs .msg-handle {
+  color: red;
+}
+.myMsgs .msg-handle  {
+  color: blue;
 }
 .chat-message {
   text-align: left;
   padding: 1px;
-  font-size: 10px;
+  font-size: 13px;
   list-style-type: none;
 }
 .messages {
@@ -96,6 +122,8 @@
  margin-left: 0; 
  padding-left: 15px;
 }
+
+
 .message.typing .messageBody {
   color: #555;
 }
@@ -108,9 +136,9 @@
 /* Input */
 /* Add styles to the form container */
 .form-container {
-  max-width: 300px;
-  /* padding: 10px; */
-  background-color: white;
+  max-width: 100%;
+  padding: 25px;
+  /* background-color: white; */
 }
 
 /* Full-width textarea */
@@ -118,15 +146,21 @@
   width: 100%;
   padding: 15px;
   margin: 5px 0 22px 0;
-  border: none;
-  background: #f1f1f1;
+  border: 0.5px solid rgb(150, 150, 150);
+  border-radius: 10px;
+  background: #dfdfdf;
   resize: none;
   height: 65px;
 }
 
+.form-container .inputMessage:hover {
+  border: 1px solid black;
+  background-color: #dfdfdf;
+}
+
 /* When the textarea gets focus, do something */
 .form-container inputMessage:focus {
-  background-color: #d4d4d4;
+  background-color: #ffffff;
   outline: none;
 }
 
@@ -144,6 +178,9 @@
   opacity: 0.7;
 }
 
+.joinChatInput {
+  font-size: x-large;
+}
 
 /* Add a red background color to the cancel button */
 .form-container .cancel {
@@ -151,14 +188,18 @@
 }
 .send {
   background-color: rgb(5, 158, 5);
+  /* border: ; */
 }
 /* Add some hover effects to buttons */
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
 }
-
+#enter_btn {
+  /* position: fixed; */
+margin-left: 50%;
+}
 /* 
     Project Code Name:    'Kaity'
     Title:                'Ole Talk'
-    Version:               1.1.1
+    Version:               1.2.1
 */
