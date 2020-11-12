@@ -142,7 +142,6 @@
 
 <!--        Chat Box            -->
 <section id="chat_box">
-
             <!--    Menu Screen     -->   
     <!-- <button class="chat-minimize btn">Hide Chat</button>  -->
     <button type="button" class="chat-minimize btn" id="openChatBtn" onclick="showChatWindow()">Open Chat <i class="far fa-comments"></i></button>
@@ -160,7 +159,7 @@
                     <input id="username" class="inputMessage joinChatInput" maxlength="10 name="username" type="text"><br> 
                     </div>
                     <div><h4>Chat Room:</h4> 
-                    <input id="room" class="userInput inputMessage joinChatInput" placeholder="#default" maxlength="7" name="chatroom" type="text"><br> 
+                    <input id="room" class="userInput inputMessage joinChatInput" value="#default" maxlength="7" name="chatroom" type="text"><br> 
                     </div>
                     <button class="btn send"  type="submit"    id="enter_btn">JOIN</button>
                 </form>
@@ -177,12 +176,12 @@
             <form id="chat-form" onsubmit="Chat.sendMsg(event)">
                 <input placeholder="Type message here..." class="inputMessage" id="msg" name="msg" autocomplete="off" required>
                 <button type="button" class="btn cancel" id="hideChatBtn" onclick="hideChatWindow()">HIDE CHAT</button>
-                <button type="submit" class="btn send"   id="sendBtn">SEND  <i class='far fa-paper-plane'></i><button><br>
+                <input type="submit" class="btn send"   id="sendBtn"  label='SEND'> 
+                 <!-- <i class='far fa-paper-plane'></i> -->
             </form>
         </div>
         <div style="text-align: center;">Powered by <a href="https://gallatinengineering.com/oletalk">Gallatin</a></div>
     </div>
-
 </section>  <!--        End of Chat Box section        -->
 
     <!-- Footer -->

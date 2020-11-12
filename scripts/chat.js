@@ -3,8 +3,9 @@
 *   __author__ = 'sauce_code, sauceCode'
 *
 *    @LICENSE: SAAS, ChaaS --> Chat as a Service register, get a key for website & user w/30 day expiry date.
-*   src="https://cdn.gallatinengineering.com/code/libs/kaity/js/v1.2.0/kaity.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
-*
+*   src="https://cdn.gallatinengineering.com/libs/js/Oletalk/v1.3.0/chat.js"    integrity="sha256-kjfgklktgjegkljegjegjeg" crossorigin="anonymous"
+*   s3://cdn.gallatinengineering.com/libs/js/Oletalk/v1.3.0/chat.js
+
 *    @AUTHOR/PROGRAMMER: muddicode/sauceCode
 *    @VERSION: 1.3.0  
 *
@@ -145,12 +146,12 @@ var Chat = {
                         if (data.message === 'Internal server error') {
                             Chat.systemMessage('Remote Server', data.message);
                             DEBUG.msg(data.message);
-                            return;
+                            return this;
                         }
                     } else {
                         if (data.userid) {
                             if (data.userid === 'SERVER MESSAGE') {
-                                // Chat.systemMessage('Remote Server', data.text);
+                                Chat.systemMessage('Remote Server', data.text);
                                 console.log(data.text);
                                 return this;
                             } else {
@@ -254,7 +255,7 @@ function serverResponseHandler(data) {
     let message = {
         text: data.message,
         userid: 'Remote Server'
-    }
+    };
     Chat.addMsg(message);
 }
 
